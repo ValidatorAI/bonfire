@@ -14,6 +14,7 @@ class Rooms::ClosedsController < RoomsController
   def new
     @room  = Rooms::Closed.new(name: DEFAULT_ROOM_NAME)
     @users = User.active.ordered
+    @agents = Agent.active
   end
 
   def create
@@ -26,6 +27,9 @@ class Rooms::ClosedsController < RoomsController
   def edit
     selected_user_ids = @room.users.pluck(:id)
     @selected_users, @unselected_users = User.active.ordered.partition { |user| selected_user_ids.include?(user.id) }
+
+    selected_agent_ids = @room.agents.pluck(:id)
+    @selected_agents, @unselected_agents = Agent.active.partition { |agent| selected_agent_ids.include?(agent.id) }
   end
 
   def update

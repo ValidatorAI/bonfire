@@ -20,6 +20,6 @@ class Users::SidebarsController < ApplicationController
     end
 
     def user_ids_already_in_direct_rooms_with_current_user
-      Membership.where(room_id: Current.user.rooms.directs.pluck(:id)).pluck(:user_id).uniq
+      Membership.where(room_id: Current.user.rooms.directs.pluck(:id), participant_type: "User").pluck(:participant_id).uniq
     end
 end

@@ -5,7 +5,7 @@
     <h2 class="message__day-separator"><%= local_datetime_tag message.created_at, style: :date %></h2>
 
     <figure class="avatar message__avatar">
-      <%= avatar_tag message.creator %>
+      <%= participant_avatar_tag message.creator %>
     </figure>
 
     <turbo-frame id="<%= dom_id(message, :edit) %>">

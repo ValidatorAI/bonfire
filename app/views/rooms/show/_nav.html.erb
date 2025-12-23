@@ -11,6 +11,20 @@
     </h1>
   <% end %>
 
+  <% online_agents = room.agents.select(&:online?) %>
+  <% if online_agents.any? %>
+    <div class="flex align-center gap-quarter" title="<%= online_agents.count %> agent(s) online">
+      <% online_agents.first(3).each do |agent| %>
+        <figure class="avatar avatar--agent" style="--avatar-size: 24px; margin: 0;">
+          <%= agent_avatar_tag agent %>
+        </figure>
+      <% end %>
+      <% if online_agents.count > 3 %>
+        <span class="txt-small txt-secondary">+<%= online_agents.count - 3 %></span>
+      <% end %>
+    </div>
+  <% end %>
+
   <%= link_to_edit_room(room) do %>
     <%= image_tag "menu-dots-horizontal.svg", size: 20, aria: { hidden: "true" } %>
     <span class="for-screen-reader">Settings for this <%= room.direct? ? "Ping" : "room" %></span>

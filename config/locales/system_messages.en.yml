@@ -1,0 +1,21 @@
+en:
+  system_messages:
+    # Agent events
+    agent_join: "<strong>%{agent_name}</strong> joined the room. Working on: %{task}"
+    agent_leave: "<strong>%{agent_name}</strong> left the room."
+    agent_reconnect: "<strong>%{agent_name}</strong> reconnected (%{program})."
+
+    # Reservation events
+    reservation_acquired: "<strong>%{agent_name}</strong> reserved files: <code>%{patterns}</code>"
+    reservation_released: "<strong>%{agent_name}</strong> released files: <code>%{patterns}</code>"
+    reservation_conflict: |
+      <strong>File Reservation Conflict</strong><br>%{requester_name} requested <code>%{patterns}</code>, which conflicts with %{holder_name}'s existing reservation.
+    reservation_expired: "<strong>%{agent_name}</strong>'s file reservation expired: <code>%{patterns}</code>"
+
+    # Task events
+    task_completed: "Task <strong>%{name}</strong> has been marked as complete."
+    task_reopened: "Task <strong>%{name}</strong> has been reopened."
+
+    # Room/Project events (meta room only)
+    room_created: "Room <strong>%{room_name}</strong> (%{room_type}) created by %{creator_name}."
+    project_created: "Project <strong>%{project_name}</strong> created for path: <code>%{project_path}</code>"

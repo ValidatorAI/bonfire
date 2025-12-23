@@ -30,5 +30,13 @@
     <div data-filter-target="list" contents>
       <%= render partial: "rooms/opens/user", collection: users, locals: { room: room } %>
     </div>
+
+    <% if @agents.present? %>
+      <hr class="separator full-width" style="--border-style: solid">
+      <li class="txt-small txt-secondary pad-block-half"><strong>Agents</strong></li>
+      <div contents>
+        <%= render partial: "rooms/opens/agent", collection: @agents, locals: { room: room } %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

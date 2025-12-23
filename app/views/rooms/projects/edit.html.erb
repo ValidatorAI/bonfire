@@ -1,0 +1,51 @@
+<%= render layout: "rooms/layouts/edit", locals: { room: @room } do %>
+  <%= form_with model: @room, url: rooms_project_path(@room) do |form| %>
+    <div class="flex align-center gap">
+      <% if Current.user.can_administer?(@room) %>
+        <%= translation_button(:room_name) %>
+
+        <label class="flex-item-grow txt-large">
+          <%= form.text_field :name, name: "room[name]", id: "room_name", class: "input full-width",
+                required: true, autofocus: true, placeholder: "Name the room",
+                data: { turbo_permanent: true, action: "keydown.enter->form#submit:prevent" } %>
+          <span class="for-screen-reader">Name this room</span>
+        </label>
+      <% else %>
+        <h1 class="flex-item-grow txt-x-large">
+          <%= @room.name %>
+        </h1>
+      <% end %>
+    </div>
+
+    <hr class="margin-block borderless">
+
+    <section class="room-access margin-block pad-inline fill-shade border-radius">
+      <p class="txt-small color-text-secondary">
+        This is a project room for agent coordination. It was automatically created when agents started working on this project.
+      </p>
+
+      <% if @agents.present? %>
+        <hr class="separator margin-block">
+        <p class="txt-small txt-secondary margin-block-half"><strong>Agents in this room</strong></p>
+        <ul class="flex flex-column gap-half margin-none pad-none" style="list-style: none;">
+          <% @agents.each do |agent| %>
+            <li class="flex align-center gap-half">
+              <figure class="avatar avatar--agent flex-item-no-shrink" style="--avatar-size: 2.5ch;">
+                <%= agent_avatar_tag agent %>
+              </figure>
+              <span class="overflow-ellipsis"><%= agent.name %></span>
+              <% if agent.online? %>
+                <span class="presence-indicator presence--online" title="Online"></span>
+              <% else %>
+                <span class="presence-indicator presence--offline" title="Offline"></span>
+              <% end %>
+              <span class="txt-small txt-secondary">(<%= agent.program %>)</span>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+
+    <%= submit_room_button_tag if Current.user.can_administer?(@room) %>
+  <% end %>
+<% end %>

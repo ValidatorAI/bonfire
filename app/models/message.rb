@@ -2,7 +2,7 @@ class Message < ApplicationRecord
   include Attachment, Broadcasts, Mentionee, Pagination, Searchable
 
   belongs_to :room, touch: true
-  belongs_to :creator, class_name: "User", default: -> { Current.user }
+  belongs_to :creator, polymorphic: true, default: -> { Current.user }
 
   has_many :boosts, dependent: :destroy
 
@@ -12,13 +12,26 @@ class Message < ApplicationRecord
   after_create_commit -> { room.receive(self) }
 
   scope :ordered, -> { order(:created_at) }
-  scope :with_creator, -> { preload(creator: :avatar_attachment) }
+  scope :with_creator, -> { preload(:creator) }
   scope :with_attachment_details, -> {
     with_rich_text_body_and_embeds
     with_attached_attachment
       .includes(attachment_blob: :variant_records)
   }
   scope :with_boosts, -> { includes(boosts: :booster) }
+
+  # Helper methods for creator type checking
+  def from_agent?
+    creator_type == "Agent"
+  end
+
+  def from_user?
+    creator_type == "User"
+  end
+
+  def from_system?
+    system?
+  end
 
   def plain_text_body
     body.to_plain_text.presence || attachment&.filename&.to_s || ""

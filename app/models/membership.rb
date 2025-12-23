@@ -2,9 +2,9 @@ class Membership < ApplicationRecord
   include Connectable
 
   belongs_to :room
-  belongs_to :user
+  belongs_to :participant, polymorphic: true
 
-  after_destroy_commit { user.reset_remote_connections }
+  after_destroy_commit :reset_participant_connections
 
   enum :involvement, %w[ invisible nothing mentions everything ].index_by(&:itself), prefix: :involved_in
 
@@ -14,11 +14,30 @@ class Membership < ApplicationRecord
   scope :visible, -> { where.not(involvement: :invisible) }
   scope :unread,  -> { where.not(unread_at: nil) }
 
+  # Scopes for filtering by participant type
+  scope :users, -> { where(participant_type: "User") }
+  scope :agents, -> { where(participant_type: "Agent") }
+
   def read
     update!(unread_at: nil)
   end
 
   def unread?
     unread_at.present?
+  end
+
+  # Backwards compatibility helpers
+  def user
+    participant if participant_type == "User"
+  end
+
+  def agent
+    participant if participant_type == "Agent"
+  end
+
+  private
+
+  def reset_participant_connections
+    participant.reset_remote_connections if participant.respond_to?(:reset_remote_connections)
   end
 end

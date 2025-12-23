@@ -6,6 +6,9 @@ module RoomsHelper
   end
 
   def link_to_edit_room(room, &)
+    # Meta rooms are not editable (system rooms)
+    return if room.is_a?(Rooms::Meta)
+
     link_to \
       [ :edit, @room ],
       class: "btn",

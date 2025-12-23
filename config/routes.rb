@@ -68,6 +68,7 @@ Rails.application.routes.draw do
       resource :refresh, only: :show
       resource :settings, only: :show
       resource :involvement, only: %i[ show update ]
+      resource :clear, only: :create
     end
 
     get "@:message_id", to: "rooms#show", as: :at_message
@@ -77,6 +78,7 @@ Rails.application.routes.draw do
     resources :opens
     resources :closeds
     resources :directs
+    resources :projects, only: %i[ edit update ]
   end
 
   resources :messages do
@@ -93,6 +95,28 @@ Rails.application.routes.draw do
 
   get "webmanifest"    => "pwa#manifest"
   get "service-worker" => "pwa#service_worker"
+
+  # MCP Agent Chat API (Streamable HTTP transport)
+  namespace :mcp do
+    post "/", to: "endpoint#handle"
+    get "/", to: "endpoint#handle_get"
+    delete "/", to: "endpoint#handle_delete"
+    get "/health", to: "endpoint#health"
+    get "/setup", to: "setup#index"
+    get "/setup/guide", to: "setup#guide"
+    get "/setup/:script_name", to: "setup#show", constraints: { script_name: /[^\/]+/ }
+  end
+
+  # OAuth discovery endpoints - signal no auth required for MCP
+  scope "/.well-known" do
+    get "oauth-protected-resource", to: "well_known#oauth_protected_resource"
+    get "oauth-protected-resource/*path", to: "well_known#oauth_protected_resource"
+    get "oauth-authorization-server", to: "well_known#not_implemented"
+    get "oauth-authorization-server/*path", to: "well_known#not_implemented"
+    get "openid-configuration", to: "well_known#not_implemented"
+    get "openid-configuration/*path", to: "well_known#not_implemented"
+  end
+  post "/register", to: "well_known#not_implemented"
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

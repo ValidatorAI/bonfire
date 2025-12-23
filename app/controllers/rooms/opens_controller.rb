@@ -14,6 +14,7 @@ class Rooms::OpensController < RoomsController
   def new
     @room = Rooms::Open.new(name: DEFAULT_ROOM_NAME)
     @users = User.active.ordered
+    @agents = Agent.active
   end
 
   def create
@@ -25,6 +26,7 @@ class Rooms::OpensController < RoomsController
 
   def edit
     @users = User.active.ordered
+    @agents = Agent.active
   end
 
   def update

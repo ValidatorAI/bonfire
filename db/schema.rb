@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
+ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -60,6 +60,25 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "agents", force: :cascade do |t|
+    t.string "api_token"
+    t.datetime "created_at", null: false
+    t.datetime "last_active_at"
+    t.string "mcp_session_id"
+    t.string "model", null: false
+    t.string "name", null: false
+    t.string "program", null: false
+    t.integer "project_id", null: false
+    t.integer "status", default: 0, null: false
+    t.text "task_description"
+    t.datetime "updated_at", null: false
+    t.index ["api_token"], name: "index_agents_on_api_token", unique: true
+    t.index ["mcp_session_id"], name: "index_agents_on_mcp_session_id"
+    t.index ["project_id", "name"], name: "index_agents_on_project_id_and_name", unique: true
+    t.index ["project_id"], name: "index_agents_on_project_id"
+    t.index ["status"], name: "index_agents_on_status"
+  end
+
   create_table "bans", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address", null: false
@@ -79,29 +98,60 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
     t.index ["message_id"], name: "index_boosts_on_message_id"
   end
 
+  create_table "file_reservations", force: :cascade do |t|
+    t.integer "agent_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "exclusive", default: true, null: false
+    t.datetime "expires_at", null: false
+    t.json "patterns", default: [], null: false
+    t.integer "project_id", null: false
+    t.text "reason"
+    t.datetime "updated_at", null: false
+    t.index ["agent_id"], name: "index_file_reservations_on_agent_id"
+    t.index ["expires_at"], name: "index_file_reservations_on_expires_at"
+    t.index ["project_id", "expires_at"], name: "index_file_reservations_on_project_id_and_expires_at"
+    t.index ["project_id"], name: "index_file_reservations_on_project_id"
+  end
+
   create_table "memberships", force: :cascade do |t|
     t.datetime "connected_at"
     t.integer "connections", default: 0, null: false
     t.datetime "created_at", null: false
     t.string "involvement", default: "mentions"
+    t.datetime "last_read_at"
+    t.integer "participant_id", null: false
+    t.string "participant_type", null: false
     t.integer "room_id", null: false
     t.datetime "unread_at"
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.index ["last_read_at"], name: "index_memberships_on_last_read_at"
+    t.index ["participant_id"], name: "index_memberships_on_participant_id"
+    t.index ["participant_type", "participant_id"], name: "index_memberships_on_participant_type_and_participant_id"
     t.index ["room_id", "created_at"], name: "index_memberships_on_room_id_and_created_at"
-    t.index ["room_id", "user_id"], name: "index_memberships_on_room_id_and_user_id", unique: true
+    t.index ["room_id", "participant_type", "participant_id"], name: "index_memberships_on_room_and_participant", unique: true
     t.index ["room_id"], name: "index_memberships_on_room_id"
-    t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
     t.string "client_message_id", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.integer "creator_id", null: false
+    t.string "creator_type", null: false
     t.integer "room_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["creator_id"], name: "index_messages_on_creator_id"
+    t.boolean "system", default: false, null: false
+    t.string "system_type"
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["creator_type", "creator_id"], name: "index_messages_on_creator_type_and_creator_id"
     t.index ["room_id"], name: "index_messages_on_room_id"
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "path", null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["path"], name: "index_projects_on_path", unique: true
+    t.index ["slug"], name: "index_projects_on_slug", unique: true
   end
 
   create_table "push_subscriptions", force: :cascade do |t|
@@ -117,11 +167,17 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
   end
 
   create_table "rooms", force: :cascade do |t|
+    t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.bigint "creator_id", null: false
+    t.text "description"
     t.string "name"
+    t.integer "project_id"
     t.string "type", null: false
     t.datetime "updated_at", null: false
+    t.index ["archived_at"], name: "index_rooms_on_archived_at"
+    t.index ["project_id", "type"], name: "index_rooms_on_project_id_and_type"
+    t.index ["project_id"], name: "index_rooms_on_project_id"
   end
 
   create_table "searches", force: :cascade do |t|
@@ -168,11 +224,14 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "agents", "projects"
   add_foreign_key "bans", "users"
   add_foreign_key "boosts", "messages"
+  add_foreign_key "file_reservations", "agents"
+  add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
-  add_foreign_key "messages", "users", column: "creator_id"
   add_foreign_key "push_subscriptions", "users"
+  add_foreign_key "rooms", "projects"
   add_foreign_key "searches", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "webhooks", "users"

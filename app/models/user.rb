@@ -1,11 +1,11 @@
 class User < ApplicationRecord
   include Avatar, Bannable, Bot, Mentionable, Role, Transferable
 
-  has_many :memberships, dependent: :delete_all
+  has_many :memberships, as: :participant, dependent: :delete_all
   has_many :rooms, through: :memberships
 
   has_many :reachable_messages, through: :rooms, source: :messages
-  has_many :messages, dependent: :destroy, foreign_key: :creator_id
+  has_many :messages, as: :creator, dependent: :destroy
 
   has_many :push_subscriptions, class_name: "Push::Subscription", dependent: :delete_all
 
@@ -51,7 +51,11 @@ class User < ApplicationRecord
 
   private
     def grant_membership_to_open_rooms
-      Membership.insert_all(Rooms::Open.pluck(:id).collect { |room_id| { room_id: room_id, user_id: id } })
+      Membership.insert_all(
+        Rooms::Open.pluck(:id).collect do |room_id|
+          { room_id: room_id, participant_type: "User", participant_id: id }
+        end
+      )
     end
 
     def deactived_email_address
