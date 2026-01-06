@@ -14,6 +14,17 @@
   &:has(.room--current) {
     padding-inline: var(--inline-space);
 
+    /* Backdrop for room view to prevent chat from obscuring header */
+    &::before {
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      background: linear-gradient(180deg, oklch(var(--lch-white) / 0.9) 60%, oklch(var(--lch-white) / 0) 100%);
+      content: "";
+      inset: 0;
+      position: absolute;
+      z-index: -1;
+    }
+
     @media (min-width: 100ch) {
       margin-inline-start: 5vw;
 

@@ -61,7 +61,8 @@ module MessagesHelper
 
       # Only auto_link if markdown wasn't applied (markdown already handles links)
       if message_has_markdown?(message)
-        processed_content
+        # Markdown was applied - return the HTML directly (already has linked URLs)
+        processed_content.to_s.html_safe
       else
         auto_link processed_content, html: { target: "_blank" }
       end

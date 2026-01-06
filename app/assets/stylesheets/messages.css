@@ -593,3 +593,44 @@ img.message__attachment {
     inline-size: 1.4em;
   }
 }
+
+/* Tables in messages */
+.message table {
+  border-collapse: collapse;
+  margin-block: var(--inline-space);
+  font-size: 0.9em;
+  width: auto;
+  max-width: 100%;
+  border: 1px solid var(--color-border-dark);
+}
+
+.message thead {
+  background-color: var(--color-bg-dark);
+
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--color-bg-darker);
+  }
+}
+
+.message th,
+.message td {
+  padding: 0.5em 1em;
+  text-align: left;
+  border: 1px solid var(--color-border-dark);
+}
+
+.message th {
+  font-weight: 600;
+}
+
+.message tbody tr:nth-child(even) {
+  background-color: var(--color-bg-dark);
+
+  @media (prefers-color-scheme: dark) {
+    background-color: oklch(var(--lch-white) / 0.03);
+  }
+}
+
+.message tbody tr:hover {
+  background-color: var(--color-selected);
+}

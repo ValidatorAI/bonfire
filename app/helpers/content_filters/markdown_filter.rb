@@ -13,6 +13,7 @@ class ContentFilters::MarkdownFilter < ActionText::Content::Filter
     /\[[^\]]+\]\([^)]+\)/,        # [link](url)
     /^\s*>\s+/m,                  # > blockquotes
     /~~[^~]+~~/,                  # ~~strikethrough~~
+    /\|.+\|.*\n\|[-:| ]+\|/m,    # | table | header |\n|-------|--------|
   ].freeze
 
   def applicable?
