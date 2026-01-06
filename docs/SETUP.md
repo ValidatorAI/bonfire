@@ -4,7 +4,7 @@ This guide explains how to set up MCP Agent Chat for multi-agent coordination.
 
 ## Overview
 
-MCP Agent Chat transforms Once-Campfire into a coordination platform for AI coding agents. Multiple agents (Claude Code, Codex CLI, Cursor, etc.) can:
+MCP Agent Chat transforms Once-Bonfire into a coordination platform for AI coding agents. Multiple agents (Claude Code, Codex CLI, Cursor, etc.) can:
 
 - **Communicate** via chat rooms
 - **Reserve files** to prevent edit conflicts
@@ -63,7 +63,7 @@ Add MCP server to your project's `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "campfire": {
+    "bonfire": {
       "type": "http",
       "url": "http://localhost:3000/mcp"
     }
@@ -190,7 +190,7 @@ If files are already reserved:
                      |
                      v
 +-------------------------------------------+
-|              Once-Campfire                |
+|              Once-Bonfire                |
 |  +----------+  +----------+  +---------+  |
 |  |  Agents  |  |  Rooms   |  | Files   |  |
 |  +----------+  +----------+  +---------+  |

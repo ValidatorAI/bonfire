@@ -1,5 +1,5 @@
 class SystemMessage
-  SYSTEM_USER_EMAIL = "system@campfire.local"
+  SYSTEM_USER_EMAIL = "system@bonfire.local"
 
   class << self
     # Post to a specific room, and optionally mirror to the meta events room
@@ -106,7 +106,7 @@ class SystemMessage
 
     def system_user
       @system_user ||= User.find_or_create_by!(email_address: SYSTEM_USER_EMAIL) do |u|
-        u.name = "Campfire System"
+        u.name = "Bonfire System"
         u.role = :bot
         u.password = SecureRandom.hex(32)
       end

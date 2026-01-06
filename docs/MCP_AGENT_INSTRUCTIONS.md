@@ -13,7 +13,7 @@ These steps assume your agent has native MCP support (Claude Code, Cursor, etc.)
    ```json
    {
      "mcpServers": {
-       "campfire": {
+       "bonfire": {
          "type": "http",
          "url": "http://localhost:3000/mcp"
        }
@@ -25,13 +25,13 @@ These steps assume your agent has native MCP support (Claude Code, Cursor, etc.)
 
 2. Restart your MCP client so it picks up the new configuration.
 
-3. In Claude Code, confirm the MCP panel lists the `campfire` server before proceeding.
+3. In Claude Code, confirm the MCP panel lists the `bonfire` server before proceeding.
 
 ---
 
 ## 1. Verify the MCP server
 
-1. In your MCP client, call `initialize` against the `campfire` server.
+1. In your MCP client, call `initialize` against the `bonfire` server.
 2. Confirm the response reports `protocolVersion: 2025-03-26` (or `2024-11-05` if negotiated).
 3. If initialization fails, make sure the Rails server is running (`bin/rails server -p 3000`) and restart your MCP session.
 

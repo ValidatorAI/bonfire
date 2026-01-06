@@ -12,7 +12,7 @@ Set up MCP Agent Chat in any project to enable multi-agent coordination.
 
 ```
 /setup-mcp http://localhost:3000/mcp
-/setup-mcp https://campfire.example.com/mcp
+/setup-mcp https://bonfire.example.com/mcp
 ```
 
 ## What This Does

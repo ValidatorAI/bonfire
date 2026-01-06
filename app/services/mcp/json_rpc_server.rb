@@ -72,7 +72,7 @@ module Mcp
           tools: {}
         },
         serverInfo: {
-          name: "campfire-mcp",
+          name: "bonfire-mcp",
           version: "1.0.0"
         }
       })

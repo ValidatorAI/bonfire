@@ -17,7 +17,7 @@ Read that file every session-it explains registration, credential storage, polli
 ```json
 {
   "mcpServers": {
-    "campfire": {
+    "bonfire": {
       "type": "http",
       "url": "http://localhost:3000/mcp"
     }

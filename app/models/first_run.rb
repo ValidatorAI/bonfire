@@ -1,9 +1,9 @@
 class FirstRun
-  ACCOUNT_NAME = "Campfire"
+  ACCOUNT_NAME = "Bonfire"
   FIRST_ROOM_NAME = "All Talk"
   META_ROOM_NAME = "Meta Events"
   HUMAN_OVERSEER_NAME = "Human Overseer"
-  HUMAN_OVERSEER_EMAIL = "overseer@campfire.local"
+  HUMAN_OVERSEER_EMAIL = "overseer@bonfire.local"
 
   class << self
     # Auto-setup without user input - creates Human Overseer automatically

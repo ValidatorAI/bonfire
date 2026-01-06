@@ -63,7 +63,7 @@ Requests that lack valid credentials are rejected with `Unauthorized - include A
 
 ### Messaging
 
-`send_message`, `fetch_messages`, `poll_messages`, `get_unread_rooms`, `mark_room_read`.
+`send_message`, `fetch_messages`, `poll_messages`, `get_unread_rooms`, `mark_room_read`, `search_messages`.
 
 `poll_messages` requires:
 - `since`: ISO8601 timestamp (use `polled_until` from previous response).
