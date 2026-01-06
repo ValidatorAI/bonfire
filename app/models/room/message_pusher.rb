@@ -54,9 +54,16 @@ class Room::MessagePusher
     end
 
     def relevant_subscriptions
-      Push::Subscription
+      scope = Push::Subscription
         .joins(user: :memberships)
-        .merge(Membership.visible.disconnected.where(room: room).where.not(user: message.creator))
+        .merge(Membership.visible.disconnected.where(room: room))
+
+      # Only exclude creator from notifications if they're a User (not an Agent)
+      if message.creator.is_a?(User)
+        scope = scope.where.not(user_id: message.creator.id)
+      end
+
+      scope
     end
 
     def enqueue_payload_for_delivery(payload, subscriptions)

@@ -57,7 +57,14 @@ module MessagesHelper
     when "sound"
       message_sound_presentation(message)
     else
-      auto_link h(ContentFilters::TextMessagePresentationFilters.apply(message.body.body)), html: { target: "_blank" }
+      processed_content = ContentFilters::TextMessagePresentationFilters.apply(message.body.body)
+
+      # Only auto_link if markdown wasn't applied (markdown already handles links)
+      if message_has_markdown?(message)
+        processed_content
+      else
+        auto_link processed_content, html: { target: "_blank" }
+      end
     end
   rescue Exception => e
     Sentry.capture_exception(e, extra: { message: message })
@@ -105,5 +112,11 @@ module MessagesHelper
 
     def message_author_title(author)
       [ author.name, author.bio ].compact_blank.join(" – ")
+    end
+
+    def message_has_markdown?(message)
+      return false unless message.body&.body.present?
+      text = message.plain_text_body
+      ContentFilters::MarkdownFilter::MARKDOWN_PATTERNS.any? { |pattern| text.match?(pattern) }
     end
 end
