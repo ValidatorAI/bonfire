@@ -5,6 +5,7 @@ module Mcp
         # Identity
         Mcp::Identity::RegisterAgentTool,
         Mcp::Identity::UpdateAgentTaskTool,
+        Mcp::Identity::UpdateAgentStatusTool,
         Mcp::Identity::GetAgentProfileTool,
         Mcp::Identity::ListAgentsTool,
         # Room

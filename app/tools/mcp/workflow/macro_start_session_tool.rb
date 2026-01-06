@@ -8,6 +8,7 @@ module Mcp
           project_path: { type: "string", description: "Filesystem path to the project" },
           program: { type: "string", description: "Agent program (Claude Code, Codex CLI, etc.)" },
           model: { type: "string", description: "LLM model identifier" },
+          name: { type: "string", description: "Existing agent name to reconnect (omit for auto-generated name)" },
           task_description: { type: "string", description: "Current work context" },
           reserve_patterns: { type: "array", items: { type: "string" }, description: "Optional file patterns to reserve immediately" }
         },
@@ -48,12 +49,10 @@ module Mcp
             last_active_at: Time.current
           )
           agent.save!
+          ensure_agent_token(agent)
 
-          # Store session ID on agent for MCP client authentication
-          mcp_session_id = params.dig(:server_context, :mcp_session_id)
-          if mcp_session_id.present?
-            agent.update_column(:mcp_session_id, mcp_session_id)
-          end
+          session_id = session_identifier(params)
+          agent.update!(mcp_session_id: session_id)
 
           # Step 3: Auto-join project room (posts join message only for new agents)
           if is_new
@@ -90,6 +89,10 @@ module Mcp
             agent: {
               id: agent.id,
               name: agent.name
+            },
+            credentials: {
+              api_token: agent.api_token,
+              session_id: session_id
             },
             project: {
               id: project.id,
@@ -128,6 +131,14 @@ module Mcp
           })
         rescue ActiveRecord::RecordInvalid => e
           error_response(e.message, code: "validation_error")
+        end
+
+        def session_identifier(params)
+          params.dig(:server_context, :mcp_session_id).presence || SecureRandom.uuid
+        end
+
+        def ensure_agent_token(agent)
+          agent.regenerate_api_token! if agent.api_token.blank?
         end
       end
     end

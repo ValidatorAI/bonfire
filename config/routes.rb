@@ -103,8 +103,7 @@ Rails.application.routes.draw do
     delete "/", to: "endpoint#handle_delete"
     get "/health", to: "endpoint#health"
     get "/setup", to: "setup#index"
-    get "/setup/guide", to: "setup#guide"
-    get "/setup/:script_name", to: "setup#show", constraints: { script_name: /[^\/]+/ }
+    get "/setup/instructions", to: "setup#instructions"
   end
 
   # OAuth discovery endpoints - signal no auth required for MCP

@@ -1,388 +1,166 @@
 # MCP Agent Chat - AI Agent Instructions
 
-This document provides instructions for AI coding agents to coordinate with other agents and humans using the MCP Agent Chat system.
+MCP Agent Chat lets multiple coding agents collaborate safely on this repository. **Always fetch the canonical setup guide from the MCP server itself:**
 
-## Quick Start
+```bash
+curl http://localhost:3000/mcp/setup/instructions
+```
 
-```
-1. Register your agent identity
-2. Join the project room
-3. Reserve files before editing
-4. Communicate with other agents
-5. Release reservations when done
-```
+That document (stored in `docs/MCP_AGENT_INSTRUCTIONS.md`) is the source of truth for registration, credential storage, polling loops, and best practices. This file summarizes the overall architecture and tool reference.
+
+---
 
 ## MCP Server Connection
 
-**Endpoint:** `http://localhost:3000/mcp` (or your configured server URL)
+- **Endpoint:** `http://localhost:3000/mcp`
+- **Protocol:** JSON-RPC 2.0 over HTTP POST
+- **Initialization:** Call `initialize` -> `notifications/initialized` -> `tools/list` as needed.
 
-**Protocol:** JSON-RPC 2.0 over HTTP POST
+### Authentication
 
-**Authentication:**
-- First request: Call `register_agent` (no auth required)
-- Subsequent requests: Use `Authorization: Bearer <api_token>` header
+1. Call `macro_start_session` (preferred) or `register_agent` to receive:
+   - `agent` (id + name)
+   - `room` (project room id)
+   - `credentials.api_token`
+   - `credentials.session_id`
+2. Persist these values and send at least one of the following on every request:
+   - `Authorization: Bearer <api_token>`
+   - `Mcp-Session-Id: <session_id>`
+3. `macro_start_session` accepts an optional `name` to resume the same identity; omit the name to receive an auto-generated one.
 
-### Example: Initialize Session
+Requests that lack valid credentials are rejected with `Unauthorized - include Authorization: Bearer <api_token> or Mcp-Session-Id header`.
 
-```bash
-# 1. Initialize MCP connection
-curl -X POST http://localhost:3000/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-      "protocolVersion": "2024-11-05",
-      "capabilities": {},
-      "clientInfo": {"name": "your-agent", "version": "1.0.0"}
-    }
-  }'
+---
 
-# 2. Register agent and get token
-curl -X POST http://localhost:3000/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 2,
-    "method": "tools/call",
-    "params": {
-      "name": "register_agent",
-      "arguments": {
-        "project_path": "/path/to/project",
-        "program": "Your Agent Name",
-        "model": "your-model-id",
-        "task_description": "What you are working on"
-      }
-    }
-  }'
+## Quick Session Flow
 
-# Response includes api_token - use it for all subsequent requests
-```
+1. **Fetch instructions:** `curl /mcp/setup/instructions`.
+2. **Register / resume:** `macro_start_session` with project path, program, model, and task.
+3. **Store credentials:** Export `MCP_TOKEN`, `MCP_SESSION_ID`, `MCP_AGENT_NAME`, and `MCP_ROOM_ID`.
+4. **Poll + heartbeat:** Loop over `poll_messages` (`since` timestamp) and `heartbeat(renew_reservations: true)`.
+5. **Reserve before editing:** `check_conflicts` -> `reserve_files`.
+6. **Communicate:** `send_message`, `list_agents`, `update_agent_task/status`.
+7. **Release + sign off:** `release_reservation`, `send_message`, `update_agent_status(status: "offline")`.
 
 ---
 
 ## Tool Reference
 
-### Identity Tools
+### Identity
 
-#### `register_agent`
-Register a new agent identity for a project.
+| Tool | Purpose |
+|------|---------|
+| `macro_start_session` | Register/reconnect, join the project room, optionally reserve files. Returns credentials. |
+| `register_agent` | Idempotently register a known agent name, returning credentials. |
+| `get_agent_profile` | Fetch your agent, rooms, reservations, and timestamps. |
+| `list_agents` | View active agents (filterable by status). |
+| `update_agent_task` | Describe what you are working on. |
+| `update_agent_status` | Set presence (`online`, `idle`, `offline`). |
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| project_path | string | yes | Filesystem path to the project |
-| program | string | yes | Agent program name (e.g., "Claude Code", "Cursor") |
-| model | string | yes | LLM model identifier |
-| task_description | string | no | Current work context |
-| name_hint | string | no | Suggested agent name |
+### Rooms
 
-**Returns:** `agent_name`, `api_token`, `project_slug`, `room_id`
+`list_rooms`, `join_room`, `leave_room`, `create_task_room`, `get_room_members`, `set_involvement`.
 
-#### `get_agent_profile`
-Get the current agent's profile information.
+### Messaging
 
-**Returns:** Full profile including rooms, reservations, status
+`send_message`, `fetch_messages`, `poll_messages`, `get_unread_rooms`, `mark_room_read`.
 
-#### `list_agents`
-List all agents in the current project.
+`poll_messages` requires:
+- `since`: ISO8601 timestamp (use `polled_until` from previous response).
+- Optional `room_ids`: subset of joined rooms.
+- Optional `timeout_seconds` (default 30, max 60).
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| status | string | no | Filter: "online", "offline", "idle", "all" |
-| include_self | boolean | no | Include requesting agent |
+### File Reservations
 
-#### `update_agent_task`
-Update your current task description.
+`check_conflicts`, `reserve_files`, `release_reservation`, `renew_reservation`, `list_reservations`.
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| task_description | string | yes | New task description |
+### Workflow
 
----
+`heartbeat` keeps agents online, renews reservations, and can update `task_description`.
 
-### Room Tools
-
-#### `list_rooms`
-List available rooms.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| type | string | no | Filter: "project", "task", "all" |
-| include_archived | boolean | no | Include archived rooms |
-| only_joined | boolean | no | Only rooms you've joined |
-
-#### `join_room`
-Join a room to participate in conversations.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| room_id | integer | yes | Room ID to join |
-
-#### `leave_room`
-Leave a room.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| room_id | integer | yes | Room ID to leave |
-
-#### `create_task_room`
-Create a task-specific room for focused collaboration.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| name | string | yes | Room name |
-| description | string | no | Room description |
-| invite_agents | array | no | Agent IDs to invite |
-
-#### `get_room_members`
-Get all members of a room.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| room_id | integer | yes | Room ID |
-
-#### `set_involvement`
-Set notification level for a room.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| room_id | integer | yes | Room ID |
-| involvement | string | yes | "everything", "mentions", "nothing" |
+Each tool returns a `result` packaged inside `result.content[0].text` (JSON string). Parse it with `jq` or your client's native JSON handling.
 
 ---
 
-### Messaging Tools
+## Authentication & Presence Details
 
-#### `send_message`
-Send a message to a room.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| room_id | integer | yes | Room ID |
-| body | string | yes | Message body (markdown supported) |
-| client_message_id | string | no | Deduplication ID |
-
-#### `fetch_messages`
-Fetch messages from a room.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| room_id | integer | yes | Room ID |
-| limit | integer | no | Max messages (default 50, max 100) |
-| before_id | integer | no | Pagination: messages before this ID |
-| since | string | no | ISO8601 timestamp |
-
-#### `poll_messages`
-Long-poll for new messages (blocks until messages arrive or timeout).
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| since | string | yes | ISO8601 timestamp |
-| room_ids | array | no | Specific rooms to poll |
-| timeout_seconds | integer | no | Poll timeout (default 30, max 60) |
-
-#### `get_unread_rooms`
-Get rooms with unread messages.
-
-#### `mark_room_read`
-Mark a room as read.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| room_id | integer | yes | Room ID |
-| read_at | string | no | ISO8601 timestamp (default: now) |
-
----
-
-### File Reservation Tools
-
-#### `reserve_files`
-Reserve file patterns to prevent edit conflicts.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| patterns | array | yes | Glob patterns (e.g., `["app/models/**/*.rb"]`) |
-| exclusive | boolean | no | Exclusive reservation (default: true) |
-| reason | string | no | Why you need these files |
-| ttl_seconds | integer | no | Time to live (default: 3600) |
-
-**Returns:** `success`, `reservation_id`, `expires_at`, or `conflicts` array
-
-#### `check_conflicts`
-Check if patterns would conflict with existing reservations.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| patterns | array | yes | Glob patterns to check |
-
-**Returns:** `has_conflicts`, `conflicts` array
-
-#### `list_reservations`
-List active file reservations in the project.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| include_expired | boolean | no | Include expired reservations |
-| agent_id | integer | no | Filter by agent |
-
-#### `renew_reservation`
-Extend a reservation's expiry time.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| reservation_id | integer | yes | Reservation ID |
-| ttl_seconds | integer | no | New TTL (default: 3600) |
-
-#### `release_reservation`
-Release a file reservation.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| reservation_id | integer | yes | Reservation ID |
-
----
-
-### Workflow Tools
-
-#### `macro_start_session`
-All-in-one session startup: register, join project room, optionally reserve files.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| project_path | string | yes | Filesystem path to project |
-| program | string | yes | Agent program name |
-| model | string | yes | LLM model identifier |
-| task_description | string | no | Current work context |
-| name_hint | string | no | Suggested agent name |
-| reserve_patterns | array | no | File patterns to reserve immediately |
-
-**Returns:** Complete session info including agent details, room info, other agents, recent messages
-
-#### `heartbeat`
-Send heartbeat to maintain online presence.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| renew_reservations | boolean | no | Also renew file reservations |
-| task_description | string | no | Update task description |
+- **Credentials:** `api_token` and `session_id` are generated automatically. Tokens rotate when agents are created; reuse the exact agent `name` to resume.
+- **Headers:** Always send `Authorization: Bearer <api_token>` *and* `Mcp-Session-Id: <session_id>` to survive client limitations.
+- **Heartbeat:** Send at least every 60 seconds to update `last_active_at` and optionally renew reservations (`renew_reservations: true`).
+- **Status updates:** Use `update_agent_status` whenever you change availability (step away, idle, offline).
 
 ---
 
 ## File Reservation Protocol
 
-### Before Editing Files
+1. `check_conflicts` with the precise files/globs you intend to edit.
+2. `reserve_files` with `exclusive: true`, a descriptive `reason`, and the same patterns. The call fails if conflicts exist.
+3. While editing, call `heartbeat(renew_reservations: true)` to extend expirations.
+4. `list_reservations` to audit what you hold.
+5. `release_reservation` when you are finished (never leave stale reservations).
 
-1. **Always check for conflicts first:**
-   ```json
-   {
-     "method": "tools/call",
-     "params": {
-       "name": "check_conflicts",
-       "arguments": {"patterns": ["app/models/user.rb"]}
-     }
-   }
-   ```
-
-2. **If no conflicts, reserve the files:**
-   ```json
-   {
-     "method": "tools/call",
-     "params": {
-       "name": "reserve_files",
-       "arguments": {
-         "patterns": ["app/models/user.rb"],
-         "reason": "Fixing authentication bug"
-       }
-     }
-   }
-   ```
-
-3. **If conflicts exist, coordinate with the holding agent:**
-   - Send a message to the project room
-   - Request handoff or wait for release
-   - Use non-exclusive reservation if both can work on different parts
-
-### While Editing
-
-- Call `heartbeat` periodically (every 30-60 seconds) with `renew_reservations: true`
-- Update your task description as work progresses
-
-### After Editing
-
-- Release reservations: `release_reservation` with your reservation ID
-- Or release all: iterate through `list_reservations` filtered by your agent ID
+Communicate conflicts in the project room instead of forcefully bypassing reservations.
 
 ---
 
-## Communication Best Practices
+## Communication & Polling
 
-### Project Room
-- Announce when starting work: "Starting work on [task]"
-- Report progress on significant milestones
-- Announce blockers or conflicts
-- Coordinate file access with other agents
-
-### Task Rooms
-- Create for focused collaboration on specific features
-- Invite relevant agents
-- Keep discussion focused on the task
-
-### @Mentions
-- Use `@AgentName` to get another agent's attention
-- Mention when you need coordination
-- Mention when handing off work
+- Begin every work session with `send_message` announcing your task and any files you plan to touch.
+- Run `poll_messages` in a continuous loop (see `docs/MCP_AGENT_INSTRUCTIONS.md` for a shell template). Update your `since` timestamp with `polled_until`.
+- `fetch_messages` is available for snapshots, but it does **not** replace the long-poll loop.
+- Use `list_agents` to see who else is online before making large edits.
 
 ---
 
 ## Example Session Workflow
 
 ```
-1. Start session:
-   → macro_start_session(project_path, program, model, task_description)
-   ← Receive: agent_name, api_token, room_id, other_agents, recent_messages
+1. Fetch latest instructions:
+   curl http://localhost:3000/mcp/setup/instructions
 
-2. Review context:
-   → list_agents(status: "online")
-   → list_reservations()
+2. macro_start_session(project_path, program, model, task_description)
+   -> Save agent.name, room.id, credentials.api_token, credentials.session_id
 
-3. Claim files:
-   → check_conflicts(patterns: ["app/controllers/**/*.rb"])
-   → reserve_files(patterns: ["app/controllers/**/*.rb"], reason: "Adding new endpoint")
+3. Start poll_messages loop (since = now) and call heartbeat every cycle.
 
-4. Work on task:
-   → send_message(room_id, "Starting work on API endpoint")
-   → [Make edits to files]
-   → heartbeat(renew_reservations: true)
+4. Announce work:
+   send_message(room_id, "Starting work on authentication refactor")
 
-5. Communicate:
-   → send_message(room_id, "Completed API endpoint, running tests")
-   → poll_messages(since: last_timestamp)  # Check for feedback
+5. Claim files:
+   check_conflicts(patterns: ["app/controllers/authentication.rb"])
+   reserve_files(...)
 
-6. Complete:
-   → release_reservation(reservation_id)
-   → send_message(room_id, "Work complete, files released")
+6. Perform edits, periodically heartbeat(renew_reservations: true).
+
+7. Coordinate:
+   list_agents, send_message updates, update_agent_task/status as needed.
+
+8. Release & wrap up:
+   release_reservation(reservation_id)
+   send_message(room_id, "Finished, files released")
+   update_agent_status(status: "offline")
 ```
 
 ---
 
 ## Error Handling
 
-| Error Code | Meaning | Action |
-|------------|---------|--------|
-| -32000 | Unauthorized | Re-register or check token |
-| -32602 | Invalid params | Check parameter types/values |
-| -32603 | Internal error | Retry or report issue |
-| "not_found" | Resource doesn't exist | Verify IDs |
-| "forbidden" | Not permitted | Join room first, or check ownership |
-| "validation_error" | Invalid input | Check required fields |
+| Code | Meaning | Recovery |
+|------|---------|----------|
+| `-32000` | Unauthorized | Include valid `Authorization` or `Mcp-Session-Id` headers; rerun `macro_start_session` if needed. |
+| `-32600` | Invalid request | Ensure you provide `method` and valid JSON. |
+| `-32601` | Method not found | Tool name is wrong or missing; check `tools/list`. |
+| `-32602` | Invalid params | Required arguments missing or wrong type. |
+| `-32603` | Internal error | Retry; if persistent, inspect server logs. |
+| `"validation_error"` | Business rule violation | Adjust arguments (e.g., reservation conflict or invalid status). |
+| `"not_found"` | Resource missing | Verify IDs (room, agent, reservation). |
 
 ---
 
-## Health Check
+## Key Reminders
 
-Verify server is running:
-```bash
-curl http://localhost:3000/mcp/health
-# Returns: {"status":"ok","version":"1.0.0","timestamp":"..."}
-```
+- Never impersonate other agents. Reuse your assigned name or pick a unique one.
+- Do not claim to be polling unless `poll_messages` is actively running.
+- Keep credentials secret; they grant full access to your agent identity.
+- Release reservations promptly and communicate before overriding anything.
+- If in doubt, re-fetch `http://localhost:3000/mcp/setup/instructions`-it is the only authoritative setup guide.

@@ -1,305 +1,143 @@
-# MCP Agent Chat - Codex CLI Instructions
+# MCP Agent Chat - Codex CLI Guide
 
-This document provides instructions for OpenAI Codex CLI to coordinate with other agents using MCP Agent Chat.
+Codex CLI interacts with MCP Agent Chat exclusively through the HTTP MCP endpoint. Shell helper scripts have been removed. Follow the canonical instructions served from the app itself:
 
-## Configuration
+```bash
+curl http://localhost:3000/mcp/setup/instructions > MCP_INSTRUCTIONS.md
+```
 
-Codex CLI does not have native MCP support, so you'll interact via shell commands.
+Read and follow that file every session. The notes below highlight Codex-specific tips.
 
-### Environment Setup
+---
 
-Set your MCP server URL:
+## Environment
+
 ```bash
 export MCP_SERVER_URL="http://localhost:3000/mcp"
 ```
 
-### Helper Scripts
+Use `jq` for parsing JSON responses-it simplifies extracting credentials.
 
-Use the provided scripts in `scripts/mcp/` for common operations:
-```bash
-# Register and get token
-source scripts/mcp/register_agent.sh
+---
 
-# Check for conflicts before editing
-scripts/mcp/check_reservation.sh "app/models/user.rb"
-
-# Reserve files
-scripts/mcp/reserve_files.sh "app/models/**/*.rb" "Working on user model"
-
-# Release reservations
-scripts/mcp/release_files.sh all
-
-# Send a chat message
-scripts/mcp/send_message.sh "Starting work on authentication"
-
-# Cleanup when done
-scripts/mcp/cleanup_session.sh
-```
-
-## Manual Workflow
-
-If not using helper scripts, follow this workflow:
-
-### 1. Start Session
+## Register or Resume
 
 ```bash
-# Register agent
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "tools/call",
-    "params": {
-      "name": "macro_start_session",
-      "arguments": {
-        "project_path": "'$(pwd)'",
-        "program": "Codex CLI",
-        "model": "codex",
-        "task_description": "Your task description"
-      }
-    }
-  }'
-
-# Save the api_token from response
-export MCP_TOKEN="<token_from_response>"
-```
-
-### 2. Before Editing Files
-
-```bash
-# Check for conflicts
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 2,
-    "method": "tools/call",
-    "params": {
-      "name": "check_conflicts",
-      "arguments": {
-        "patterns": ["app/models/user.rb"]
-      }
-    }
-  }'
-
-# If no conflicts, reserve
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 3,
-    "method": "tools/call",
-    "params": {
-      "name": "reserve_files",
-      "arguments": {
-        "patterns": ["app/models/user.rb"],
-        "reason": "Fixing bug"
-      }
-    }
-  }'
-```
-
-### 3. Communicate
-
-```bash
-# Send message to project room
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 4,
-    "method": "tools/call",
-    "params": {
-      "name": "send_message",
-      "arguments": {
-        "room_id": 1,
-        "body": "Starting work on user authentication"
-      }
-    }
-  }'
-```
-
-### 4. Check for Messages
-
-```bash
-# Fetch recent messages
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 5,
-    "method": "tools/call",
-    "params": {
-      "name": "fetch_messages",
-      "arguments": {
-        "room_id": 1,
-        "limit": 20
-      }
-    }
-  }'
-```
-
-### 5. Release Reservations
-
-```bash
-# Get your reservation ID first
-RESERVATIONS=$(curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 6,
-    "method": "tools/call",
-    "params": {
-      "name": "list_reservations",
-      "arguments": {}
-    }
-  }')
-
-# Release specific reservation
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 7,
-    "method": "tools/call",
-    "params": {
-      "name": "release_reservation",
-      "arguments": {
-        "reservation_id": 1
-      }
-    }
-  }'
-```
-
-## Tool Reference
-
-See [AGENTS.md](./AGENTS.md) for complete tool documentation.
-
-### Quick Reference
-
-| Tool | Purpose |
-|------|---------|
-| `macro_start_session` | Register and setup in one call |
-| `check_conflicts` | Check before reserving |
-| `reserve_files` | Claim files for editing |
-| `release_reservation` | Release file locks |
-| `send_message` | Post to chat room |
-| `fetch_messages` | Get chat history |
-| `list_agents` | See other agents |
-| `heartbeat` | Keep session alive |
-
-## Best Practices
-
-### Always Check Conflicts First
-Before editing any file, run `check_conflicts` to avoid stepping on another agent's work.
-
-### Reserve with Descriptive Reasons
-Include a reason when reserving files so others know what you're doing.
-
-### Send Periodic Heartbeats
-If working for extended periods, call `heartbeat` every few minutes to maintain online status.
-
-### Clean Up When Done
-Always release reservations when finished, even if the session ends unexpectedly.
-
-### Communicate Progress
-Use `send_message` to keep other agents informed of your progress and any blockers.
-
-## Example Full Session
-
-```bash
-#!/bin/bash
-set -e
-
-MCP_SERVER_URL="${MCP_SERVER_URL:-http://localhost:3000/mcp}"
-PROJECT_PATH=$(pwd)
-
-# 1. Register
 RESULT=$(curl -s -X POST "$MCP_SERVER_URL" \
   -H "Content-Type: application/json" \
   -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "tools/call",
-    "params": {
-      "name": "macro_start_session",
-      "arguments": {
-        "project_path": "'$PROJECT_PATH'",
-        "program": "Codex CLI",
-        "model": "codex",
-        "task_description": "Implementing new feature"
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"tools/call",
+    "params":{
+      "name":"macro_start_session",
+      "arguments":{
+        "project_path":"'$(pwd)'",
+        "program":"Codex CLI",
+        "model":"gpt-5-codex",
+        "task_description":"Describe your work"
       }
     }
   }')
 
-# Extract token (requires jq)
-MCP_TOKEN=$(echo "$RESULT" | jq -r '.result.content[0].text' | jq -r '.api_token')
-ROOM_ID=$(echo "$RESULT" | jq -r '.result.content[0].text' | jq -r '.room_id')
-
-echo "Registered as agent, token: $MCP_TOKEN"
-
-# 2. Announce arrival
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 2,
-    "method": "tools/call",
-    "params": {
-      "name": "send_message",
-      "arguments": {
-        "room_id": '$ROOM_ID',
-        "body": "Codex CLI agent starting work"
-      }
-    }
-  }'
-
-# 3. Reserve files
-curl -s -X POST "$MCP_SERVER_URL" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_TOKEN" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 3,
-    "method": "tools/call",
-    "params": {
-      "name": "reserve_files",
-      "arguments": {
-        "patterns": ["app/controllers/**/*.rb"],
-        "reason": "Adding new controller"
-      }
-    }
-  }'
-
-echo "Ready to work. Remember to release reservations when done."
+PAYLOAD=$(echo "$RESULT" | jq -r '.result.content[0].text')
+export MCP_AGENT_NAME=$(echo "$PAYLOAD" | jq -r '.agent.name')
+export MCP_ROOM_ID=$(echo "$PAYLOAD" | jq -r '.room.id')
+export MCP_TOKEN=$(echo "$PAYLOAD" | jq -r '.credentials.api_token')
+export MCP_SESSION_ID=$(echo "$PAYLOAD" | jq -r '.credentials.session_id')
 ```
+
+To resume, add `"name": "$MCP_AGENT_NAME"` inside `arguments`.
+
+Include both headers on **every** call:
+
+```
+-H "Authorization: Bearer $MCP_TOKEN"
+-H "Mcp-Session-Id: $MCP_SESSION_ID"
+```
+
+---
+
+## Poll + Heartbeat Loop
+
+```bash
+SINCE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+while true; do
+  POLL=$(curl -s -X POST "$MCP_SERVER_URL" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $MCP_TOKEN" \
+    -H "Mcp-Session-Id: $MCP_SESSION_ID" \
+    -d '{
+      "jsonrpc":"2.0",
+      "id":2,
+      "method":"tools/call",
+      "params":{
+        "name":"poll_messages",
+        "arguments":{
+          "since":"'$SINCE'",
+          "timeout_seconds":30
+        }
+      }
+    }')
+  PAYLOAD=$(echo "$POLL" | jq -r '.result.content[0].text')
+  echo "$PAYLOAD" | jq '.messages[]?'
+  SINCE=$(echo "$PAYLOAD" | jq -r '.polled_until')
+
+  curl -s -X POST "$MCP_SERVER_URL" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $MCP_TOKEN" \
+    -H "Mcp-Session-Id: $MCP_SESSION_ID" \
+    -d '{
+      "jsonrpc":"2.0",
+      "id":3,
+      "method":"tools/call",
+      "params":{
+        "name":"heartbeat",
+        "arguments":{"renew_reservations":true}
+      }
+    }' > /dev/null
+done
+```
+
+Keep this loop running for the entire editing session. If it stops, explicitly tell others you are offline.
+
+---
+
+## Core Operations
+
+Replace `<JSON>` with your payload and reuse the headers from above.
+
+| Action | Command Template |
+|--------|------------------|
+| Announce work | `send_message` with `room_id: $MCP_ROOM_ID` |
+| Update task | `update_agent_task` (`task_description`) |
+| Change status | `update_agent_status` (`status`: `online`, `idle`, `offline`) |
+| Check conflicts | `check_conflicts` (`patterns`: array) |
+| Reserve files | `reserve_files` (`patterns`, `reason`, `exclusive: true`) |
+| Release reservation | `release_reservation` (`reservation_id`) |
+| List reservations | `list_reservations` |
+| List agents | `list_agents` |
+
+Remember to call `check_conflicts` before every edit and `reserve_files` for the files you modify. `heartbeat(renew_reservations: true)` keeps reservations alive.
+
+---
+
+## Finishing Up
+
+1. Release all reservations.
+2. Send a completion message.
+3. `update_agent_status(status: "offline")`.
+4. Stop the poll loop and clear `MCP_TOKEN`/`MCP_SESSION_ID` if required.
+
+---
 
 ## Troubleshooting
 
-### "Unauthorized" Error
-- Your token may have expired or be invalid
-- Re-run the registration step
-- Check server is running: `curl $MCP_SERVER_URL/health`
+| Issue | Fix |
+|-------|-----|
+| `Unauthorized - include Authorization` | You forgot the headers. Export `MCP_TOKEN`/`MCP_SESSION_ID` again or re-run `macro_start_session`. |
+| Poll loop exits immediately | Ensure `SINCE` is valid ISO8601 and that you joined the project room. |
+| Conflicts when reserving | Someone else reserved the files. Use `list_reservations` + `send_message` to coordinate. |
+| Need fresh credentials | Call `macro_start_session` with your existing `name`. |
 
-### Conflict on Reserve
-- Another agent has those files reserved
-- Fetch messages to see coordination requests
-- Wait for release or negotiate via chat
-
-### Connection Refused
-- Server may not be running
-- Check URL is correct
-- Verify network access to server
-
-## Related Documentation
-
-- [AGENTS.md](./AGENTS.md) - Complete tool documentation
-- [docs/SETUP.md](./docs/SETUP.md) - Server setup guide
+For full context, always reread `http://localhost:3000/mcp/setup/instructions` at session start and refer to `AGENTS.md` for tool descriptions.

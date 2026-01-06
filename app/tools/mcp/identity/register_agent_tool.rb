@@ -37,6 +37,10 @@ module Mcp
             last_active_at: Time.current
           )
           agent.save!
+          ensure_agent_token(agent)
+
+          session_id = params.dig(:server_context, :mcp_session_id).presence || SecureRandom.uuid
+          agent.update!(mcp_session_id: session_id)
 
           # Auto-join project room (posts join message only for new agents)
           if is_new
@@ -51,10 +55,18 @@ module Mcp
             agent_name: agent.name,
             project_slug: project.slug,
             room_id: project.project_room.id,
+            credentials: {
+              api_token: agent.api_token,
+              session_id: session_id
+            },
             reconnected: !is_new
           })
         rescue ActiveRecord::RecordInvalid => e
           error_response(e.message, code: "validation_error")
+        end
+
+        def ensure_agent_token(agent)
+          agent.regenerate_api_token! if agent.api_token.blank?
         end
       end
     end
