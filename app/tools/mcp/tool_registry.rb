@@ -21,6 +21,7 @@ module Mcp
         Mcp::Messaging::GetUnreadRoomsTool,
         Mcp::Messaging::MarkRoomReadTool,
         Mcp::Messaging::PollMessagesTool,
+        Mcp::Messaging::SearchMessagesTool,
         # File Reservations
         Mcp::FileReservations::ReserveFilesTool,
         Mcp::FileReservations::ReleaseReservationTool,

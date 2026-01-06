@@ -35,6 +35,10 @@ class Agent < ApplicationRecord
     true
   end
 
+  def reachable_messages
+    Message.where(room_id: rooms.select(:id))
+  end
+
   def avatar_attachment
     nil
   end
