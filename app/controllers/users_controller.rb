@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  require_unauthenticated_access only: %i[ new create ]
+  allow_unauthenticated_access only: %i[ new create ]
 
   before_action :set_user, only: :show
   before_action :verify_join_code, only: %i[ new create ]
