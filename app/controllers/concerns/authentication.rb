@@ -10,6 +10,11 @@ module Authentication
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
     end
+
+    def allow_bot_access(**options)
+      allow_unauthenticated_access(**options)
+      before_action :require_bot_authentication, **options
+    end
   end
 
   private
@@ -21,5 +26,10 @@ module Authentication
       # Auto-identify as Human Overseer - no login required
       # This ensures the account and overseer user exist
       Current.user = FirstRun.human_overseer
+    end
+
+    def require_bot_authentication
+      Current.user = User.authenticate_bot(params[:bot_key])
+      head :not_found unless Current.user
     end
 end
