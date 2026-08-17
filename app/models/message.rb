@@ -8,6 +8,8 @@ class Message < ApplicationRecord
 
   has_rich_text :body
 
+  validate :body_or_attachment_present
+
   before_create -> { self.client_message_id ||= Random.uuid } # Bots don't care
   after_create_commit -> { room.receive(self) }
 
@@ -54,4 +56,12 @@ class Message < ApplicationRecord
       Sound.find_by_name match[:name]
     end
   end
+
+  private
+    def body_or_attachment_present
+      return if attachment?
+      return if body.to_plain_text.present?
+
+      errors.add(:body, :blank)
+    end
 end

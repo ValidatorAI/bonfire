@@ -63,6 +63,16 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "creating a blank message does not create or broadcast" do
+    assert_no_difference -> { Message.count } do
+      assert_no_broadcasts "unread_rooms" do
+        post room_messages_url(@room, format: :turbo_stream), params: { message: { body: "", client_message_id: 999 } }
+      end
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "update updates a message belonging to the user" do
     message = @room.messages.where(creator: users(:david)).first
 

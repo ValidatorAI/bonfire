@@ -3,6 +3,8 @@ class Messages::ByBotsController < MessagesController
 
   def create
     super
+    return if performed?
+
     head :created, location: message_url(@message)
   end
 

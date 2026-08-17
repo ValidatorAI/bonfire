@@ -19,6 +19,14 @@ class Messages::ByBotsControlleTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "create blank message is rejected" do
+    assert_no_difference -> { Message.count } do
+      post room_bot_messages_url(@room, users(:bender).bot_key), params: +""
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "create file" do
     assert_difference -> { Message.count }, +1 do
       post room_bot_messages_url(@room, users(:bender).bot_key), params: { attachment: fixture_file_upload("moon.jpg", "image/jpeg") }

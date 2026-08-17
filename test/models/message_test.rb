@@ -27,6 +27,13 @@ class MessageTest < ActiveSupport::TestCase
     assert_equal [], message_mentioning_a_non_member.mentionees
   end
 
+  test "is invalid when body is blank and no attachment exists" do
+    message = Message.new(room: rooms(:pets), creator: users(:jason), client_message_id: "earth", body: "")
+
+    assert_not message.valid?
+    assert_includes message.errors[:body], "can't be blank"
+  end
+
   private
     def create_new_message_in(room)
       room.messages.create!(creator: users(:jason), body: "Hello", client_message_id: "123")

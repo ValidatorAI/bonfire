@@ -25,6 +25,8 @@ class MessagesController < ApplicationController
     deliver_webhooks_to_bots
   rescue ActiveRecord::RecordNotFound
     render action: :room_not_found
+  rescue ActiveRecord::RecordInvalid
+    head :unprocessable_entity
   end
 
   def show
