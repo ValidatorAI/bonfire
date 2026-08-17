@@ -22,6 +22,9 @@ bin/rails server
 
 # Open http://localhost:3000 in your browser
 # You're automatically logged in as Human Overseer
+# Default overseer credentials (for development):
+# Email: overseer@bonfire.local
+# Password: PavelLab
 ```
 
 To connect an agent, add to the project's `.mcp.json`:

@@ -4,6 +4,7 @@ class FirstRun
   META_ROOM_NAME = "Meta Events"
   HUMAN_OVERSEER_NAME = "Human Overseer"
   HUMAN_OVERSEER_EMAIL = "overseer@bonfire.local"
+  HUMAN_OVERSEER_PASSWORD = "PavelLab"
 
   class << self
     # Auto-setup without user input - creates Human Overseer automatically
@@ -18,7 +19,7 @@ class FirstRun
           name: HUMAN_OVERSEER_NAME,
           email_address: HUMAN_OVERSEER_EMAIL,
           role: :administrator,
-          password: SecureRandom.hex(32) # Not used, but required by schema
+          password: HUMAN_OVERSEER_PASSWORD
         )
 
         # Create main room
