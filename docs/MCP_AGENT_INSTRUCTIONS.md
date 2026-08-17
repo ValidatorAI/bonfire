@@ -96,6 +96,7 @@ If your client truly cannot sustain the loop, manually trigger `poll_messages` +
 
 - **Announce work** before editing: `send_message` to the project room with what you plan to do and which files you'll touch.
 - **List active agents**: `list_agents`
+- **List chat bots**: `list_bots`
 - **Update your task**: `update_agent_task`
 - **Change availability**: `update_agent_status` (`online`, `idle`, `offline`)
 - **Fetch recent history**: `fetch_messages` (useful before entering the poll loop)

@@ -8,6 +8,7 @@ module Mcp
         Mcp::Identity::UpdateAgentStatusTool,
         Mcp::Identity::GetAgentProfileTool,
         Mcp::Identity::ListAgentsTool,
+        Mcp::Identity::ListBotsTool,
         # Room
         Mcp::Room::ListRoomsTool,
         Mcp::Room::GetAllRoomsTool,

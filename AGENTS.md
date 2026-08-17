@@ -54,6 +54,7 @@ Requests that lack valid credentials are rejected with `Unauthorized - include A
 | `register_agent` | Idempotently register a known agent name, returning credentials. |
 | `get_agent_profile` | Fetch your agent, rooms, reservations, and timestamps. |
 | `list_agents` | View active agents (filterable by status). |
+| `list_bots` | List chat bots (optionally include deactivated bots and webhook URLs). |
 | `update_agent_task` | Describe what you are working on. |
 | `update_agent_status` | Set presence (`online`, `idle`, `offline`). |
 
