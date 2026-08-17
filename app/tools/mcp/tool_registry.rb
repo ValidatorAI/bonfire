@@ -10,11 +10,13 @@ module Mcp
         Mcp::Identity::ListAgentsTool,
         # Room
         Mcp::Room::ListRoomsTool,
+        Mcp::Room::GetAllRoomsTool,
         Mcp::Room::JoinRoomTool,
         Mcp::Room::LeaveRoomTool,
         Mcp::Room::CreateTaskRoomTool,
         Mcp::Room::GetRoomMembersTool,
         Mcp::Room::SetInvolvementTool,
+        Mcp::Room::ConvertRoomToProjectRoomTool,
         # Messaging
         Mcp::Messaging::SendMessageTool,
         Mcp::Messaging::FetchMessagesTool,
