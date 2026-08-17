@@ -99,7 +99,7 @@
     <% if Current.user.can_administer? %>
       <hr class="margin-block separator full-width" style="--border-style: solid">
 
-      <%= form_with url: account_users_path, scope: :user, class: "flex gap wrap align-center", method: :post do |form| %>
+      <%= form_with url: account_users_path, scope: :user, class: "flex flex-column gap", method: :post do |form| %>
         <label class="flex-item-grow txt-large input input--actor">
           <%= form.text_field :name, class: "input", placeholder: "New user name", required: true %>
         </label>
