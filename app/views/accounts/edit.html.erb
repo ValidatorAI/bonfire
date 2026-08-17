@@ -96,6 +96,29 @@
   <div class="margin-block pad-inline pad-block-start fill-shade border-radius">
     <%= render "accounts/invite" %>
 
+    <% if Current.user.can_administer? %>
+      <hr class="margin-block separator full-width" style="--border-style: solid">
+
+      <%= form_with url: account_users_path, scope: :user, class: "flex gap wrap align-center", method: :post do |form| %>
+        <label class="flex-item-grow txt-large input input--actor">
+          <%= form.text_field :name, class: "input", placeholder: "New user name", required: true %>
+        </label>
+
+        <label class="flex-item-grow txt-large input input--actor">
+          <%= form.email_field :email_address, class: "input", placeholder: "Email address", required: true %>
+        </label>
+
+        <label class="flex-item-grow txt-large input input--actor">
+          <%= form.password_field :password, class: "input", placeholder: "Temporary password", required: true, maxlength: 72 %>
+        </label>
+
+        <%= form.button class: "btn btn--reversed", type: "submit" do %>
+          <%= image_tag "person-add.svg", aria: { hidden: "true" }, size: 20 %>
+          <span>Add user</span>
+        <% end %>
+      <% end %>
+    <% end %>
+
     <hr class="margin-block separator full-width" style="--border-style: solid">
 
     <menu class="flex flex-column gap margin-none pad">

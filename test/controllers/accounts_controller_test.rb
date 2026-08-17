@@ -8,6 +8,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
   test "edit" do
     get edit_account_url
     assert_response :ok
+    assert_select "form[action='#{account_users_path}']"
   end
 
   test "edit groups administrators separately from members with a divider" do
