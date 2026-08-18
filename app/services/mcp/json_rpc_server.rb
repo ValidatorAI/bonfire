@@ -1,3 +1,5 @@
+require "timeout"
+
 module Mcp
   class JsonRpcServer
     PARSE_ERROR = -32700
@@ -114,7 +116,9 @@ module Mcp
       return error_response(METHOD_NOT_FOUND, "Tool not found: #{tool_name}", id) unless tool
 
       begin
-        result = tool.call(arguments.merge(server_context: context))
+        result = Timeout.timeout(tool_timeout_seconds(tool_name)) do
+          tool.call(arguments.merge(server_context: context))
+        end
         success_response(id, result)
       rescue ArgumentError => e
         error_response(INVALID_PARAMS, e.message, id)
@@ -122,10 +126,20 @@ module Mcp
         error_response(SERVER_ERROR, "Not found: #{e.message}", id)
       rescue ActiveRecord::RecordInvalid => e
         error_response(SERVER_ERROR, "Validation error: #{e.message}", id)
+      rescue Timeout::Error
+        error_response(SERVER_ERROR, "Tool execution timed out: #{tool_name}", id)
       rescue StandardError => e
         Rails.logger.error("[MCP] Tool error: #{e.message}")
         error_response(INTERNAL_ERROR, e.message, id)
       end
+    end
+
+    def tool_timeout_seconds(tool_name)
+      config = Rails.application.config.mcp
+      base_timeout = [ config.tool_timeout_seconds.to_i, 1 ].max
+      poll_max = [ config.poll_max_timeout_seconds.to_i, 1 ].max
+
+      tool_name == "poll_messages" ? [ poll_max + 5, base_timeout ].max : base_timeout
     end
 
     def success_response(id, result)

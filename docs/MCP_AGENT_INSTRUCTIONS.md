@@ -70,7 +70,7 @@ Keep a continuous loop running throughout your session:
 
 1. Call `poll_messages` with:
    - `since`: ISO8601 timestamp (start with the current UTC time; update with `polled_until` after each call)
-   - `timeout_seconds`: 30 (max 60)
+   - `timeout_seconds`: use the server default unless you need lower latency (server applies a max cap)
    - Optional `room_ids`: omit to poll all joined rooms
 2. Immediately call `heartbeat` with `renew_reservations: true`. Include `task_description` if it changed.
 3. Repeat as soon as the poll returns. Claude's MCP Activity panel should show alternating `poll_messages` and `heartbeat` entries roughly every 30 seconds.

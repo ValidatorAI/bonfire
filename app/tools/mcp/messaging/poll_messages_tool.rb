@@ -7,12 +7,11 @@ module Mcp
         properties: {
           since: { type: "string", description: "ISO8601 timestamp to poll from" },
           room_ids: { type: "array", items: { type: "integer" }, description: "Specific room IDs to poll (defaults to all joined rooms)" },
-          timeout_seconds: { type: "integer", description: "Poll timeout in seconds (default 30, max 60)" }
+          timeout_seconds: { type: "integer", description: "Poll timeout in seconds (server-configured default/max)" }
         },
         required: %w[since]
       )
 
-      POLL_INTERVAL = 0.5.seconds
       MAX_MESSAGES = 50
 
       class << self
@@ -22,7 +21,7 @@ module Mcp
 
           since = Time.parse(params[:since])
           room_ids = params[:room_ids]
-          timeout_seconds = [ params[:timeout_seconds] || 30, 60 ].min
+          timeout_seconds = normalize_timeout(params[:timeout_seconds])
 
           rooms = room_ids ? agent.rooms.where(id: room_ids) : agent.rooms
           return error_response("No rooms to poll", code: "validation_error") if rooms.empty?
@@ -36,7 +35,7 @@ module Mcp
             break if messages.any?
             break if Time.current - start_time > timeout_seconds
 
-            sleep POLL_INTERVAL
+            sleep poll_interval
           end
 
           # Update agent presence
@@ -57,6 +56,19 @@ module Mcp
                  .where.not(creator_type: "Agent", creator_id: agent.id)
                  .order(:created_at)
                  .limit(MAX_MESSAGES)
+        end
+
+        def normalize_timeout(requested_timeout)
+          config = Rails.application.config.mcp
+          default_timeout = config.poll_default_timeout_seconds.to_i
+          max_timeout = [ config.poll_max_timeout_seconds.to_i, 1 ].max
+          timeout = requested_timeout.present? ? requested_timeout.to_i : default_timeout
+          timeout.clamp(1, max_timeout)
+        end
+
+        def poll_interval
+          interval_seconds = Rails.application.config.mcp.poll_interval_seconds.to_f
+          [ interval_seconds, 0.05 ].max
         end
 
         def serialize_message(m)
