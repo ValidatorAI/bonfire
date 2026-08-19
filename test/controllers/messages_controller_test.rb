@@ -44,7 +44,7 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   test "last_messages returns messages after the provided last_id" do
     last_message = @all_messages.third
 
-    get last_messages_messages_url(last_id: last_message.id)
+    get pooling_messages_url(last_id: last_message.id)
 
     assert_response :success
     response_ids = JSON.parse(response.body).map { |message| message["id"] }
@@ -56,7 +56,7 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     delete session_url
     assert_not cookies[:session_token].present?
 
-    get last_messages_messages_url(last_id: @all_messages.first.id)
+    get pooling_messages_url(last_id: @all_messages.first.id)
 
     assert_response :success
   end

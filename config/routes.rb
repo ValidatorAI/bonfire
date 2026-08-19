@@ -81,9 +81,9 @@ Rails.application.routes.draw do
     resources :projects, only: %i[ edit update ]
   end
 
-  resources :messages do
-    get :last_messages, on: :collection
+  get "pooling_messages", to: "messages#last_messages", as: :pooling_messages
 
+  resources :messages do
     scope module: "messages" do
       resources :boosts
     end
