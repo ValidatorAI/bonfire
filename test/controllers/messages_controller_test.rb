@@ -40,6 +40,26 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :no_content
   end
 
+  test "last_messages returns messages after the provided last_id" do
+    last_message = @messages.third
+
+    get last_messages_room_messages_url(@room, last_id: last_message.id)
+
+    assert_response :success
+    response_ids = JSON.parse(response.body).map { |message| message["id"] }
+
+    assert_equal @messages.select { |message| message.id > last_message.id }.map(&:id), response_ids
+  end
+
+  test "last_messages can be accessed without authentication" do
+    delete session_url
+    assert_not cookies[:session_token].present?
+
+    get last_messages_room_messages_url(@room, last_id: @messages.first.id)
+
+    assert_response :success
+  end
+
   test "get renders a single message belonging to the user" do
     message = @room.messages.where(creator: users(:david)).first
 

@@ -1,5 +1,6 @@
 class MessagesController < ApplicationController
   include ActiveStorage::SetCurrent, RoomScoped
+  allow_unauthenticated_access only: :last_messages
 
   before_action :set_room, except: :create
   before_action :set_message, only: %i[ show edit update destroy ]
@@ -47,6 +48,17 @@ class MessagesController < ApplicationController
     @message.broadcast_remove
   end
 
+  def last_messages
+    last_id = params[:last_id].to_i
+
+    if params[:last_id].blank? || last_id <= 0
+      return render json: { error: "last_id parameter is required and must be a positive integer" }, status: :bad_request
+    end
+
+    messages = @room.messages.where("id > ?", last_id).ordered
+    render json: messages.map { |message| serialize_message(message) }
+  end
+
   private
     def set_message
       @message = @room.messages.find(params[:id])
@@ -80,5 +92,18 @@ class MessagesController < ApplicationController
 
     def bots_eligible_for_webhook
       @room.direct? ? @room.users.active_bots : @message.mentionees.active_bots
+    end
+
+    def serialize_message(message)
+      {
+        id: message.id,
+        room_id: message.room_id,
+        creator_id: message.creator_id,
+        creator_type: message.creator_type,
+        body: message.plain_text_body,
+        client_message_id: message.client_message_id,
+        created_at: message.created_at,
+        updated_at: message.updated_at
+      }
     end
 end
