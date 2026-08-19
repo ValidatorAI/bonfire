@@ -60,9 +60,7 @@ Rails.application.routes.draw do
   end
 
   resources :rooms do
-    resources :messages do
-      get :last_messages, on: :collection
-    end
+    resources :messages
 
     post ":bot_key/messages", to: "messages/by_bots#create", as: :bot_messages
 
@@ -84,6 +82,8 @@ Rails.application.routes.draw do
   end
 
   resources :messages do
+    get :last_messages, on: :collection
+
     scope module: "messages" do
       resources :boosts
     end

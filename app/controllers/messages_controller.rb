@@ -2,7 +2,7 @@ class MessagesController < ApplicationController
   include ActiveStorage::SetCurrent, RoomScoped
   allow_unauthenticated_access only: :last_messages
 
-  before_action :set_room, except: :create
+  before_action :set_room, except: %i[ create last_messages ]
   before_action :set_message, only: %i[ show edit update destroy ]
   before_action :ensure_can_administer, only: %i[ edit update destroy ]
 
@@ -55,7 +55,7 @@ class MessagesController < ApplicationController
       return render json: { error: "last_id parameter is required and must be a positive integer" }, status: :bad_request
     end
 
-    messages = @room.messages.where("id > ?", last_id).ordered
+    messages = Message.where("id > ?", last_id).ordered
     render json: messages.map { |message| serialize_message(message) }
   end
 

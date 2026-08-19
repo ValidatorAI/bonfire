@@ -7,6 +7,7 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     sign_in :david
     @room = rooms(:watercooler)
     @messages = @room.messages.ordered.to_a
+    @all_messages = Message.ordered.to_a
   end
 
   test "index returns the last page by default" do
@@ -41,21 +42,21 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "last_messages returns messages after the provided last_id" do
-    last_message = @messages.third
+    last_message = @all_messages.third
 
-    get last_messages_room_messages_url(@room, last_id: last_message.id)
+    get last_messages_messages_url(last_id: last_message.id)
 
     assert_response :success
     response_ids = JSON.parse(response.body).map { |message| message["id"] }
 
-    assert_equal @messages.select { |message| message.id > last_message.id }.map(&:id), response_ids
+    assert_equal @all_messages.select { |message| message.id > last_message.id }.map(&:id), response_ids
   end
 
   test "last_messages can be accessed without authentication" do
     delete session_url
     assert_not cookies[:session_token].present?
 
-    get last_messages_room_messages_url(@room, last_id: @messages.first.id)
+    get last_messages_messages_url(last_id: @all_messages.first.id)
 
     assert_response :success
   end
