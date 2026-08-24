@@ -34,4 +34,24 @@ class RoomTest < ActiveSupport::TestCase
     room = Rooms::Closed.create_for({ name: "Hello!", creator: users(:david) }, users: [ users(:kevin), users(:david) ])
     assert room.memberships.all? { |m| m.involved_in_mentions? }
   end
+
+  test "auto-joins all agents when a new room is created" do
+    project = Project.create!(path: "/tmp/bonfire-room-auto-join")
+    alpha = project.agents.create!(name: "Agent Alpha", program: "Codex", model: "gpt-5.3-codex")
+    beta = project.agents.create!(name: "Agent Beta", program: "Claude Code", model: "claude-sonnet")
+
+    room = Rooms::Closed.create_for({ name: "Ops", creator: users(:david) }, users: [ users(:david) ])
+
+    assert room.agents.include?(alpha)
+    assert room.agents.include?(beta)
+  end
+
+  test "does not auto-join agents for direct rooms" do
+    project = Project.create!(path: "/tmp/bonfire-direct-room-auto-join")
+    project.agents.create!(name: "Agent Gamma", program: "Codex", model: "gpt-5.3-codex")
+
+    room = Rooms::Direct.find_or_create_for(User.where(id: [ users(:david).id, users(:kevin).id ]))
+
+    assert_equal 0, room.agents.count
+  end
 end

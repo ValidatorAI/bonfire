@@ -3,6 +3,7 @@ class Room < ApplicationRecord
 
   after_create_commit :announce_creation, unless: :skip_announcement?
   after_create_commit :auto_join_human_overseer
+  after_create_commit :auto_join_all_agents, unless: :direct?
 
   has_many :memberships, dependent: :delete_all do
     def grant_to(participants)
@@ -139,5 +140,9 @@ class Room < ApplicationRecord
       return unless overseer
 
       memberships.grant_to(overseer) unless users.include?(overseer)
+    end
+
+    def auto_join_all_agents
+      memberships.grant_to(Agent.all)
     end
 end
