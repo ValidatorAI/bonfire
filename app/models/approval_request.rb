@@ -3,6 +3,7 @@ class ApprovalRequest < ApplicationRecord
   belongs_to :message, optional: true
   belongs_to :agent, optional: true
   belongs_to :resolved_by, class_name: "User", optional: true
+  has_many :approval_request_actions, dependent: :delete_all
 
   enum :status, { pending: 0, approved: 1, denied: 2, canceled: 3 }, default: :pending
 

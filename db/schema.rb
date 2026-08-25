@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_123000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_124000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -77,6 +77,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_123000) do
     t.index ["project_id", "name"], name: "index_agents_on_project_id_and_name", unique: true
     t.index ["project_id"], name: "index_agents_on_project_id"
     t.index ["status"], name: "index_agents_on_status"
+  end
+
+  create_table "approval_request_actions", force: :cascade do |t|
+    t.string "action"
+    t.integer "actor_id"
+    t.string "actor_type"
+    t.integer "approval_request_id"
+    t.datetime "created_at", null: false
+    t.text "note"
+    t.datetime "updated_at", null: false
   end
 
   create_table "approval_requests", force: :cascade do |t|
