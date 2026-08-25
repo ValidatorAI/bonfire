@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_127000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_128000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -296,12 +296,22 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_127000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "agents", "projects"
+  add_foreign_key "approval_request_actions", "approval_requests"
+  add_foreign_key "approval_requests", "agents"
+  add_foreign_key "approval_requests", "messages"
+  add_foreign_key "approval_requests", "rooms"
+  add_foreign_key "approval_requests", "users", column: "resolved_by_id"
+  add_foreign_key "attention_items", "projects"
+  add_foreign_key "attention_items", "rooms"
+  add_foreign_key "attention_items", "users", column: "resolved_by_id"
   add_foreign_key "bans", "users"
   add_foreign_key "boosts", "messages"
   add_foreign_key "file_reservations", "agents"
   add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
   add_foreign_key "push_subscriptions", "users"
+  add_foreign_key "room_ai_activity_states", "agents"
+  add_foreign_key "room_ai_activity_states", "rooms"
   add_foreign_key "rooms", "projects"
   add_foreign_key "searches", "users"
   add_foreign_key "sessions", "users"
