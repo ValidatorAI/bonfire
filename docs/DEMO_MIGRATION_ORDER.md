@@ -170,8 +170,7 @@ Goal: Enforce strict rules only after production confirms no null gaps.
 
 ## Deployment Safety Checklist
 
-- Deploy additive migrations before code that depends on them.
-- For every new required field, do add nullable, backfill, enforce not null as separate steps.
+- Deploy additive migrations before code that depends onreatew required field, do add nullable, backfill, enforce not null as separate steps.
 - Keep dual-read fallback logic for one release cycle.
 - Run backfill in batches for large tables.
 - Add monitoring for failed inserts and null violations before enforcing strict constraints.

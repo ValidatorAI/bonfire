@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_125000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_126000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -210,6 +210,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_125000) do
     t.integer "user_id", null: false
     t.index ["endpoint", "p256dh_key", "auth_key"], name: "idx_on_endpoint_p256dh_key_auth_key_7553014576"
     t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+  end
+
+  create_table "room_ai_activity_states", force: :cascade do |t|
+    t.integer "agent_id"
+    t.datetime "created_at", null: false
+    t.integer "room_id"
+    t.datetime "started_at"
+    t.integer "state", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["room_id", "agent_id"], name: "index_room_ai_activity_states_on_room_id_and_agent_id", unique: true
+    t.index ["updated_at"], name: "index_room_ai_activity_states_on_updated_at"
   end
 
   create_table "rooms", force: :cascade do |t|

@@ -40,6 +40,7 @@ class Room < ApplicationRecord
   has_many :agents, through: :agent_memberships, source: :participant, source_type: "Agent"
 
   has_many :messages, dependent: :destroy
+  has_many :room_ai_activity_states, dependent: :delete_all
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
 
