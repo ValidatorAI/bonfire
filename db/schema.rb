@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_120000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -147,7 +147,11 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
 
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
     t.string "path", null: false
+    t.boolean "private", default: false, null: false
+    t.string "short_code"
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index ["path"], name: "index_projects_on_path", unique: true
