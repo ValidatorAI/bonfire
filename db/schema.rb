@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_126000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_127000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -101,6 +101,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_126000) do
     t.integer "room_id"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["requested_at"], name: "index_approval_requests_on_requested_at"
+    t.index ["room_id", "status", "requested_at"], name: "index_approval_requests_on_room_id_and_status_and_requested_at"
+    t.index ["room_id"], name: "index_approval_requests_on_room_id"
+    t.index ["status"], name: "index_approval_requests_on_status"
   end
 
   create_table "attention_items", force: :cascade do |t|
@@ -119,6 +123,10 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_126000) do
     t.integer "status", default: 0, null: false
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["due_at"], name: "index_attention_items_on_due_at"
+    t.index ["project_id", "status", "due_at"], name: "index_attention_items_on_project_id_and_status_and_due_at"
+    t.index ["project_id"], name: "index_attention_items_on_project_id"
+    t.index ["status"], name: "index_attention_items_on_status"
   end
 
   create_table "bans", force: :cascade do |t|
@@ -220,6 +228,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_126000) do
     t.integer "state", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["room_id", "agent_id"], name: "index_room_ai_activity_states_on_room_id_and_agent_id", unique: true
+    t.index ["room_id"], name: "index_room_ai_activity_states_on_room_id"
     t.index ["updated_at"], name: "index_room_ai_activity_states_on_updated_at"
   end
 
