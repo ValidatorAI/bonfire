@@ -24,12 +24,24 @@ class User < ApplicationRecord
   scope :ordered, -> { order("LOWER(name)") }
   scope :filtered_by, ->(query) { where("name like ?", "%#{query}%") }
 
+  validates :display_name, length: { maximum: 255 }, allow_blank: true
+  validates :job_title, length: { maximum: 255 }, allow_blank: true
+  validates :timezone,
+            length: { maximum: 100 },
+            inclusion: { in: ActiveSupport::TimeZone.all.map(&:name), message: "is not a valid timezone" },
+            allow_blank: true
+  validate :preferences_must_be_object
+
   def initials
     name.scan(/\b\w/).join
   end
 
   def title
-    [ name, bio ].compact_blank.join(" – ")
+    [ effective_display_name, bio ].compact_blank.join(" – ")
+  end
+
+  def effective_display_name
+    display_name.presence || name
   end
 
   def deactivate
@@ -50,6 +62,12 @@ class User < ApplicationRecord
   end
 
   private
+    def preferences_must_be_object
+      return if preferences.blank? || preferences.is_a?(Hash)
+
+      errors.add(:preferences, "must be a JSON object")
+    end
+
     def grant_membership_to_open_rooms
       Membership.insert_all(
         Rooms::Open.pluck(:id).collect do |room_id|
