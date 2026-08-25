@@ -145,26 +145,6 @@ Scope assumptions (minimal structure change):
   - Non-breaking (new table).
   - Can be skipped if state is ephemeral over ActionCable/presence only.
 
-## 2.5 project_meetings
-- Purpose:
-  - Persist all-hands records per project.
-- Suggested columns:
-  - `project_id`, `title`, `held_at`, `duration_minutes`, `summary`, `recording_url`, `facilitator_id`.
-- Related features:
-  - Project All-Hands
-- Breaking change hint:
-  - Non-breaking (new table).
-
-## 2.6 project_meeting_action_items
-- Purpose:
-  - Persist meeting tasks and completion state.
-- Suggested columns:
-  - `project_meeting_id`, `title`, `assignee_type`, `assignee_id`, `due_at`, `status`, `completed_at`.
-- Related features:
-  - All-Hands action items list
-- Breaking change hint:
-  - Non-breaking (new table).
-
 ## 3. Recommended Minimal Sequence
 
 1. Add only additive columns on existing tables:
@@ -180,10 +160,6 @@ Scope assumptions (minimal structure change):
 3. Add AI loading indicator persistence only if needed:
 - Use ephemeral ActionCable state first.
 - Add `room_ai_activity_states` when reconnect consistency becomes necessary.
-
-4. Add meeting tables when enabling All-Hands persistence:
-- `project_meetings`
-- `project_meeting_action_items`
 
 ## 4. Migration Safety Notes
 

@@ -173,7 +173,7 @@ This document lists the functionalities implemented in [demo.html](demo.html), a
 - Project briefing cards for extracted context, decisions, and action items.
 - Project overview metrics, milestones, contributors, and resources.
 - Project status progress, bottlenecks, todos, and contextual knowledge.
-- All-hands summary, decisions, and meeting history blocks.
+- All-hands summary and decisions blocks.
 - Knowledge view with:
   - Obsidian-style graph and note panel
   - External docs cards
@@ -208,14 +208,7 @@ Legend:
   - `company_decisions`
   - `company_learnings`
 
-3. Project all-hands meetings and meeting action items
-- Why: meetings are first-class records with summaries, decisions, recordings, and todo ownership.
-- Suggested new tables:
-  - `project_meetings`
-  - `project_meeting_action_items`
-  - `project_meeting_decisions`
-
-4. Knowledge base structured records
+3. Knowledge base structured records
 - Why: ADRs, notes, external assets, and activity feed events should be queryable and versionable.
 - Suggested new tables:
   - `knowledge_entries`
@@ -223,20 +216,20 @@ Legend:
   - `project_adrs`
   - `external_assets`
 
-5. AI profile catalog (if managed centrally)
+4. AI profile catalog (if managed centrally)
 - Why: bots with role/skills/approval constraints are reusable entities across workspace/projects.
 - Suggested new tables:
   - `ai_agents`
   - `ai_agent_capabilities`
   - `ai_agent_approval_policies`
 
-6. Approval workflow for AI-requested actions
+5. Approval workflow for AI-requested actions
 - Why: approvals/denials in thread and home views require persistent decision records and auditability.
 - Suggested new tables:
   - `approval_requests`
   - `approval_request_actions`
 
-7. AI room activity state (optional but recommended)
+6. AI room activity state (optional but recommended)
 - Why: typing/loading indicators should be durable enough for reconnects and multi-client consistency.
 - Suggested new table:
   - `room_ai_activity_states` (room_id, agent_id, state, started_at, updated_at)
@@ -318,7 +311,6 @@ If implementing this demo in the current app, start with these high-value schema
 2. Add essential new tables
 - `approval_requests` + `approval_request_actions`.
 - `attention_items`.
-- `project_meetings` + `project_meeting_action_items`.
 
 3. Then add knowledge and company-status structures
 - `company_status_periods` and related item tables.

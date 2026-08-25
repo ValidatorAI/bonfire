@@ -98,19 +98,11 @@ Goal: Introduce workflow persistence tables without touching existing behavior.
 - Note:
   - Skip if you keep this state ephemeral through ActionCable only.
 
-8. Optional: create all-hands persistence tables
-- Migration name examples:
-  - CreateProjectMeetings
-  - CreateProjectMeetingActionItems
-- Related features:
-  - All-Hands history and action items
-- Risk: Level A
-
 ## Phase 3: Level B (Indexes and Light Constraints)
 
 Goal: Improve performance and consistency while staying mostly safe.
 
-9. Add indexes for new query paths
+8. Add indexes for new query paths
 - Migration name example: AddIndexesForDemoWorkflows
 - Examples:
   - attention_items on status, due_at, project_id
@@ -118,7 +110,7 @@ Goal: Improve performance and consistency while staying mostly safe.
   - room_ai_activity_states on room_id and updated_at
 - Risk: Level B
 
-10. Add foreign keys where missing
+9. Add foreign keys where missing
 - Migration name example: AddForeignKeysForDemoWorkflows
 - Examples:
   - approval_requests.room_id -> rooms.id
@@ -132,14 +124,14 @@ Goal: Improve performance and consistency while staying mostly safe.
 
 Goal: Move reads and writes to new schema after data is ready.
 
-11. Backfill project name and user display fields
+10. Backfill project name and user display fields
 - Migration name example: BackfillDemoDisplayFields
 - Backfill examples:
   - projects.name from projects.slug
   - users.display_name from users.name where display_name is null
 - Risk: Level C
 
-12. App rollout step (code deploy)
+11. App rollout step (code deploy)
 - Switch UI and services to read from new columns and tables.
 - Keep fallback logic for one release window.
 - Risk: Level C
@@ -148,7 +140,7 @@ Goal: Move reads and writes to new schema after data is ready.
 
 Goal: Enforce strict rules only after production confirms no null gaps.
 
-13. Tighten null constraints and unique constraints
+12. Tighten null constraints and unique constraints
 - Migration name example: EnforceDemoConstraints
 - Possible changes:
   - set projects.name not null
@@ -156,7 +148,7 @@ Goal: Enforce strict rules only after production confirms no null gaps.
   - add unique indexes if business rules require
 - Risk: Level C or D depending on data quality
 
-14. Any renames or type replacements
+13. Any renames or type replacements
 - Example: replacing existing columns or enums
 - Risk: Level D
 - Recommendation:
@@ -171,12 +163,10 @@ Goal: Enforce strict rules only after production confirms no null gaps.
 5. CreateApprovalRequestActions
 6. CreateAttentionItems
 7. CreateRoomAiActivityStates (optional)
-8. CreateProjectMeetings (optional)
-9. CreateProjectMeetingActionItems (optional)
-10. AddIndexesForDemoWorkflows
-11. AddForeignKeysForDemoWorkflows
-12. BackfillDemoDisplayFields
-13. EnforceDemoConstraints (later)
+8. AddIndexesForDemoWorkflows
+9. AddForeignKeysForDemoWorkflows
+10. BackfillDemoDisplayFields
+11. EnforceDemoConstraints (later)
 
 ## Deployment Safety Checklist
 
