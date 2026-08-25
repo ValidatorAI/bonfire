@@ -1,0 +1,214 @@
+/* Demo style overrides for room/sidebar pages */
+
+:root {
+  --demo-shell-radius: 12px;
+  --demo-shell-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+body.sidebar {
+  background: var(--bg-purple);
+  max-block-size: none;
+  min-block-size: 100dvh;
+  padding: 20px;
+}
+
+body.sidebar #main-content,
+body.sidebar #sidebar {
+  background: var(--surface);
+  box-shadow: var(--demo-shell-shadow);
+}
+
+body.sidebar #main-content {
+  border-radius: var(--demo-shell-radius) 0 0 var(--demo-shell-radius);
+  overflow: hidden;
+}
+
+body.sidebar #sidebar {
+  border-radius: 0 var(--demo-shell-radius) var(--demo-shell-radius) 0;
+  border-inline-start: 1px solid var(--border-color);
+}
+
+body.sidebar #nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-color);
+  border-top-left-radius: var(--demo-shell-radius);
+  padding: 20px 24px;
+}
+
+body.sidebar #nav::before {
+  backdrop-filter: none;
+  background: var(--surface);
+}
+
+body.sidebar .room--current {
+  --btn-background: #000000;
+  --btn-color: #ffffff;
+  --btn-border-color: #000000;
+  --btn-border-radius: 999px;
+  --btn-padding: 0.55em 1.1em;
+}
+
+body.sidebar .directs,
+body.sidebar .sidebar__tools {
+  backdrop-filter: none;
+  background: var(--surface);
+}
+
+body.sidebar .sidebar__container {
+  padding-block-end: calc(var(--sidebar-tools-height) + 0.75rem);
+}
+
+body.sidebar .rooms {
+  gap: 0.35rem;
+}
+
+body.sidebar .room {
+  --btn-background: transparent;
+  --btn-border-radius: 999px;
+  --btn-border-color: transparent;
+  --btn-padding: 0.45em 0.9em;
+  box-shadow: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+body.sidebar .room:hover,
+body.sidebar .direct:hover .direct__author {
+  --btn-background: var(--pill-hover);
+}
+
+body.sidebar .room.unread {
+  --btn-border-color: #000000;
+  --btn-background: var(--surface);
+  font-weight: 600;
+}
+
+body.sidebar .room-item__link {
+  border-radius: 999px;
+}
+
+body.sidebar .room-item__actions-btn {
+  border-radius: 999px;
+  padding: 0.2em;
+}
+
+body.sidebar .rooms__new-btn {
+  --btn-background: #000000;
+  --btn-border-color: #000000;
+  --btn-color: #ffffff;
+  --btn-border-radius: 999px;
+}
+
+body.sidebar .messages {
+  background: var(--surface-alt);
+  padding: calc(var(--navbar-height) + 0.8rem) 24px 20px;
+  row-gap: 1rem;
+}
+
+body.sidebar .message {
+  --content-padding-block: 0.75rem;
+  --content-padding-inline: 1rem;
+  padding-inline: 0;
+}
+
+body.sidebar .message__avatar {
+  --avatar-size: 36px;
+}
+
+body.sidebar .message__body {
+  max-inline-size: 100%;
+}
+
+body.sidebar .message__meta {
+  margin-block-end: 0.25rem;
+}
+
+body.sidebar .message__author,
+body.sidebar .message__permalink {
+  font-size: 0.78rem;
+}
+
+body.sidebar .message__permalink {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+body.sidebar .message__body-content {
+  background: var(--msg-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px 12px 12px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  max-inline-size: min(85%, 72ch);
+}
+
+body.sidebar .message--me .message__body-content {
+  border-radius: 12px 4px 12px 12px;
+}
+
+body.sidebar #footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border-color);
+}
+
+body.sidebar .composer {
+  padding: 16px 24px;
+}
+
+body.sidebar .composer__input.input--actor {
+  --input-background: var(--msg-bg);
+  --input-border-color: var(--border-color);
+  --input-border-radius: 999px;
+  --input-padding: 0.55rem 0.75rem;
+  align-items: center;
+  border-radius: 999px;
+}
+
+body.sidebar .composer__input .input {
+  font-size: 0.95rem;
+}
+
+body.sidebar .composer .btn--reversed {
+  --btn-border-radius: 999px;
+  --btn-background: #000000;
+  --btn-border-color: #000000;
+}
+
+body.sidebar .composer__attachment-btn,
+body.sidebar .composer__rich-text-btn {
+  --btn-border-radius: 999px;
+}
+
+.panel {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+@media (max-width: 100ch) {
+  body.sidebar {
+    padding: 0;
+    background: var(--surface-alt);
+  }
+
+  body.sidebar #main-content,
+  body.sidebar #sidebar {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body.sidebar #nav {
+    border-top-left-radius: 0;
+    padding: 14px 12px;
+  }
+
+  body.sidebar .messages {
+    padding: calc(var(--navbar-height) + 0.55rem) 12px 12px;
+  }
+
+  body.sidebar .composer {
+    padding: 10px 12px;
+  }
+
+  body.sidebar .message__body-content {
+    max-inline-size: 100%;
+  }
+}

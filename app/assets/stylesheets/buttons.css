@@ -5,7 +5,7 @@
 .btn {
   align-items: center;
   background-color: var(--btn-background, var(--color-text-reversed));
-  border-radius: var(--btn-border-radius, 2em);
+  border-radius: var(--btn-border-radius, 0.55rem);
   border: var(--btn-border-size, 1px) solid var(--btn-border-color, var(--color-border-darker));
   color: var(--btn-color, var(--color-text));
   cursor: pointer;
@@ -147,6 +147,27 @@
 .btn--reversed {
   --btn-background: var(--color-text);
   --btn-color: var(--color-text-reversed);
+}
+
+.btn--demo-primary {
+  --btn-background: #000000;
+  --btn-border-color: #000000;
+  --btn-color: #ffffff;
+  --btn-border-radius: 0.4rem;
+}
+
+.btn--demo-outline {
+  --btn-background: #ffffff;
+  --btn-border-color: var(--border-color);
+  --btn-color: var(--text-primary);
+  --btn-border-radius: 0.4rem;
+}
+
+.btn--demo-danger {
+  --btn-background: #fee2e2;
+  --btn-border-color: #fca5a5;
+  --btn-color: #b91c1c;
+  --btn-border-radius: 0.4rem;
 }
 
 .btn--negative {

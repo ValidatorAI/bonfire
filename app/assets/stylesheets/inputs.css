@@ -1,8 +1,8 @@
 /* Text inputs */
 .input {
   accent-color: var(--input-accent-color, var(--color-text));
-  background-color: var(--input-background, transparent);
-  border-radius: var(--input-border-radius, 0.5em);
+  background-color: var(--input-background, var(--surface));
+  border-radius: var(--input-border-radius, 0.5rem);
   border: var(--input-border-size, 1px) solid var(--input-border-color, var(--color-border-darker));
   color: var(--input-color, var(--color-text));
   font-size: max(16px, 1em);
@@ -27,12 +27,12 @@
   }
 
   &:where(:not(:active)):focus {
-    --input-border-color: var(--color-selected-dark);
-    --hover-color: var(--color-selected-dark);
+    --input-border-color: #000000;
+    --hover-color: #000000;
     --outline-size: 0;
 
     filter: var(--hover-filter);
-    box-shadow: 0 0 0 var(--hover-size) var(--hover-color);
+    box-shadow: 0 0 0 1px var(--hover-color);
   }
 }
 
@@ -56,14 +56,15 @@
 
 .input--actor {
   transition: box-shadow 150ms ease, outline-offset 150ms ease;
+  border-radius: var(--input-border-radius, 0.5rem);
 
   &:focus-within {
-    --input-border-color: var(--color-selected-dark);
-    --hover-color: var(--color-selected-dark);
+    --input-border-color: #000000;
+    --hover-color: #000000;
     --outline-size: 0;
 
     filter: var(--hover-filter);
-    box-shadow: 0 0 0 var(--hover-size) var(--hover-color);
+    box-shadow: 0 0 0 1px var(--hover-color);
   }
 
   .input {
