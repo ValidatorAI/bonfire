@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_129000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_130000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -198,7 +198,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_129000) do
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
-    t.string "name"
+    t.string "name", null: false
     t.string "path", null: false
     t.boolean "private", default: false, null: false
     t.string "short_code"
@@ -271,7 +271,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_129000) do
     t.text "bio"
     t.string "bot_token"
     t.datetime "created_at", null: false
-    t.string "display_name"
+    t.string "display_name", null: false
     t.string "email_address"
     t.string "job_title"
     t.string "name", null: false
