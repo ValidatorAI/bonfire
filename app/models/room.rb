@@ -51,8 +51,12 @@ class Room < ApplicationRecord
   scope :without_directs, -> { where.not(type: "Rooms::Direct") }
   scope :active,          -> { where(archived_at: nil) }
   scope :archived,        -> { where.not(archived_at: nil) }
+  scope :privates,        -> { where(private: true) }
+  scope :public_rooms,    -> { where(private: false) }
 
   scope :ordered, -> { order("LOWER(name)") }
+
+  validates :private, inclusion: { in: [ true, false ] }
 
   class << self
     def create_for(attributes, users:)
