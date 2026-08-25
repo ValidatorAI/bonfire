@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_122000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_123000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -77,6 +77,20 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_122000) do
     t.index ["project_id", "name"], name: "index_agents_on_project_id_and_name", unique: true
     t.index ["project_id"], name: "index_agents_on_project_id"
     t.index ["status"], name: "index_agents_on_status"
+  end
+
+  create_table "approval_requests", force: :cascade do |t|
+    t.integer "agent_id"
+    t.datetime "created_at", null: false
+    t.integer "message_id"
+    t.json "payload"
+    t.string "request_type"
+    t.datetime "requested_at"
+    t.datetime "resolved_at"
+    t.integer "resolved_by_id"
+    t.integer "room_id"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "bans", force: :cascade do |t|
