@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_124000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_25_125000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -100,6 +100,24 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_124000) do
     t.integer "resolved_by_id"
     t.integer "room_id"
     t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "attention_items", force: :cascade do |t|
+    t.boolean "ai_confirm", default: false, null: false
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "due_at"
+    t.text "meta_text"
+    t.boolean "overdue", default: false, null: false
+    t.integer "project_id"
+    t.datetime "resolved_at"
+    t.integer "resolved_by_id"
+    t.integer "room_id"
+    t.integer "source_id"
+    t.string "source_type"
+    t.integer "status", default: 0, null: false
+    t.string "title"
     t.datetime "updated_at", null: false
   end
 
