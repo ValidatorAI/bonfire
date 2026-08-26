@@ -33,21 +33,45 @@
         <h2 class="sidebar-projects__title">Projects</h2>
 
         <div class="sidebar-projects__list flex flex-column gap">
+          <% project_actions = [
+            ["📌", "Overview"],
+            ["📊", "Status"],
+            ["🗣️", "All-Hands"],
+            ["🧠", "Knowledge"]
+          ] %>
+
           <% @projects.each do |project| %>
-            <% project_room = project.project_room %>
-            <% if project_room %>
-              <% membership = @project_memberships_by_room_id[project_room.id] %>
-              <%= link_to_room project_room,
-                    class: [ "room btn txt-nowrap sidebar-projects__button", "unread": membership&.unread? ] do %>
-                <span aria-hidden="true">⚡</span>
-                <span class="overflow-ellipsis"><%= project.display_name %></span>
+            <div class="sidebar-projects__item">
+              <% project_room = project.project_room %>
+              <% if project_room %>
+                <% membership = @project_memberships_by_room_id[project_room.id] %>
+                <%= link_to_room project_room,
+                      class: [ "room btn txt-nowrap sidebar-projects__button", "unread": membership&.unread? ] do %>
+                  <span class="sidebar-projects__main">
+                    <span aria-hidden="true">⚡</span>
+                    <span class="overflow-ellipsis sidebar-projects__name"><%= project.display_name %></span>
+                  </span>
+                  <span class="sidebar-projects__gear" aria-hidden="true">⚙️</span>
+                <% end %>
+              <% else %>
+                <span class="room btn txt-nowrap sidebar-projects__button sidebar-projects__button--inactive">
+                  <span class="sidebar-projects__main">
+                    <span aria-hidden="true">⚡</span>
+                    <span class="overflow-ellipsis sidebar-projects__name"><%= project.display_name %></span>
+                  </span>
+                  <span class="sidebar-projects__gear" aria-hidden="true">⚙️</span>
+                </span>
               <% end %>
-            <% else %>
-              <span class="room btn txt-nowrap sidebar-projects__button sidebar-projects__button--inactive">
-                <span aria-hidden="true">⚡</span>
-                <span class="overflow-ellipsis"><%= project.display_name %></span>
-              </span>
-            <% end %>
+
+              <div class="sidebar-projects__actions flex flex-column gap">
+                <% project_actions.each do |emoji, label| %>
+                  <button type="button" class="room btn txt-nowrap sidebar-projects__action-btn" aria-label="<%= "#{project.display_name} #{label}" %>">
+                    <span aria-hidden="true"><%= emoji %></span>
+                    <span class="overflow-ellipsis"><%= label %></span>
+                  </button>
+                <% end %>
+              </div>
+            </div>
           <% end %>
         </div>
       </section>
