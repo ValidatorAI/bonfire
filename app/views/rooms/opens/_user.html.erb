@@ -1,6 +1,6 @@
 <li class="flex align-center gap margin-none" data-value="<%= user.name.downcase %>">
   <figure class="avatar flex-item-no-shrink" style="--avatar-size: 4ch;">
-    <%= avatar_tag user, loading: :lazy %>
+    <span class="txt-large" aria-hidden="true">👤</span>
   </figure>
 
   <div class="min-width">
@@ -10,6 +10,6 @@
   <hr class="separator" aria-hidden="true">
 
   <% if Current.user.can_administer?(room) %>
-    <%= image_tag "check.svg", size: 20, class: "colorize--black flex-item-no-shrink", aria: { hidden: "true" } %>
+    <span class="txt-large flex-item-no-shrink" aria-hidden="true">✅</span>
   <% end %>
 </li>

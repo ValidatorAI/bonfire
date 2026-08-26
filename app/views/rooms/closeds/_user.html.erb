@@ -1,6 +1,6 @@
 <li class="flex align-center gap margin-none" data-value="<%= user.name.downcase %>">
   <figure class="avatar flex-item-no-shrink" style="--avatar-size: 4ch;">
-    <%= avatar_tag user, loading: :lazy %>
+    <span class="txt-large" aria-hidden="true">👤</span>
   </figure>
 
   <div class="min-width">
@@ -12,7 +12,7 @@
   <% if Current.user.can_administer?(room) %>
     <% if user == Current.user && room.new_record? %>
       <%= hidden_field_tag "user_ids[]", user.id, id: nil %>
-      <%= image_tag "check.svg", size: 20, class: "colorize--black flex-item-no-shrink", aria: { hidden: "true" } %>
+      <span class="txt-large flex-item-no-shrink" aria-hidden="true">✅</span>
     <% else %>
       <label class="switch flex-item-no-shrink">
         <%= check_box_tag "user_ids[]", user.id, selected, class: "switch__input", id: nil %>
