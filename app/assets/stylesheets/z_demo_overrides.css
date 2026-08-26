@@ -268,10 +268,9 @@ body.sidebar .composer {
 body.sidebar .composer__input.input--actor {
   --input-background: var(--msg-bg);
   --input-border-color: var(--border-color);
-  --input-border-radius: 999px;
+  --input-border-radius: 0;
   --input-padding: 0.55rem 0.75rem;
   align-items: center;
-  border-radius: 999px;
 }
 
 body.sidebar .composer__input .input {

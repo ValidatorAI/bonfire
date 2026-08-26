@@ -105,6 +105,12 @@
 }
 
 .composer--rich-text {
+  .composer__input.input--actor {
+    --input-border-radius: 0.85rem;
+
+    border-radius: var(--input-border-radius);
+  }
+
   trix-toolbar {
     display: block;
   }
