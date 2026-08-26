@@ -20,7 +20,11 @@ class Rooms::OpensController < RoomsController
 
   def create
     room_attributes = room_params
-    room_attributes[:project_id] = @project.id if @project
+    if @project
+      project_room = @project.ensure_project_room!
+      room_attributes[:project_id] = @project.id
+      room_attributes[:parent_id] = project_room.id
+    end
 
     room = Rooms::Open.create_for(room_attributes, users: Current.user)
 

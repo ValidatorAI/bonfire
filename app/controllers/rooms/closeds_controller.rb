@@ -4,6 +4,7 @@ class Rooms::ClosedsController < RoomsController
   before_action :remember_last_room_visited, only: :show
   before_action :force_room_type, only: %i[ edit update ]
   before_action :ensure_permission_to_create_rooms, only: %i[ new create ]
+  before_action :set_project_for_new_room, only: %i[ new create ]
 
   DEFAULT_ROOM_NAME = "New room"
 
@@ -12,13 +13,20 @@ class Rooms::ClosedsController < RoomsController
   end
 
   def new
-    @room  = Rooms::Closed.new(name: DEFAULT_ROOM_NAME)
+    @room  = Rooms::Closed.new(name: DEFAULT_ROOM_NAME, project: @project)
     @users = User.active.ordered
     @agents = Agent.active
   end
 
   def create
-    room = Rooms::Closed.create_for(room_params, users: grantees)
+    room_attributes = room_params
+    if @project
+      project_room = @project.ensure_project_room!
+      room_attributes[:project_id] = @project.id
+      room_attributes[:parent_id] = project_room.id
+    end
+
+    room = Rooms::Closed.create_for(room_attributes, users: grantees)
 
     broadcast_create_room(room)
     redirect_to room_url(room)
@@ -41,6 +49,16 @@ class Rooms::ClosedsController < RoomsController
   end
 
   private
+    def set_project_for_new_room
+      project_id = params[:project_id] || params.dig(:room, :project_id)
+      return if project_id.blank?
+
+      @project = Current.user.projects.find_by(id: project_id)
+      return if @project
+
+      redirect_to root_url, alert: "Project not found or inaccessible"
+    end
+
     # Allows us to edit an open room and turn it into a closed one on saving.
     def force_room_type
       @room = @room.becomes!(Rooms::Closed)
