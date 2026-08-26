@@ -254,6 +254,19 @@ body.sidebar .message__body-content {
   max-inline-size: min(85%, 72ch);
 }
 
+body.sidebar .user-settings-nav__pill {
+  --btn-padding: 0.5em 1em;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+body.sidebar .user-settings-nav__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 body.sidebar .message--me .message__body-content {
   border-radius: 12px 4px 12px 12px;
 }
