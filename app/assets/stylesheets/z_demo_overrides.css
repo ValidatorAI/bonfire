@@ -268,7 +268,7 @@ body.sidebar .user-settings-nav__title {
 }
 
 body.sidebar .user-settings-content {
-  padding: calc(var(--navbar-height) + 0.45rem) 12px 12px;
+  padding: 12px 12px 12px;
 }
 
 body.sidebar .user-settings-grid {
@@ -294,18 +294,15 @@ body.sidebar .user-settings-card-header {
 }
 
 body.sidebar .user-settings-card-title {
-  font-size: 1.95rem;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   margin: 0;
-}
-
-body.sidebar .user-settings-card-title--small {
-  font-size: 2rem;
 }
 
 body.sidebar .user-settings-card-desc {
   color: var(--text-secondary);
   margin: 6px 0 0;
+  font-size: 13px;
 }
 
 body.sidebar .avatar-row {
@@ -337,6 +334,17 @@ body.sidebar .user-settings-avatar-btn {
   position: relative;
 }
 
+.btn-outline {
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
 body.sidebar .user-settings-avatar-btn input[type="file"] {
   inset: 0;
   opacity: 0;
@@ -351,7 +359,7 @@ body.sidebar .user-settings-help {
 
 body.sidebar .user-settings-form {
   display: grid;
-  row-gap: 14px;
+  row-gap: 20px;
 }
 
 body.sidebar .user-settings-form .form-group {
@@ -362,6 +370,7 @@ body.sidebar .user-settings-form .form-group label {
   display: inline-block;
   font-weight: 600;
   margin-bottom: 6px;
+  font-size: 13px;
 }
 
 body.sidebar .user-settings-form .input {

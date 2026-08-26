@@ -26,7 +26,7 @@
           </label>
 
           <%= form_with model: Current.user, url: user_profile_path, method: :patch, data: { controller: "form" } do |form| %>
-            <label class="btn input--file user-settings-avatar-btn">
+            <label class="btn btn-outline input--file user-settings-avatar-btn">
               <span>Update Avatar</span>
               <%= form.file_field :avatar,
                     class: "input",
