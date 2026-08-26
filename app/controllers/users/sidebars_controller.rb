@@ -4,17 +4,47 @@ class Users::SidebarsController < ApplicationController
   def show
     all_memberships     = Current.user.memberships.visible.with_ordered_room
     project_memberships, non_project_memberships = all_memberships.partition { |membership| membership.room.project_room? }
-    project_scoped_memberships = non_project_memberships.select { |membership| membership.room.project_id.present? }
+    project_room_project_ids = {}
+
+    project_memberships.each do |membership|
+      project_room_project_ids[membership.room_id] = membership.room.project_id
+    end
+
+    non_project_memberships.each do |membership|
+      next if membership.room.project_id.blank?
+
+      project_room_project_ids[membership.room_id] = membership.room.project_id
+    end
+
+    loop do
+      propagated = false
+
+      non_project_memberships.each do |membership|
+        next if project_room_project_ids.key?(membership.room_id)
+
+        parent_project_id = project_room_project_ids[membership.room.parent_id]
+        next if parent_project_id.blank?
+
+        project_room_project_ids[membership.room_id] = parent_project_id
+        propagated = true
+      end
+
+      break unless propagated
+    end
+
+    project_scoped_memberships = non_project_memberships.select { |membership| project_room_project_ids.key?(membership.room_id) }
 
     @direct_memberships = extract_direct_memberships(all_memberships)
     @other_memberships  = prioritize_company_memberships(
       non_project_memberships
         .without(@direct_memberships)
-        .reject { |membership| membership.room.project_id.present? }
+        .reject { |membership| project_room_project_ids.key?(membership.room_id) }
         .to_a
     )
     @project_memberships_by_room_id = project_memberships.index_by(&:room_id)
-    @project_memberships_by_project_id = project_scoped_memberships.group_by { |membership| membership.room.project_id }
+    @project_memberships_by_project_id = project_scoped_memberships.group_by do |membership|
+      project_room_project_ids[membership.room_id]
+    end
     @projects = Current.user.projects.includes(:rooms).sort_by { |project| project.display_name.to_s.downcase }
 
     @direct_placeholder_users = find_direct_placeholder_users

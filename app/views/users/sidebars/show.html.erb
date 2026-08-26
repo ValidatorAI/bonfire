@@ -79,10 +79,11 @@
                   <% knowledge_memberships = @project_memberships_by_project_id.fetch(project.id, []) %>
                   <% if knowledge_memberships.any? %>
                     <div class="sidebar-projects__knowledge-rooms flex flex-column gap">
-                      <% knowledge_memberships.each do |knowledge_membership| %>
+                      <% each_membership_in_room_tree(knowledge_memberships) do |knowledge_membership, depth| %>
                         <%= link_to_room knowledge_membership.room,
-                              class: [ "room btn txt-nowrap sidebar-projects__knowledge-room", "unread": knowledge_membership.unread? ] do %>
-                          <span aria-hidden="true">#</span>
+                              class: [ "room btn txt-nowrap sidebar-projects__knowledge-room", "sidebar-projects__knowledge-room--child": depth.positive?, "unread": knowledge_membership.unread? ],
+                              style: "--room-depth: #{depth}" do %>
+                          <span aria-hidden="true"><%= depth.positive? ? "💬" : "#" %></span>
                           <span class="overflow-ellipsis"><%= room_display_name(knowledge_membership.room) %></span>
                         <% end %>
                       <% end %>

@@ -342,6 +342,7 @@
 }
 
 .sidebar-projects__knowledge-room {
+  --room-depth: 0;
   --btn-border-color: color-mix(in oklab, var(--color-text), transparent 82%);
   --btn-padding: 0.32em 0.8em;
 
@@ -351,6 +352,10 @@
   font-weight: 500;
   gap: 0.35em;
   max-inline-size: max-content;
+}
+
+.sidebar-projects__knowledge-room--child {
+  margin-inline-start: calc(var(--room-depth) * 1rem);
 }
 
 .sidebar-projects__knowledge-empty {
