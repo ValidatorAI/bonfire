@@ -310,6 +310,18 @@
   opacity: 1;
 }
 
+.sidebar-projects__plus {
+  color: var(--color-text) !important;
+  flex-shrink: 0;
+  opacity: 1;
+}
+
+.sidebar-projects__controls {
+  align-items: center;
+  column-gap: 0.25em;
+  display: inline-flex;
+}
+
 .sidebar-projects__settings-link {
   --btn-background: transparent;
   --btn-border-color: color-mix(in oklab, var(--color-text), transparent 78%);
