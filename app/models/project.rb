@@ -2,6 +2,8 @@ class Project < ApplicationRecord
   has_many :agents, dependent: :destroy
   has_many :rooms, dependent: :destroy
   has_many :file_reservations, dependent: :destroy
+  has_many :project_users, dependent: :delete_all
+  has_many :users, through: :project_users
 
   validates :slug, presence: true, uniqueness: true,
             format: { with: /\A[a-z0-9\-]+\z/, message: "must be lowercase alphanumeric with dashes" }

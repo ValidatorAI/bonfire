@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_25_130000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_26_100000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -195,6 +195,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_130000) do
     t.index ["room_id"], name: "index_messages_on_room_id"
   end
 
+  create_table "project_users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["project_id", "user_id"], name: "index_project_users_on_project_id_and_user_id", unique: true
+    t.index ["project_id"], name: "index_project_users_on_project_id"
+    t.index ["user_id"], name: "index_project_users_on_user_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -309,6 +319,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_25_130000) do
   add_foreign_key "file_reservations", "agents"
   add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
+  add_foreign_key "project_users", "projects"
+  add_foreign_key "project_users", "users"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "room_ai_activity_states", "agents"
   add_foreign_key "room_ai_activity_states", "rooms"

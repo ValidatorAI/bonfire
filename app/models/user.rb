@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   include Avatar, Bannable, Bot, Mentionable, Role, Transferable
 
+  has_many :project_users, dependent: :delete_all
+  has_many :projects, through: :project_users
+
   has_many :memberships, as: :participant, dependent: :delete_all
   has_many :rooms, through: :memberships
 
