@@ -347,6 +347,7 @@
   --btn-padding: 0.32em 0.8em;
 
   align-items: center;
+  color: #777777 !important;
   display: inline-flex;
   font-size: 0.8rem;
   font-weight: 500;
@@ -355,7 +356,7 @@
 }
 
 .sidebar-projects__knowledge-room--child {
-  margin-inline-start: calc(var(--room-depth) * 1rem);
+  margin-inline-start: calc(var(--room-depth) * 1.4rem);
 }
 
 .sidebar-projects__knowledge-empty {
@@ -534,12 +535,13 @@
 }
 
 .room-item--child {
-  margin-inline-start: calc(var(--room-depth) * 1rem);
+  margin-inline-start: calc(var(--room-depth) * 1.4rem);
 }
 
 .room-item__link {
   display: flex;
   align-items: center;
+  color: #777777 !important;
   gap: 0.5em;
   justify-content: space-between;
 }
