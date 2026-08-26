@@ -58,10 +58,62 @@ body.sidebar #nav {
   background: var(--surface);
   border-bottom: 1px solid var(--border-color);
   border-top-left-radius: var(--demo-shell-radius);
+  display: flex;
+  flex-wrap: wrap;
   inset: auto;
   overflow: hidden;
   padding: 20px 24px;
   position: relative;
+}
+
+@media (min-width: 100ch) {
+  body.sidebar #nav:has(.room--current) {
+    margin-inline-start: 0;
+  }
+
+  body.sidebar #nav:has(.room--current) .room--current,
+  body.sidebar #nav:has(.room--current) .account-logo {
+    margin-inline-start: 0;
+  }
+}
+
+body.sidebar .nav__room-members {
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex: 1 0 100%;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  overflow-x: auto;
+  padding-top: 0.65rem;
+  scrollbar-width: thin;
+}
+
+body.sidebar .nav__room-members-label {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+body.sidebar .nav__room-member {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
+  max-inline-size: 10rem;
+}
+
+body.sidebar .nav__room-member-avatar .avatar {
+  --avatar-size: 2.15ch;
+}
+
+body.sidebar .nav__room-member-name {
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 body.sidebar #nav::before {
@@ -244,6 +296,15 @@ body.sidebar .composer__rich-text-btn {
   body.sidebar #nav {
     border-top-left-radius: 0;
     padding: 14px 12px;
+  }
+
+  body.sidebar .nav__room-members {
+    margin-top: 0;
+    padding-top: 0.5rem;
+  }
+
+  body.sidebar .nav__room-member-name {
+    max-inline-size: 5rem;
   }
 
   body.sidebar .messages {
