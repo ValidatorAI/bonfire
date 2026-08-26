@@ -95,23 +95,12 @@ trix-editor {
     opacity: 1 !important;
   }
 
-  @media (prefers-color-scheme: dark) {
-    &::before {
-      filter: invert(100);
-    }
-  }
-
   &.trix-active {
     background-color: var(--color-text) !important;
+    color: var(--color-text-reversed) !important;
 
     &::before {
-      filter: invert(100);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      &::before {
-        filter: invert(0);
-      }
+      filter: brightness(0) invert(1) !important;
     }
   }
 
@@ -146,6 +135,12 @@ trix-editor {
 }
 
 .trix-button:not(.trix-button--remove) {
+  color: var(--color-text) !important;
+
+  &::before {
+    filter: none !important;
+  }
+
   @media (any-hover: hover) {
     &:where(:not(:active):hover) {
       filter: brightness(0.9);
@@ -156,6 +151,11 @@ trix-editor {
   &:disabled {
     opacity: 0.33;
   }
+}
+
+.trix-button-group--text-tools {
+  display: inline-flex !important;
+  gap: 0.2rem;
 }
 
 trix-editor,

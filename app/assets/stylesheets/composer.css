@@ -104,19 +104,19 @@
   }
 }
 
+.composer--rich-text {
+  trix-toolbar {
+    display: block;
+  }
+
+  trix-editor.input {
+    margin-block-start: var(--block-space-half);
+  }
+}
+
 @media (min-width: 100ch) and (any-hover: hover) and (pointer: fine) {
   .composer__rich-text-btn {
     display: inline-flex;
-  }
-
-  .composer--rich-text {
-    trix-toolbar {
-      display: block;
-    }
-
-    trix-editor.input {
-      margin-block-start: var(--block-space-half);
-    }
   }
 
   .composer--edit trix-toolbar {
