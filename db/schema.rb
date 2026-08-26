@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_26_100000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_26_113000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -248,11 +248,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_26_100000) do
     t.bigint "creator_id", null: false
     t.text "description"
     t.string "name"
+    t.integer "parent_id"
     t.boolean "private", default: false, null: false
     t.integer "project_id"
     t.string "type", null: false
     t.datetime "updated_at", null: false
     t.index ["archived_at"], name: "index_rooms_on_archived_at"
+    t.index ["parent_id"], name: "index_rooms_on_parent_id"
     t.index ["project_id", "type"], name: "index_rooms_on_project_id_and_type"
     t.index ["project_id"], name: "index_rooms_on_project_id"
   end
@@ -325,6 +327,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_26_100000) do
   add_foreign_key "room_ai_activity_states", "agents"
   add_foreign_key "room_ai_activity_states", "rooms"
   add_foreign_key "rooms", "projects"
+  add_foreign_key "rooms", "rooms", column: "parent_id"
   add_foreign_key "searches", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "webhooks", "users"

@@ -328,6 +328,42 @@
   max-inline-size: max-content;
 }
 
+.sidebar-projects__knowledge {
+  display: grid;
+  gap: 0.35em;
+}
+
+.sidebar-projects__knowledge-label {
+  pointer-events: none;
+}
+
+.sidebar-projects__knowledge-rooms {
+  --row-gap: 0.35em;
+}
+
+.sidebar-projects__knowledge-room {
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 82%);
+  --btn-padding: 0.32em 0.8em;
+
+  align-items: center;
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 500;
+  gap: 0.35em;
+  max-inline-size: max-content;
+}
+
+.sidebar-projects__knowledge-empty {
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 86%);
+  --btn-padding: 0.28em 0.75em;
+
+  color: color-mix(in oklab, var(--color-text), transparent 58%) !important;
+  font-size: 0.78rem;
+  max-inline-size: max-content;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
 .rooms__new-btn {
   --btn-background: transparent;
   --btn-border-color: color-mix(in oklab, var(--color-text), transparent 70%);
@@ -488,6 +524,14 @@
 }
 
 /* Room item with actions dropdown */
+.room-item {
+  --room-depth: 0;
+}
+
+.room-item--child {
+  margin-inline-start: calc(var(--room-depth) * 1rem);
+}
+
 .room-item__link {
   display: flex;
   align-items: center;

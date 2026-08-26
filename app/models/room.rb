@@ -1,5 +1,7 @@
 class Room < ApplicationRecord
   belongs_to :project, optional: true
+  belongs_to :parent, class_name: "Room", optional: true, inverse_of: :children
+  has_many :children, class_name: "Room", foreign_key: :parent_id, dependent: :nullify, inverse_of: :parent
 
   after_create_commit :announce_creation, unless: :skip_announcement?
   after_create_commit :auto_join_human_overseer
@@ -58,6 +60,7 @@ class Room < ApplicationRecord
   scope :ordered, -> { order("LOWER(name)") }
 
   validates :private, inclusion: { in: [ true, false ] }
+  validate :parent_cannot_be_self
 
   class << self
     def create_for(attributes, users:)
@@ -120,6 +123,12 @@ class Room < ApplicationRecord
   end
 
   private
+    def parent_cannot_be_self
+      return if parent_id.blank?
+
+      errors.add(:parent_id, "cannot reference itself") if parent_id == id
+    end
+
     def unread_memberships(message)
       memberships.visible.disconnected
                  .where.not(participant_type: message.creator_type, participant_id: message.creator_id)
