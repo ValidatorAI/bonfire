@@ -272,6 +272,12 @@
   gap: 0.42em;
 }
 
+.sidebar-projects__row {
+  align-items: center;
+  column-gap: 0.35em;
+  display: flex;
+}
+
 .sidebar-projects__button {
   --btn-padding: 0.5em 0.35em 0.5em 1.1em;
   --column-gap: 0.45em;
@@ -280,9 +286,10 @@
   color: #000 !important;
   display: flex;
   font-weight: 700;
-  inline-size: 100%;
+  flex: 1;
+  inline-size: auto;
   justify-content: space-between;
-  max-inline-size: 100%;
+  max-inline-size: none;
 }
 
 .sidebar-projects__main {
@@ -300,8 +307,28 @@
 .sidebar-projects__gear {
   color: var(--color-text) !important;
   flex-shrink: 0;
-  margin-inline-start: auto;
   opacity: 1;
+}
+
+.sidebar-projects__settings-link {
+  --btn-background: transparent;
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 78%);
+  --btn-border-radius: 999px;
+  --btn-border-size: 1px;
+  --btn-padding: 0.42em;
+
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.sidebar-projects__settings-link--inactive {
+  opacity: 0.72;
+  pointer-events: none;
 }
 
 .sidebar-projects__button--inactive {

@@ -141,6 +141,23 @@ body.sidebar .room--current {
   --btn-padding: 0.55em 1.1em;
 }
 
+body.sidebar .project-settings__title {
+  align-items: center;
+  color: #111111;
+  display: inline-flex;
+  font-size: 1.08rem;
+  font-weight: 700;
+  gap: 0.45rem;
+  max-inline-size: min(44ch, calc(100dvw - var(--sidebar-width) - 19rem));
+}
+
+body.sidebar .project-settings__empty {
+  background: var(--surface-alt);
+  block-size: calc(100dvh - 104px);
+  margin-inline: auto;
+  min-block-size: 320px;
+}
+
 body.sidebar .directs,
 body.sidebar .sidebar__tools {
   backdrop-filter: none;
