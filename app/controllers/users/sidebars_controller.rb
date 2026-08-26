@@ -3,8 +3,12 @@ class Users::SidebarsController < ApplicationController
 
   def show
     all_memberships     = Current.user.memberships.visible.with_ordered_room
+    project_memberships, non_project_memberships = all_memberships.partition { |membership| membership.room.project_room? }
+
     @direct_memberships = extract_direct_memberships(all_memberships)
-    @other_memberships  = prioritize_company_memberships(all_memberships.without(@direct_memberships).to_a)
+    @other_memberships  = prioritize_company_memberships(non_project_memberships.without(@direct_memberships).to_a)
+    @project_memberships_by_room_id = project_memberships.index_by(&:room_id)
+    @projects = Current.user.projects.includes(:rooms).sort_by { |project| project.display_name.to_s.downcase }
 
     @direct_placeholder_users = find_direct_placeholder_users
   end

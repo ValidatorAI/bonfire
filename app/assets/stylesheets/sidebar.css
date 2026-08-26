@@ -242,6 +242,45 @@
   max-inline-size: max-content;
 }
 
+.sidebar-projects {
+  display: grid;
+  gap: 0.55em;
+  padding: 0 var(--sidebar-inline-space);
+}
+
+.sidebar-section-separator {
+  block-size: 1px;
+  background: color-mix(in oklab, var(--color-text), transparent 85%);
+  margin-block: 0.15em 0.25em;
+}
+
+.sidebar-projects__title {
+  color: color-mix(in oklab, var(--color-text), transparent 55%);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.sidebar-projects__list {
+  --row-gap: 0.45em;
+}
+
+.sidebar-projects__button {
+  --column-gap: 0.45em;
+
+  align-items: center;
+  display: inline-flex;
+  justify-content: flex-start;
+  max-inline-size: max-content;
+}
+
+.sidebar-projects__button--inactive {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
 .rooms__new-btn {
   --btn-background: transparent;
   --btn-border-color: color-mix(in oklab, var(--color-text), transparent 70%);
