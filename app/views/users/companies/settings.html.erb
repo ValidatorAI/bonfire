@@ -1,0 +1,82 @@
+<% @page_title = "Company Settings" %>
+<% @body_class = "sidebar" %>
+
+<% content_for :nav do %>
+  <span class="btn btn--reversed btn--faux user-settings-nav__pill">Workspace</span>
+  <h1 class="user-settings-nav__title txt-large">Company Settings</h1>
+<% end %>
+
+<% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
+
+<div id="message-area" class="message-area">
+  <div class="company-page company-page--settings">
+    <section class="company-page-card" aria-label="Organization profile">
+      <header class="company-page-card__header">
+        <h2 class="company-page-card__title">Organization Profile</h2>
+        <p class="company-page-card__desc">Manage the primary identity shown across your workspace.</p>
+      </header>
+
+      <% if Current.user.can_administer? %>
+        <%= form_with model: @account, url: account_path, method: :patch, class: "company-settings-form" do |form| %>
+          <div class="company-settings-form__grid">
+            <label class="company-settings-form__group">
+              <span>Company Name</span>
+              <%= form.text_field :name, class: "input", autocomplete: "organization", required: true %>
+            </label>
+
+            <label class="company-settings-form__group">
+              <span>Workspace URL</span>
+              <input class="input" type="text" value="<%= @account.join_code %>.w.app" readonly>
+            </label>
+          </div>
+
+          <div class="company-page-actions">
+            <%= form.button "Save Changes", class: "btn btn--reversed", type: :submit %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="company-settings-form__grid">
+          <label class="company-settings-form__group">
+            <span>Company Name</span>
+            <input class="input" type="text" value="<%= @account.name %>" readonly>
+          </label>
+
+          <label class="company-settings-form__group">
+            <span>Workspace URL</span>
+            <input class="input" type="text" value="<%= @account.join_code %>.w.app" readonly>
+          </label>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="company-page-card" aria-label="Member directory">
+      <header class="company-page-card__header company-page-card__header--inline">
+        <div>
+          <h2 class="company-page-card__title">Member Directory</h2>
+          <p class="company-page-card__desc">Workspace participants and their current roles.</p>
+        </div>
+      </header>
+
+      <div class="company-members-table-wrap">
+        <table class="company-members-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @users.each do |user| %>
+              <tr>
+                <td><%= user.effective_display_name %></td>
+                <td><%= user.email_address %></td>
+                <td><%= user.role.to_s.humanize %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

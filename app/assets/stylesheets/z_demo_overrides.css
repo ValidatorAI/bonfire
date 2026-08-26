@@ -288,6 +288,236 @@ body.sidebar .user-settings-content {
   padding: 12px 12px 12px;
 }
 
+body.sidebar .company-page {
+  margin-inline: auto;
+  max-inline-size: 72rem;
+  padding: 12px;
+  display: grid;
+  gap: 16px;
+}
+
+body.sidebar .company-page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+body.sidebar .company-page-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: 22px;
+}
+
+body.sidebar .company-page-card__header {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+}
+
+body.sidebar .company-page-card__header--inline {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+body.sidebar .company-page-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+body.sidebar .company-page-card__desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: 6px 0 0;
+}
+
+body.sidebar .company-page-stat-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+body.sidebar .company-page-stat {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+  background: var(--surface-alt);
+}
+
+body.sidebar .company-page-stat__label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+body.sidebar .company-page-stat__value {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+body.sidebar .company-page-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+body.sidebar .company-page-list__item {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+body.sidebar .company-page-list__item strong {
+  font-size: 14px;
+}
+
+body.sidebar .company-page-list__item span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+body.sidebar .company-page-empty {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+body.sidebar .company-page-meter-stack {
+  display: grid;
+  gap: 12px;
+}
+
+body.sidebar .company-page-meter {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+body.sidebar .company-page-meter__labels {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+body.sidebar .company-page-meter__bar {
+  background: color-mix(in oklab, var(--color-text), transparent 88%);
+  border-radius: 999px;
+  block-size: 8px;
+  overflow: hidden;
+}
+
+body.sidebar .company-page-meter__bar span {
+  background: #1f2937;
+  block-size: 100%;
+  border-radius: inherit;
+  display: block;
+}
+
+body.sidebar .company-page-alerts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+body.sidebar .company-page-alert {
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+body.sidebar .company-page-alert strong {
+  font-size: 14px;
+}
+
+body.sidebar .company-page-alert span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+body.sidebar .company-page-alert--warn {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+body.sidebar .company-page-alert--danger {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+body.sidebar .company-settings-form {
+  display: grid;
+  gap: 16px;
+}
+
+body.sidebar .company-settings-form__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.sidebar .company-settings-form__group {
+  display: grid;
+  gap: 6px;
+}
+
+body.sidebar .company-settings-form__group span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.sidebar .company-page-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+body.sidebar .company-members-table-wrap {
+  overflow-x: auto;
+}
+
+body.sidebar .company-members-table {
+  border-collapse: collapse;
+  inline-size: 100%;
+}
+
+body.sidebar .company-members-table th,
+body.sidebar .company-members-table td {
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+  padding: 10px 8px;
+  text-align: left;
+}
+
+body.sidebar .company-members-table th {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  body.sidebar .company-page-grid,
+  body.sidebar .company-settings-form__grid,
+  body.sidebar .company-page-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 body.sidebar .user-settings-grid {
   margin-inline: auto;
   max-inline-size: 72rem;

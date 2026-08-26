@@ -9,21 +9,21 @@
     <section class="sidebar-company" aria-label="Company">
       <div class="sidebar-company__header">
         <h2 class="sidebar-company__title">Company</h2>
-        <button type="button" class="btn sidebar-company__settings" aria-label="Company settings">
+        <%= link_to user_company_settings_path(user_id: "me"), class: "btn sidebar-company__settings", aria: { label: "Company settings" } do %>
           <span aria-hidden="true">⚙️</span>
-        </button>
+        <% end %>
       </div>
 
       <div class="sidebar-company__buttons flex flex-column gap">
-        <button type="button" class="room btn txt-nowrap sidebar-company__button" aria-label="Company Home">
+        <%= link_to user_company_home_path(user_id: "me"), class: "room btn txt-nowrap sidebar-company__button", aria: { label: "Company Home" } do %>
           <span aria-hidden="true">🏠</span>
           <span>Home</span>
-        </button>
+        <% end %>
 
-        <button type="button" class="room btn txt-nowrap sidebar-company__button" aria-label="Company Status">
+        <%= link_to user_company_status_path(user_id: "me"), class: "room btn txt-nowrap sidebar-company__button", aria: { label: "Company Status" } do %>
           <span aria-hidden="true">📊</span>
           <span>Company Status</span>
-        </button>
+        <% end %>
       </div>
     </section>
 
