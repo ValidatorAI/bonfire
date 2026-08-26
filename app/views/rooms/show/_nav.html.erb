@@ -1,6 +1,5 @@
 <% content_for :nav do %>
-  <% user_members = room.users.distinct.to_a.sort_by { |user| user.name.to_s.downcase } %>
-  <% room_members = user_members  %>
+  <% room_members = room.users.distinct.to_a.sort_by { |member| [ member.bot? ? 1 : 0, member.name.to_s.downcase ] } %>
 
   <%= account_logo_tag if Current.account.logo.attached? %>
 
