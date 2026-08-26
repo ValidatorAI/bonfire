@@ -13,6 +13,7 @@ html {
 }
 
 body.sidebar {
+  --navbar-height: 7.25rem;
   --sidebar-width: clamp(290px, 23vw, 360px);
 
   align-content: center;
@@ -58,6 +59,7 @@ body.sidebar #nav {
   background: var(--surface);
   border-bottom: 1px solid var(--border-color);
   border-top-left-radius: var(--demo-shell-radius);
+  column-gap: 0.5rem;
   display: flex;
   flex-wrap: wrap;
   inset: auto;
@@ -136,6 +138,13 @@ body.sidebar .sidebar__tools {
   background: var(--surface);
 }
 
+/* Direct strip is intentionally hidden in this layout variant. */
+body.sidebar #direct_rooms_control,
+body.sidebar .directs,
+body.sidebar #direct_rooms {
+  display: none !important;
+}
+
 body.sidebar .sidebar__tools {
   border-top: 1px solid #eaeaea;
   inline-size: 100%;
@@ -194,7 +203,7 @@ body.sidebar .rooms__new-btn {
 
 body.sidebar .messages {
   background: var(--surface-alt);
-  padding: 20px 24px;
+  padding: calc(var(--navbar-height) + 0.45rem) 24px 20px;
   row-gap: 1rem;
 }
 
@@ -308,7 +317,7 @@ body.sidebar .composer__rich-text-btn {
   }
 
   body.sidebar .messages {
-    padding: calc(var(--navbar-height) + 0.55rem) 12px 12px;
+    padding: calc(var(--navbar-height) + 0.4rem) 12px 12px;
   }
 
   body.sidebar .composer {
