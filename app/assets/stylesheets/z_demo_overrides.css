@@ -1,38 +1,57 @@
 /* Demo style overrides for room/sidebar pages */
 
+html {
+  background: var(--bg-purple);
+}
+
 :root {
   --demo-shell-radius: 12px;
   --demo-shell-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  --demo-shell-gap: 20px;
+  --demo-shell-max-width: 1240px;
+  --demo-shell-max-height: 920px;
 }
 
 body.sidebar {
+  --sidebar-width: clamp(290px, 23vw, 360px);
+
+  align-content: center;
   background: var(--bg-purple);
+  block-size: min(var(--demo-shell-max-height), calc(100dvh - (var(--demo-shell-gap) * 2)));
+  border-radius: var(--demo-shell-radius);
+  inline-size: min(var(--demo-shell-max-width), calc(100vw - (var(--demo-shell-gap) * 2)));
+  margin: var(--demo-shell-gap) auto;
   max-block-size: none;
-  min-block-size: 100dvh;
-  padding: 20px;
+  min-block-size: 0;
+  overflow: hidden;
+  padding: 0;
 }
 
 body.sidebar #main-content,
 body.sidebar #sidebar {
   background: var(--surface);
-  box-shadow: var(--demo-shell-shadow);
 }
 
 body.sidebar #main-content {
-  border-radius: var(--demo-shell-radius) 0 0 var(--demo-shell-radius);
+  background: var(--surface-alt);
+  border-radius: 0;
   overflow: hidden;
 }
 
 body.sidebar #sidebar {
-  border-radius: 0 var(--demo-shell-radius) var(--demo-shell-radius) 0;
+  block-size: 100%;
   border-inline-start: 1px solid var(--border-color);
+  border-radius: 0;
+  max-block-size: none;
 }
 
 body.sidebar #nav {
   background: var(--surface);
   border-bottom: 1px solid var(--border-color);
-  border-top-left-radius: var(--demo-shell-radius);
+  border-top-left-radius: 0;
+  inset: auto;
   padding: 20px 24px;
+  position: relative;
 }
 
 body.sidebar #nav::before {
@@ -52,6 +71,12 @@ body.sidebar .directs,
 body.sidebar .sidebar__tools {
   backdrop-filter: none;
   background: var(--surface);
+}
+
+body.sidebar .sidebar__tools {
+  inline-size: 100%;
+  inset: auto 0 0 0;
+  position: sticky;
 }
 
 body.sidebar .sidebar__container {
@@ -101,7 +126,7 @@ body.sidebar .rooms__new-btn {
 
 body.sidebar .messages {
   background: var(--surface-alt);
-  padding: calc(var(--navbar-height) + 0.8rem) 24px 20px;
+  padding: 20px 24px;
   row-gap: 1rem;
 }
 
@@ -185,8 +210,13 @@ body.sidebar .composer__rich-text-btn {
 
 @media (max-width: 100ch) {
   body.sidebar {
+    block-size: 100dvh;
+    border-radius: 0;
     padding: 0;
     background: var(--surface-alt);
+    box-shadow: none;
+    inline-size: 100%;
+    margin: 0;
   }
 
   body.sidebar #main-content,
