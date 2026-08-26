@@ -6,6 +6,27 @@
       data-controller="badge-dot"
       data-badge-dot-unread-class="unread"
       data-action="rooms-list:unread@window->badge-dot#update rooms-list:read@window->badge-dot#update turbo:submit-start->turbo-frame#unpermanize">
+    <section class="sidebar-company" aria-label="Company">
+      <div class="sidebar-company__header">
+        <h2 class="sidebar-company__title">Company</h2>
+        <button type="button" class="btn sidebar-company__settings" aria-label="Company settings">
+          <span aria-hidden="true">⚙️</span>
+        </button>
+      </div>
+
+      <div class="sidebar-company__buttons flex flex-column gap">
+        <button type="button" class="room btn txt-nowrap sidebar-company__button" aria-label="Company Home">
+          <span aria-hidden="true">🏠</span>
+          <span>Home</span>
+        </button>
+
+        <button type="button" class="room btn txt-nowrap sidebar-company__button" aria-label="Company Status">
+          <span aria-hidden="true">📊</span>
+          <span>Company Status</span>
+        </button>
+      </div>
+    </section>
+
     <div class="rooms position-relative flex flex-column gap">
       <div id="shared_rooms" contents data-controller="sorted-list">
         <% @other_memberships.each do |membership| %>

@@ -200,6 +200,48 @@
   padding-inline: var(--sidebar-inline-space);
 }
 
+.sidebar-company {
+  display: grid;
+  gap: 0.6em;
+  padding: var(--block-space) var(--sidebar-inline-space) 0;
+}
+
+.sidebar-company__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sidebar-company__title {
+  color: color-mix(in oklab, var(--color-text), transparent 55%);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.sidebar-company__settings {
+  --btn-background: transparent;
+  --btn-border-color: transparent;
+  --btn-padding: 0.2em;
+
+  min-block-size: auto;
+}
+
+.sidebar-company__buttons {
+  --row-gap: 0.4em;
+}
+
+.sidebar-company__button {
+  --column-gap: 0.45em;
+
+  align-items: center;
+  display: inline-flex;
+  justify-content: flex-start;
+  max-inline-size: max-content;
+}
+
 .rooms__new-btn {
   --btn-background: transparent;
   --btn-border-color: color-mix(in oklab, var(--color-text), transparent 70%);

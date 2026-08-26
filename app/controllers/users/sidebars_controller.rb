@@ -4,7 +4,7 @@ class Users::SidebarsController < ApplicationController
   def show
     all_memberships     = Current.user.memberships.visible.with_ordered_room
     @direct_memberships = extract_direct_memberships(all_memberships)
-    @other_memberships  = all_memberships.without(@direct_memberships)
+    @other_memberships  = prioritize_company_memberships(all_memberships.without(@direct_memberships).to_a)
 
     @direct_placeholder_users = find_direct_placeholder_users
   end
@@ -12,6 +12,31 @@ class Users::SidebarsController < ApplicationController
   private
     def extract_direct_memberships(all_memberships)
       all_memberships.select { |m| m.room.direct? }.sort_by { |m| m.room.updated_at }.reverse
+    end
+
+    def prioritize_company_memberships(memberships)
+      home_memberships = memberships.select { |membership| company_home_room?(membership.room.name) }
+      status_memberships = memberships.select { |membership| company_status_room?(membership.room.name) }
+      remaining_memberships = memberships - home_memberships - status_memberships
+
+      home_memberships + status_memberships + remaining_memberships
+    end
+
+    def company_home_room?(name)
+      normalized_name = normalize_room_name(name)
+      normalized_name == "home" || normalized_name == "company home"
+    end
+
+    def company_status_room?(name)
+      normalize_room_name(name) == "company status"
+    end
+
+    def normalize_room_name(name)
+      name.to_s
+        .downcase
+        .gsub(/[^a-z0-9 ]/, "")
+        .squeeze(" ")
+        .strip
     end
 
     def find_direct_placeholder_users
