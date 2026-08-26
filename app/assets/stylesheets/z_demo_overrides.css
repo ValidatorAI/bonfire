@@ -19,6 +19,7 @@ body.sidebar {
   background: var(--bg-purple);
   block-size: min(var(--demo-shell-max-height), calc(100dvh - (var(--demo-shell-gap) * 2)));
   border-radius: var(--demo-shell-radius);
+  grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
   inline-size: min(var(--demo-shell-max-width), calc(100vw - (var(--demo-shell-gap) * 2)));
   margin: var(--demo-shell-gap) auto;
   max-block-size: none;
@@ -34,21 +35,29 @@ body.sidebar #sidebar {
 
 body.sidebar #main-content {
   background: var(--surface-alt);
-  border-radius: 0;
+  border-end-start-radius: var(--demo-shell-radius);
+  border-start-start-radius: var(--demo-shell-radius);
   overflow: hidden;
 }
 
 body.sidebar #sidebar {
+  align-self: stretch;
   block-size: 100%;
   border-inline-start: 1px solid var(--border-color);
-  border-radius: 0;
-  max-block-size: none;
+  border-end-end-radius: var(--demo-shell-radius);
+  border-start-end-radius: var(--demo-shell-radius);
+  inline-size: var(--sidebar-width);
+  max-block-size: 100%;
+  max-inline-size: var(--sidebar-width);
+  min-block-size: 0;
+  overflow: hidden;
+  position: relative;
 }
 
 body.sidebar #nav {
   background: var(--surface);
   border-bottom: 1px solid var(--border-color);
-  border-top-left-radius: 0;
+  border-top-left-radius: var(--demo-shell-radius);
   inset: auto;
   padding: 20px 24px;
   position: relative;
