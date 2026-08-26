@@ -267,6 +267,168 @@ body.sidebar .user-settings-nav__title {
   line-height: 1.2;
 }
 
+body.sidebar .user-settings-content {
+  padding: calc(var(--navbar-height) + 0.45rem) 12px 12px;
+}
+
+body.sidebar .user-settings-grid {
+  margin-inline: auto;
+  max-inline-size: 72rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+body.sidebar .user-settings-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: 22px;
+}
+
+body.sidebar .user-settings-card-header {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+}
+
+body.sidebar .user-settings-card-title {
+  font-size: 1.95rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+body.sidebar .user-settings-card-title--small {
+  font-size: 2rem;
+}
+
+body.sidebar .user-settings-card-desc {
+  color: var(--text-secondary);
+  margin: 6px 0 0;
+}
+
+body.sidebar .avatar-row {
+  align-items: center;
+  column-gap: 14px;
+  display: flex;
+  margin-bottom: 16px;
+}
+
+body.sidebar .user-settings-avatar {
+  align-items: center;
+  border: none;
+  border-radius: 999px;
+  display: inline-flex;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+}
+
+body.sidebar .user-settings-avatar img {
+  block-size: 64px;
+  inline-size: 64px;
+  object-fit: cover;
+}
+
+body.sidebar .user-settings-avatar-btn {
+  display: inline-flex;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+body.sidebar .user-settings-avatar-btn input[type="file"] {
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+}
+
+body.sidebar .user-settings-help {
+  color: var(--text-secondary);
+  display: block;
+  font-size: 0.82rem;
+}
+
+body.sidebar .user-settings-form {
+  display: grid;
+  row-gap: 14px;
+}
+
+body.sidebar .user-settings-form .form-group {
+  margin: 0;
+}
+
+body.sidebar .user-settings-form .form-group label {
+  display: inline-block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+body.sidebar .user-settings-form .input {
+  inline-size: 100%;
+}
+
+body.sidebar .user-settings-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+body.sidebar .user-settings-option-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+body.sidebar .user-settings-option-desc {
+  margin: 2px 0 0;
+  color: var(--text-secondary);
+}
+
+body.sidebar .user-settings-divider {
+  border-top: 1px solid var(--border-color);
+  margin: 18px 0;
+}
+
+body.sidebar .user-settings-muted-header {
+  margin-bottom: 10px;
+}
+
+body.sidebar .user-settings-muted-list {
+  display: grid;
+  row-gap: 10px;
+}
+
+body.sidebar .user-settings-muted-item {
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+body.sidebar .user-settings-muted-btn {
+  --btn-padding: 0.35em 0.9em;
+}
+
+body.sidebar .user-settings-page-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-inline: auto;
+  margin-top: 12px;
+  max-inline-size: 72rem;
+  width: 100%;
+}
+
+@media (max-width: 78ch) {
+  body.sidebar .user-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 body.sidebar .message--me .message__body-content {
   border-radius: 12px 4px 12px 12px;
 }
