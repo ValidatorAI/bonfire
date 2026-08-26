@@ -312,7 +312,7 @@
 .sidebar-projects__actions {
   --row-gap: 0.4em;
 
-  margin-inline-start: 1.15em;
+  margin-inline-start: 1.9em;
 }
 
 .sidebar-projects__action-btn {
@@ -320,8 +320,9 @@
   --btn-padding: 0.36em 0.9em;
 
   align-items: center;
-  color: color-mix(in oklab, var(--color-text), transparent 28%);
+  color: color-mix(in oklab, var(--color-text), transparent 32%) !important;
   display: inline-flex;
+  font-size: 0.84rem;
   font-weight: 500;
   justify-content: flex-start;
   max-inline-size: max-content;
