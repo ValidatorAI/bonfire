@@ -204,10 +204,12 @@ body.sidebar .room-item__actions-btn {
 }
 
 body.sidebar .rooms__new-btn {
-  --btn-background: #000000;
-  --btn-border-color: #000000;
-  --btn-color: #ffffff;
+  --btn-background: transparent;
+  --btn-border-color: color-mix(in oklab, #000000, transparent 75%);
+  --btn-border-size: 1.5px;
+  --btn-color: color-mix(in oklab, #000000, transparent 35%);
   --btn-border-radius: 999px;
+  border-style: dashed;
 }
 
 body.sidebar .messages {
