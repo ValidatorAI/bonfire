@@ -162,6 +162,12 @@
 }
 
 .composer__input {
+  trix-editor.input {
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+
   .composer__rich-text-btn,
   label:has(input[type="file"]) {
     cursor: pointer;
