@@ -41,7 +41,7 @@
   }
 
   /* Circle buttons */
-  &:where(:has(.for-screen-reader):has(img, figure)) {
+  &:where(:has(.for-screen-reader):has(img, figure, .btn__icon-emoji)) {
     --btn-border-radius: 50%;
     --btn-padding: 0;
 
