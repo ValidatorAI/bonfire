@@ -1,5 +1,5 @@
 <% content_for :nav do %>
-  <% room_members = room.memberships.includes(:participant).map(&:participant).compact.uniq %>
+  <% room_members = room.users.distinct %>
 
   <%= account_logo_tag if Current.account.logo.attached? %>
 
