@@ -38,6 +38,7 @@ class Users::SidebarsController < ApplicationController
     @other_memberships  = prioritize_company_memberships(
       non_project_memberships
         .without(@direct_memberships)
+        .reject { |membership| room_without_parent_or_project?(membership.room) }
         .reject { |membership| project_room_project_ids.key?(membership.room_id) }
         .to_a
     )
@@ -78,6 +79,10 @@ class Users::SidebarsController < ApplicationController
         .gsub(/[^a-z0-9 ]/, "")
         .squeeze(" ")
         .strip
+    end
+
+    def room_without_parent_or_project?(room)
+      room.parent_id.blank? && room.project_id.blank?
     end
 
     def find_direct_placeholder_users
