@@ -5,6 +5,7 @@ class Rooms::OpensController < RoomsController
   before_action :force_room_type, only: %i[ edit update ]
   before_action :ensure_permission_to_create_rooms, only: %i[ new create ]
   before_action :set_project_for_new_room, only: %i[ new create ]
+  before_action :set_parent_room_for_new_room, only: %i[ new create ]
 
   DEFAULT_ROOM_NAME = "New room"
 
@@ -13,17 +14,26 @@ class Rooms::OpensController < RoomsController
   end
 
   def new
-    @room = Rooms::Open.new(name: DEFAULT_ROOM_NAME, project: @project)
+    @room = Rooms::Open.new(name: DEFAULT_ROOM_NAME, project: @project, parent_id: @parent_room&.id)
     @users = User.active.ordered
     @agents = Agent.active
   end
 
   def create
     room_attributes = room_params
+
     if @project
-      project_room = @project.ensure_project_room!
       room_attributes[:project_id] = @project.id
-      room_attributes[:parent_id] = project_room.id
+    end
+
+    room_attributes[:parent_id] = if @parent_room
+      @parent_room.id
+    elsif @project
+      @project.ensure_project_room!.id
+    end
+
+    if room_attributes[:project_id].blank? && @parent_room&.project_id.present?
+      room_attributes[:project_id] = @parent_room.project_id
     end
 
     room = Rooms::Open.create_for(room_attributes, users: Current.user)
@@ -53,6 +63,21 @@ class Rooms::OpensController < RoomsController
       return if @project
 
       redirect_to root_url, alert: "Project not found or inaccessible"
+    end
+
+    def set_parent_room_for_new_room
+      parent_room_id = params[:parent_room_id] || params.dig(:room, :parent_room_id)
+      return if parent_room_id.blank?
+
+      @parent_room = Current.user.rooms.find_by(id: parent_room_id)
+      unless @parent_room
+        redirect_to root_url, alert: "Parent room not found or inaccessible"
+        return
+      end
+
+      return if @project.blank? || @parent_room.project_id == @project.id
+
+      redirect_to root_url, alert: "Parent room does not belong to this project"
     end
 
     # Allows us to edit a closed room and turn it into an open one on saving.

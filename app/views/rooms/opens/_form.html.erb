@@ -1,5 +1,6 @@
 <%= render layout: "rooms/layouts/form", locals: { room: room } do %>
   <%= hidden_field_tag "room[project_id]", room.project_id if room.project_id.present? %>
+  <%= hidden_field_tag "room[parent_room_id]", room.parent_id if room.parent_id.present? %>
 
   <%= user_filter_menu_tag do %>
     <li class="flex align-center gap margin-none">

@@ -124,11 +124,27 @@
                   <% if knowledge_memberships.any? %>
                     <div class="sidebar-projects__knowledge-rooms flex flex-column gap">
                       <% each_membership_in_room_tree(knowledge_memberships) do |knowledge_membership, depth| %>
-                        <%= link_to_room knowledge_membership.room,
-                              class: [ "room btn txt-nowrap sidebar-projects__knowledge-room", "sidebar-projects__knowledge-room--child": depth.positive?, "unread": knowledge_membership.unread? ],
-                              style: "--room-depth: #{depth}" do %>
-                          <span aria-hidden="true"><%= depth.positive? ? "💬" : "#" %></span>
-                          <span class="overflow-ellipsis"><%= room_display_name(knowledge_membership.room) %></span>
+                        <% if depth.zero? %>
+                          <div class="sidebar-projects__knowledge-room-row">
+                            <%= link_to_room knowledge_membership.room,
+                                  class: [ "room btn txt-nowrap sidebar-projects__knowledge-room", "unread": knowledge_membership.unread? ] do %>
+                              <span aria-hidden="true">#</span>
+                              <span class="overflow-ellipsis"><%= room_display_name(knowledge_membership.room) %></span>
+                            <% end %>
+
+                            <%= link_to new_rooms_open_path(project_id: project.id, parent_room_id: knowledge_membership.room.id),
+                                  class: "btn sidebar-projects__settings-link sidebar-projects__knowledge-add-link",
+                                  aria: { label: "Create room in #{room_display_name(knowledge_membership.room)}" } do %>
+                              <span class="sidebar-projects__knowledge-plus" aria-hidden="true">➕</span>
+                            <% end %>
+                          </div>
+                        <% else %>
+                          <%= link_to_room knowledge_membership.room,
+                                class: [ "room btn txt-nowrap sidebar-projects__knowledge-room", "sidebar-projects__knowledge-room--child", "unread": knowledge_membership.unread? ],
+                                style: "--room-depth: #{depth}" do %>
+                            <span aria-hidden="true">💬</span>
+                            <span class="overflow-ellipsis"><%= room_display_name(knowledge_membership.room) %></span>
+                          <% end %>
                         <% end %>
                       <% end %>
                     </div>
