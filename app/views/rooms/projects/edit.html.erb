@@ -191,15 +191,17 @@
         </p>
 
         <div class="project-settings-inline-actions">
-          <%= button_to "Archive Project", rooms_project_path(@room.id), method: :patch,
-                params: { intent: "archive_project" },
-                class: "btn",
-                data: { turbo_confirm: "Archive this project and all its channels?" } %>
-
-          <%= button_to "Delete Project", rooms_project_path(@room.id), method: :patch,
-                params: { intent: "delete_project" },
-                class: "btn btn--negative",
-                data: { turbo_confirm: "Delete this project permanently? This cannot be undone." } %>
+          <% if @room.archived? %>
+            <%= button_to "Unarchive Project", rooms_project_path(@room.id), method: :patch,
+                  params: { intent: "unarchive_project" },
+                  class: "btn",
+                  data: { turbo_confirm: "Unarchive this project and all its channels?" } %>
+          <% else %>
+            <%= button_to "Archive Project", rooms_project_path(@room.id), method: :patch,
+                  params: { intent: "archive_project" },
+                  class: "btn",
+                  data: { turbo_confirm: "Archive this project and all its channels?" } %>
+          <% end %>
         </div>
       </section>
     <% end %>

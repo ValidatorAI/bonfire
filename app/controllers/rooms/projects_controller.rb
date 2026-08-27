@@ -13,6 +13,8 @@ class Rooms::ProjectsController < RoomsController
     case params[:intent]
     when "archive_project"
       archive_project
+    when "unarchive_project"
+      unarchive_project
     when "delete_project"
       delete_project
     when "archive_channel"
@@ -67,7 +69,15 @@ class Rooms::ProjectsController < RoomsController
       rooms.each(&:archive!)
       rooms.each { |room| broadcast_remove_to :rooms, target: [ room, :list ] }
 
-      redirect_to root_url, notice: "Project archived"
+      redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Project archived"
+    end
+
+    def unarchive_project
+      rooms = @project.rooms.archived.to_a
+      rooms.each(&:unarchive!)
+
+      broadcast_update_room
+      redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Project unarchived"
     end
 
     def delete_project
