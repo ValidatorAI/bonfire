@@ -52,4 +52,20 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "knowledge" do
+    project = projects(:basecamp)
+
+    get user_company_project_knowledge_url(id: project.id)
+
+    assert_response :success
+    assert_match project.display_name, @response.body
+    assert_match "Knowledge Base", @response.body
+  end
+
+  test "knowledge returns not found for non-member project" do
+    get user_company_project_knowledge_url(id: -1)
+
+    assert_response :not_found
+  end
 end

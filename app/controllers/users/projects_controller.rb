@@ -11,6 +11,9 @@ class Users::ProjectsController < ApplicationController
   def all_hands
   end
 
+  def knowledge
+  end
+
   private
     def set_company_context
       @account = Current.account

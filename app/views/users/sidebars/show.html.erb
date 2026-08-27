@@ -112,10 +112,13 @@
                 <% end %>
 
                 <div class="sidebar-projects__knowledge">
-                  <div class="room btn txt-nowrap sidebar-projects__action-btn sidebar-projects__knowledge-label" aria-hidden="true">
+                  <%= link_to user_company_project_knowledge_path(user_id: "me", id: project.id),
+                        class: "room btn txt-nowrap sidebar-projects__action-btn sidebar-projects__knowledge-label",
+                        aria: { label: "#{project.display_name} Knowledge" },
+                        data: { turbo: false, turbo_frame: "_top" } do %>
                     <span aria-hidden="true">🧠</span>
                     <span class="overflow-ellipsis">Knowledge</span>
-                  </div>
+                  <% end %>
 
                   <% knowledge_memberships = @project_memberships_by_project_id.fetch(project.id, []) %>
                   <% if knowledge_memberships.any? %>
