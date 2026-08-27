@@ -5,9 +5,10 @@ module Rooms
     before_action :ensure_can_administer, only: :update
 
     def show
-      @users = @room.users.ordered
+      @users = @room.users.without_bots.ordered
+      @bot_users = @room.users.active_bots.ordered
       @bots = @room.agents.ordered
-      @available_users = User.active.ordered.where.not(id: @users.select(:id))
+      @available_users = User.active.without_bots.ordered.where.not(id: @users.select(:id))
       @available_bots = available_bots_scope.where.not(id: @bots.select(:id))
 
       render layout: false
