@@ -176,6 +176,11 @@ body.sidebar .sidebar__tools {
   inline-size: 100%;
   inset: auto 0 0 0;
   position: sticky;
+  background-color: white !important;
+}
+
+body.sidebar .sidebar__container {
+  scrollbar-gutter: stable;
 }
 
 body.sidebar .sidebar__tool--settings {
