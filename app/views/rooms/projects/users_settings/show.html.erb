@@ -82,5 +82,13 @@
 
       </ul>
     </section>
+
+    <% if params[:refresh_project_settings] == "true" %>
+      <%= javascript_tag nonce: true do %>
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: "project-users:refresh-project" }, window.location.origin)
+        }
+      <% end %>
+    <% end %>
   </body>
 </html>
