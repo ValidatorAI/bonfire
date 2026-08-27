@@ -35,7 +35,7 @@ class Rooms::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "Project Details", @response.body
-    assert_match "Attached AI Teammates", @response.body
+    assert_match "Teammates", @response.body
     assert_match "Channel Management", @response.body
     assert_match "Danger Zone", @response.body
   end
@@ -80,6 +80,44 @@ class Rooms::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to edit_rooms_project_url(@project.id, by: "project")
     assert @channel.reload.archived?
+  end
+
+  test "unarchive channel restores selected project channel" do
+    @channel.archive!
+
+    patch rooms_project_url(@project_room.id), params: {
+      intent: "unarchive_channel",
+      channel_id: @channel.id
+    }
+
+    assert_redirected_to edit_rooms_project_url(@project.id, by: "project")
+    assert_not @channel.reload.archived?
+  end
+
+  test "channel management lists top-level channels including archived" do
+    nested_channel = Rooms::Open.create!(
+      name: "nested",
+      creator: users(:david),
+      project: @project,
+      parent: @channel
+    )
+    nested_channel.memberships.grant_to(users(:david))
+
+    archived_channel = Rooms::Open.create!(
+      name: "archived-top-level",
+      creator: users(:david),
+      project: @project,
+      parent: @project_room,
+      archived_at: Time.current
+    )
+    archived_channel.memberships.grant_to(users(:david))
+
+    get edit_rooms_project_url(@project.id, by: "project")
+
+    assert_response :success
+    assert_match "general", @response.body
+    assert_match "archived-top-level", @response.body
+    assert_no_match "nested", @response.body
   end
 
   test "archive project archives all active project rooms" do

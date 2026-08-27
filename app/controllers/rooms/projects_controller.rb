@@ -17,6 +17,8 @@ class Rooms::ProjectsController < RoomsController
       delete_project
     when "archive_channel"
       archive_channel
+    when "unarchive_channel"
+      unarchive_channel
     else
       update_project_details
     end
@@ -88,8 +90,19 @@ class Rooms::ProjectsController < RoomsController
       redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Channel archived"
     end
 
+    def unarchive_channel
+      channel = project_channels_scope.find_by(id: params[:channel_id])
+      unless channel
+        redirect_to edit_rooms_project_url(@project.id, by: "project"), alert: "Channel not found"
+        return
+      end
+
+      channel.unarchive!
+      redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Channel unarchived"
+    end
+
     def project_channels_scope
-      @project.rooms.active.where.not(id: @room.id).ordered
+      @project.rooms.where(parent_id: @room.id).ordered
     end
 
     def project_params

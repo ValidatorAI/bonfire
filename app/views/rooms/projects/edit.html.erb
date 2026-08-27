@@ -130,6 +130,7 @@
           <thead>
             <tr>
               <th>Channel</th>
+              <th>Status</th>
               <th>Privacy</th>
               <th>Actions</th>
             </tr>
@@ -140,6 +141,11 @@
                 <tr>
                   <td># <%= room_display_name(channel) %></td>
                   <td>
+                    <span class="project-settings-badge <%= channel.archived? ? "project-settings-badge--offline" : "project-settings-badge--active" %>">
+                      <%= channel.archived? ? "Archived" : "Active" %>
+                    </span>
+                  </td>
+                  <td>
                     <span class="project-settings-badge <%= channel.private? ? "project-settings-badge--private" : "project-settings-badge--public" %>">
                       <%= channel.private? ? "Private" : "Public" %>
                     </span>
@@ -148,10 +154,17 @@
                     <div class="project-settings-inline-actions">
                       <%= link_to "Edit", room_settings_path(channel), class: "btn", data: { turbo: false, turbo_frame: "_top" } %>
                       <% if Current.user.can_administer?(@room) %>
-                        <%= button_to "Archive", rooms_project_path(@room.id), method: :patch,
-                              params: { intent: "archive_channel", channel_id: channel.id },
-                              class: "btn btn--negative",
-                              data: { turbo_confirm: "Archive ##{room_display_name(channel)}?" } %>
+                        <% if channel.archived? %>
+                          <%= button_to "Unarchive", rooms_project_path(@room.id), method: :patch,
+                                params: { intent: "unarchive_channel", channel_id: channel.id },
+                                class: "btn",
+                                data: { turbo_confirm: "Unarchive ##{room_display_name(channel)}?" } %>
+                        <% else %>
+                          <%= button_to "Archive", rooms_project_path(@room.id), method: :patch,
+                                params: { intent: "archive_channel", channel_id: channel.id },
+                                class: "btn btn--negative",
+                                data: { turbo_confirm: "Archive ##{room_display_name(channel)}?" } %>
+                        <% end %>
                       <% end %>
                     </div>
                   </td>
@@ -159,7 +172,7 @@
               <% end %>
             <% else %>
               <tr>
-                <td colspan="3">No channels created under this project yet.</td>
+                <td colspan="4">No channels created under this project yet.</td>
               </tr>
             <% end %>
           </tbody>
