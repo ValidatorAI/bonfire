@@ -39,7 +39,7 @@ class Rooms::ClosedsController < RoomsController
     room = Rooms::Closed.create_for(room_attributes, users: grantees)
 
     broadcast_create_room(room)
-    redirect_to room_url(room)
+    redirect_to post_create_redirect_url(room)
   end
 
   def edit
@@ -139,5 +139,16 @@ class Rooms::ClosedsController < RoomsController
       html = render_to_string(partial: "users/sidebars/rooms/shared", locals: { room: room })
 
       room.users.each { |user| yield user, html }
+    end
+
+    def post_create_redirect_url(room)
+      return room_url(room) unless created_from_project_settings?
+      return room_url(room) unless @project
+
+      edit_rooms_project_url(@project.id, by: "project")
+    end
+
+    def created_from_project_settings?
+      ActiveModel::Type::Boolean.new.cast(params[:from_project_settings])
     end
 end

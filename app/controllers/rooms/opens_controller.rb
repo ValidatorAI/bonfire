@@ -39,7 +39,7 @@ class Rooms::OpensController < RoomsController
     room = Rooms::Open.create_for(room_attributes, users: Current.user)
 
     broadcast_create_room(room)
-    redirect_to room_url(room)
+    redirect_to post_create_redirect_url(room)
   end
 
   def edit
@@ -101,5 +101,16 @@ class Rooms::OpensController < RoomsController
 
     def broadcast_update_room
       broadcast_replace_to :rooms, target: [ @room, :list ], partial: "users/sidebars/rooms/shared", locals: { room: @room }
+    end
+
+    def post_create_redirect_url(room)
+      return room_url(room) unless created_from_project_settings?
+      return room_url(room) unless @project
+
+      edit_rooms_project_url(@project.id, by: "project")
+    end
+
+    def created_from_project_settings?
+      ActiveModel::Type::Boolean.new.cast(params[:from_project_settings])
     end
 end

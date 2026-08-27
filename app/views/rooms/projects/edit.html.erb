@@ -122,7 +122,7 @@
     <section class="project-settings-card" aria-label="Channel management">
       <header class="project-settings-card__header project-settings-card__header--inline">
         <h2 class="project-settings-card__title">💬 Channel Management</h2>
-        <%= link_to "+ Create Channel", new_rooms_open_path(project_id: @project.id, parent_room_id: @room.id), class: "btn btn--reversed", data: { turbo: false, turbo_frame: "_top" } %>
+        <%= link_to "+ Create Channel", new_rooms_open_path(project_id: @project.id, parent_room_id: @room.id, from_project_settings: true), class: "btn btn--reversed", data: { turbo: false, turbo_frame: "_top" } %>
       </header>
 
       <div class="project-settings-table-wrap">

@@ -45,6 +45,25 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to room_url(Room.last)
   end
 
+  test "create from project settings redirects back to project settings" do
+    project = Project.create!(
+      name: "Echo",
+      slug: "echo-#{SecureRandom.hex(4)}",
+      path: "/tmp/echo-#{SecureRandom.hex(8)}"
+    )
+    ProjectUser.create!(project: project, user: users(:david))
+
+    post rooms_opens_url, params: {
+      from_project_settings: "1",
+      room: {
+        name: "Project Settings Room",
+        project_id: project.id
+      }
+    }
+
+    assert_redirected_to edit_rooms_project_url(project.id, by: "project")
+  end
+
   test "create forbidden by non-admin when account restricts creation to admins" do
     accounts(:signal).settings.restrict_room_creation_to_administrators = true
     accounts(:signal).save!
