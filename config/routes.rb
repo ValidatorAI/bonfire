@@ -86,7 +86,9 @@ Rails.application.routes.draw do
     resources :opens
     resources :closeds
     resources :directs
-    resources :projects, only: %i[ edit update ]
+    resources :projects, only: %i[ edit update ] do
+      resource :users_settings, only: %i[ show update ], controller: "projects/users_settings"
+    end
   end
 
   get "pooling_messages", to: "messages#last_messages", as: :pooling_messages

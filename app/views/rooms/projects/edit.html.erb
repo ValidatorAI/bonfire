@@ -51,15 +51,15 @@
       <% end %>
     </section>
 
-    <section class="project-settings-card" aria-label="Teammates" data-controller="room-settings-modal">
+    <section class="project-settings-card" aria-label="Teammates" data-controller="project-users-modal">
       <header class="project-settings-card__header project-settings-card__header--inline">
         <h2 class="project-settings-card__title">🤖 Teammates</h2>
-        <% room_settings_url = room_settings_path(@room) %>
-        <%= link_to "Manage Bots", room_settings_url,
+        <% project_users_settings_url = rooms_project_users_settings_path(@project) %>
+        <%= link_to "Manage Users", project_users_settings_url,
               class: "btn",
               data: {
-                action: "click->room-settings-modal#open",
-                room_settings_modal_url_param: room_settings_url
+                action: "click->project-users-modal#open",
+                project_users_modal_url_param: project_users_settings_url
               } %>
       </header>
 
@@ -108,13 +108,13 @@
       </div>
 
       <dialog class="dialog sidebar-room-settings-modal border border-radius shadow"
-          aria-label="Room settings"
-          data-room-settings-modal-target="dialog"
-          data-action="click->room-settings-modal#closeOnBackdrop close->room-settings-modal#reset">
-        <button type="button" class="btn dialog__close" data-action="room-settings-modal#close" aria-label="Close room settings">✕</button>
+          aria-label="Project users settings"
+          data-project-users-modal-target="dialog"
+          data-action="click->project-users-modal#closeOnBackdrop close->project-users-modal#reset">
+        <button type="button" class="btn dialog__close" data-action="project-users-modal#close" aria-label="Close project users settings">✕</button>
         <iframe class="sidebar-room-settings-modal__frame"
-            data-room-settings-modal-target="frame"
-            title="Room settings"
+            data-project-users-modal-target="frame"
+            title="Project users settings"
             loading="lazy"></iframe>
       </dialog>
     </section>
