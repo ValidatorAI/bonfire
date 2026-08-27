@@ -6,7 +6,7 @@
   <h1 class="user-settings-nav__title txt-large"><%= @project.display_name %></h1>
 
   <%= link_to "Edit Project Details", edit_rooms_project_path(@project.id, by: "project"),
-        class: "btn btn--reversed",
+      class: "btn btn--reversed flex-item-justify-end",
         data: { turbo: false, turbo_frame: "_top" } %>
 <% end %>
 
