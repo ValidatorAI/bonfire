@@ -14,4 +14,151 @@
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<section class="project-settings__empty" aria-label="Project settings"></section>
+<div id="message-area" class="message-area">
+  <div class="project-settings-page" aria-label="Project settings">
+    <section class="project-settings-card" aria-label="Project details">
+      <header class="project-settings-card__header">
+        <h2 class="project-settings-card__title">📌 Project Details</h2>
+      </header>
+
+      <% if Current.user.can_administer?(@room) %>
+        <%= form_with model: @project, url: rooms_project_path(@room.id), method: :patch, class: "project-settings-form" do |form| %>
+          <label class="project-settings-form__group">
+            <span>Project Name</span>
+            <%= form.text_field :name, class: "input", required: true, autocomplete: "off" %>
+          </label>
+
+          <label class="project-settings-form__group">
+            <span>Description</span>
+            <%= form.text_area :description, class: "input", rows: 3 %>
+          </label>
+
+          <label class="project-settings-form__checkbox">
+            <%= form.check_box :private %>
+            <span>Private Project (Only visible to added members)</span>
+          </label>
+
+          <div class="project-settings-actions">
+            <%= form.button "Save Project Changes", class: "btn btn--reversed", type: :submit %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="project-settings-readonly">
+          <p><strong>Project Name:</strong> <%= @project.display_name %></p>
+          <p><strong>Description:</strong> <%= @project.description.presence || "No description yet." %></p>
+          <p><strong>Visibility:</strong> <%= @project.private? ? "Private" : "Public" %></p>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="project-settings-card" aria-label="Attached AI teammates">
+      <header class="project-settings-card__header project-settings-card__header--inline">
+        <h2 class="project-settings-card__title">🤖 Attached AI Teammates</h2>
+        <%= link_to "Manage Bots", account_bots_path, class: "btn" %>
+      </header>
+
+      <div class="project-settings-table-wrap">
+        <table class="project-settings-table">
+          <thead>
+            <tr>
+              <th>Bot Name</th>
+              <th>Permissions</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @agents.any? %>
+              <% @agents.each do |agent| %>
+                <tr>
+                  <td><%= agent.name %></td>
+                  <td>Read/Write in project channels</td>
+                  <td>
+                    <span class="project-settings-badge <%= agent.online? || agent.idle? ? "project-settings-badge--active" : "project-settings-badge--offline" %>">
+                      <%= agent.status.humanize %>
+                    </span>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="3">No AI teammates attached to this project.</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="project-settings-card" aria-label="Channel management">
+      <header class="project-settings-card__header project-settings-card__header--inline">
+        <h2 class="project-settings-card__title">💬 Channel Management</h2>
+        <%= link_to "+ Create Channel", new_rooms_open_path(project_id: @project.id, parent_room_id: @room.id), class: "btn btn--reversed", data: { turbo: false, turbo_frame: "_top" } %>
+      </header>
+
+      <div class="project-settings-table-wrap">
+        <table class="project-settings-table">
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Privacy</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @channels.any? %>
+              <% @channels.each do |channel| %>
+                <tr>
+                  <td># <%= room_display_name(channel) %></td>
+                  <td>
+                    <span class="project-settings-badge <%= channel.private? ? "project-settings-badge--private" : "project-settings-badge--public" %>">
+                      <%= channel.private? ? "Private" : "Public" %>
+                    </span>
+                  </td>
+                  <td>
+                    <div class="project-settings-inline-actions">
+                      <%= link_to "Edit", room_settings_path(channel), class: "btn", data: { turbo: false, turbo_frame: "_top" } %>
+                      <% if Current.user.can_administer?(@room) %>
+                        <%= button_to "Archive", rooms_project_path(@room.id), method: :patch,
+                              params: { intent: "archive_channel", channel_id: channel.id },
+                              class: "btn btn--negative",
+                              data: { turbo_confirm: "Archive ##{room_display_name(channel)}?" } %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="3">No channels created under this project yet.</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <% if Current.user.can_administer?(@room) %>
+      <section class="project-settings-card project-settings-card--danger" aria-label="Danger zone">
+        <header class="project-settings-card__header">
+          <h2 class="project-settings-card__title">⚠️ Danger Zone</h2>
+        </header>
+
+        <p class="project-settings-danger-copy">
+          Archiving a project hides all its channels from active views. Deleting a project permanently removes all project channels, messages, and AI teammates.
+        </p>
+
+        <div class="project-settings-inline-actions">
+          <%= button_to "Archive Project", rooms_project_path(@room.id), method: :patch,
+                params: { intent: "archive_project" },
+                class: "btn",
+                data: { turbo_confirm: "Archive this project and all its channels?" } %>
+
+          <%= button_to "Delete Project", rooms_project_path(@room.id), method: :patch,
+                params: { intent: "delete_project" },
+                class: "btn btn--negative",
+                data: { turbo_confirm: "Delete this project permanently? This cannot be undone." } %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+</div>

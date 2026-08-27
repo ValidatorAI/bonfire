@@ -1,0 +1,102 @@
+require "test_helper"
+
+class Rooms::ProjectsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    sign_in :david
+
+    @project = Project.create!(
+      name: "Alpha",
+      slug: "alpha-#{SecureRandom.hex(4)}",
+      path: "/tmp/alpha-#{SecureRandom.hex(8)}"
+    )
+    ProjectUser.create!(project: @project, user: users(:david))
+
+    @project_room = @project.ensure_project_room!
+    @project_room.memberships.grant_to(users(:david))
+
+    @channel = Rooms::Open.create!(
+      name: "general",
+      creator: users(:david),
+      project: @project,
+      parent: @project_room
+    )
+    @channel.memberships.grant_to(users(:david))
+
+    Agent.create!(
+      project: @project,
+      name: "Scout",
+      program: "RSpec",
+      model: "gpt-test"
+    )
+  end
+
+  test "edit renders project settings sections" do
+    get edit_rooms_project_url(@project.id, by: "project")
+
+    assert_response :success
+    assert_match "Project Details", @response.body
+    assert_match "Attached AI Teammates", @response.body
+    assert_match "Channel Management", @response.body
+    assert_match "Danger Zone", @response.body
+  end
+
+  test "update project details syncs project room" do
+    patch rooms_project_url(@project_room.id), params: {
+      project: {
+        name: "Renamed Alpha",
+        description: "New description",
+        private: "1"
+      }
+    }
+
+    assert_redirected_to edit_rooms_project_url(@project.id, by: "project")
+    assert_equal "Renamed Alpha", @project.reload.name
+    assert_equal "New description", @project.description
+    assert_equal true, @project.private?
+
+    assert_equal "Renamed Alpha", @project_room.reload.name
+    assert_equal "New description", @project_room.description
+    assert_equal true, @project_room.private?
+  end
+
+  test "archive channel archives selected project channel" do
+    patch rooms_project_url(@project_room.id), params: {
+      intent: "archive_channel",
+      channel_id: @channel.id
+    }
+
+    assert_redirected_to edit_rooms_project_url(@project.id, by: "project")
+    assert @channel.reload.archived?
+  end
+
+  test "archive project archives all active project rooms" do
+    patch rooms_project_url(@project_room.id), params: { intent: "archive_project" }
+
+    assert_redirected_to root_url
+    assert @project_room.reload.archived?
+    assert @channel.reload.archived?
+  end
+
+  test "delete project removes project and rooms" do
+    assert_difference -> { Project.count }, -1 do
+      patch rooms_project_url(@project_room.id), params: { intent: "delete_project" }
+    end
+
+    assert_redirected_to root_url
+    assert_not Room.exists?(@project_room.id)
+    assert_not Room.exists?(@channel.id)
+  end
+
+  test "non-admin cannot update" do
+    sign_in :jz
+    @project_room.memberships.grant_to(users(:jz))
+    ProjectUser.create!(project: @project, user: users(:jz))
+
+    patch rooms_project_url(@project_room.id), params: {
+      project: { name: "Blocked rename" }
+    }
+
+    assert_response :forbidden
+    assert_not_equal "Blocked rename", @project.reload.name
+  end
+end
