@@ -417,8 +417,18 @@
   opacity: 0.9;
 }
 
+.sidebar-projects__knowledge-settings-link {
+  opacity: 0.9;
+}
+
 .sidebar-projects__knowledge-plus {
   color: color-mix(in oklab, var(--color-text), transparent 40%);
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
+.sidebar-projects__knowledge-gear {
+  color: color-mix(in oklab, var(--color-text), transparent 40%) !important;
   font-size: 0.92rem;
   line-height: 1;
 }
