@@ -5,8 +5,9 @@
 }
 
 .sidebar__container {
-  block-size: 100dvh;
-  max-block-size: 100dvh;
+  block-size: 100%;
+  max-block-size: 100%;
+  min-block-size: 0;
   padding-block-end: var(--sidebar-tools-height);
 }
 
@@ -276,6 +277,7 @@
   align-items: center;
   column-gap: 0.35em;
   display: flex;
+  min-inline-size: 0;
 }
 
 .sidebar-projects__button {
@@ -290,6 +292,7 @@
   inline-size: auto;
   justify-content: space-between;
   max-inline-size: none;
+  min-inline-size: 0;
 }
 
 .sidebar-projects__main {

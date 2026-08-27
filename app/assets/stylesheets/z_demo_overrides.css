@@ -14,7 +14,7 @@ html {
 
 body.sidebar {
   --navbar-height: 7.25rem;
-  --sidebar-width: clamp(290px, 23vw, 360px);
+  --sidebar-width: clamp(320px, 26vw, 420px);
 
   align-content: center;
   background: var(--bg-purple);
@@ -47,6 +47,8 @@ body.sidebar #sidebar {
   border-inline-start: 1px solid var(--border-color);
   border-end-end-radius: var(--demo-shell-radius);
   border-start-end-radius: var(--demo-shell-radius);
+  display: flex;
+  flex-direction: column;
   inline-size: var(--sidebar-width);
   max-block-size: 100%;
   max-inline-size: var(--sidebar-width);
@@ -363,6 +365,11 @@ body.sidebar .sidebar__tools {
 }
 
 body.sidebar .sidebar__container {
+  block-size: auto;
+  flex: 1 1 auto;
+  max-block-size: none;
+  min-block-size: 0;
+  overflow-x: hidden;
   scrollbar-gutter: stable;
 }
 
