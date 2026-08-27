@@ -178,6 +178,10 @@ body.sidebar .project-settings-card {
   padding: 22px;
 }
 
+.project-settings-page .project-settings-card:first-child {
+  margin-top:120px;
+}
+
 body.sidebar .project-settings-card--danger {
   background: #fef2f2;
   border-color: #fecaca;
@@ -223,6 +227,12 @@ body.sidebar .project-settings-form__checkbox {
   display: inline-flex;
   font-size: 14px;
   gap: 8px;
+}
+
+body.sidebar .project-settings-form__checkbox-input {
+  appearance: auto;
+  block-size: 1rem;
+  inline-size: 1rem;
 }
 
 body.sidebar .project-settings-actions {
