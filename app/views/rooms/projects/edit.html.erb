@@ -51,42 +51,72 @@
       <% end %>
     </section>
 
-    <section class="project-settings-card" aria-label="Attached AI teammates">
+    <section class="project-settings-card" aria-label="Teammates" data-controller="room-settings-modal">
       <header class="project-settings-card__header project-settings-card__header--inline">
-        <h2 class="project-settings-card__title">🤖 Attached AI Teammates</h2>
-        <%= link_to "Manage Bots", account_bots_path, class: "btn" %>
+        <h2 class="project-settings-card__title">🤖 Teammates</h2>
+        <% room_settings_url = room_settings_path(@room) %>
+        <%= link_to "Manage Bots", room_settings_url,
+              class: "btn",
+              data: {
+                action: "click->room-settings-modal#open",
+                room_settings_modal_url_param: room_settings_url
+              } %>
       </header>
 
       <div class="project-settings-table-wrap">
         <table class="project-settings-table">
           <thead>
             <tr>
-              <th>Bot Name</th>
+              <th>Teammate</th>
+              <th>Type</th>
               <th>Permissions</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            <% if @attached_bots.any? %>
-              <% @attached_bots.each do |bot| %>
+            <% if @teammates.any? %>
+              <% @teammates.each do |teammate| %>
                 <tr>
-                  <td><%= bot.name %></td>
+                  <td>
+                    <div class="project-settings-member">
+                      <span class="avatar flex-item-no-shrink" style="--avatar-size: 2.25rem;">
+                        <%= image_tag fresh_user_avatar_path(teammate), aria: { hidden: "true" }, size: 36, loading: :lazy %>
+                      </span>
+                      <span><%= teammate.name %></span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="project-settings-badge <%= teammate.bot? ? "project-settings-badge--ai" : "project-settings-badge--human" %>">
+                      <%= teammate.bot? ? "AI" : "Human" %>
+                    </span>
+                  </td>
                   <td>Read/Write in project channels</td>
                   <td>
-                    <span class="project-settings-badge <%= bot.active? ? "project-settings-badge--active" : "project-settings-badge--offline" %>">
-                      <%= bot.status.humanize %>
+                    <span class="project-settings-badge <%= teammate.active? ? "project-settings-badge--active" : "project-settings-badge--offline" %>">
+                      <%= teammate.status.humanize %>
                     </span>
                   </td>
                 </tr>
               <% end %>
             <% else %>
               <tr>
-                <td colspan="3">No AI teammates attached to this project.</td>
+                <td colspan="4">No teammates attached to this project.</td>
               </tr>
             <% end %>
           </tbody>
         </table>
       </div>
+
+      <dialog class="dialog sidebar-room-settings-modal border border-radius shadow"
+          aria-label="Room settings"
+          data-room-settings-modal-target="dialog"
+          data-action="click->room-settings-modal#closeOnBackdrop close->room-settings-modal#reset">
+        <button type="button" class="btn dialog__close" data-action="room-settings-modal#close" aria-label="Close room settings">✕</button>
+        <iframe class="sidebar-room-settings-modal__frame"
+            data-room-settings-modal-target="frame"
+            title="Room settings"
+            loading="lazy"></iframe>
+      </dialog>
     </section>
 
     <section class="project-settings-card" aria-label="Channel management">
