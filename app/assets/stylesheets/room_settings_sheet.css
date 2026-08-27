@@ -135,6 +135,12 @@
   font-size: 0.95rem;
 }
 
+.room-settings-sheet__remove-form {
+  display: flex;
+  justify-content: flex-end;
+  margin-inline-start: auto;
+}
+
 .room-settings-sheet__remove-btn {
   --btn-background: transparent;
   --btn-border-color: transparent;

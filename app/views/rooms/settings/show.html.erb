@@ -55,7 +55,7 @@
             </div>
 
             <% if Current.user.can_administer?(@room) && user != Current.user %>
-              <%= form_with url: room_settings_path(@room), method: :patch do %>
+              <%= form_with url: room_settings_path(@room), method: :patch, class: "room-settings-sheet__remove-form" do %>
                 <%= hidden_field_tag :intent, "remove_user" %>
                 <%= hidden_field_tag :participant_id, user.id %>
                 <button type="submit" class="btn room-settings-sheet__remove-btn">Remove</button>
@@ -73,7 +73,7 @@
             </div>
 
             <% if Current.user.can_administer?(@room) %>
-              <%= form_with url: room_settings_path(@room), method: :patch do %>
+              <%= form_with url: room_settings_path(@room), method: :patch, class: "room-settings-sheet__remove-form" do %>
                 <%= hidden_field_tag :intent, "remove_user" %>
                 <%= hidden_field_tag :participant_id, bot_user.id %>
                 <button type="submit" class="btn room-settings-sheet__remove-btn">Remove</button>
