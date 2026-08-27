@@ -78,4 +78,24 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     put rooms_open_url(rooms(:designers)), params: { room: { name: "Doesn't matter" } }
     assert_equal rooms(:designers).memberships.count, User.count
   end
+
+  test "update a project closed room to open only grants project users" do
+    project = Project.create!(
+      name: "Delta",
+      slug: "delta-#{SecureRandom.hex(4)}",
+      path: "/tmp/delta-#{SecureRandom.hex(8)}"
+    )
+    ProjectUser.create!(project: project, user: users(:david))
+    ProjectUser.create!(project: project, user: users(:kevin))
+
+    room = Rooms::Closed.create!(name: "Private Project Room", creator: users(:david), project: project)
+    room.memberships.grant_to(users(:david))
+
+    put rooms_open_url(room), params: { room: { name: room.name } }
+
+    room.reload
+    assert_includes room.users, users(:david)
+    assert_includes room.users, users(:kevin)
+    assert_not_includes room.users, users(:jason)
+  end
 end

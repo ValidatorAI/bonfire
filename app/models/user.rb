@@ -72,11 +72,14 @@ class User < ApplicationRecord
     end
 
     def grant_membership_to_open_rooms
+      room_ids = Rooms::Open.where(project_id: nil).pluck(:id) +
+                 Rooms::Open.where(project_id: projects.select(:id)).pluck(:id)
+
       Membership.insert_all(
-        Rooms::Open.pluck(:id).collect do |room_id|
+        room_ids.uniq.collect do |room_id|
           { room_id: room_id, participant_type: "User", participant_id: id }
         end
-      )
+      ) if room_ids.any?
     end
 
     def deactived_email_address
