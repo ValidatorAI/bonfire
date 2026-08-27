@@ -24,7 +24,7 @@
 }
 
 .room-settings-sheet__title {
-  font-size: 2rem;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
@@ -61,12 +61,17 @@
 .room-settings-sheet__add-btn {
   --btn-background: color-mix(in oklab, var(--color-text), transparent 96%);
   --btn-border-color: color-mix(in oklab, var(--color-text), transparent 85%);
-  --btn-border-radius: 10px;
+  --btn-border-radius: 6px;
   --btn-border-size: 1px;
 
   inline-size: 100%;
   justify-content: center;
   list-style: none;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  padding: 8px 12px;
 }
 
 .room-settings-sheet__add-btn::-webkit-details-marker {
@@ -88,7 +93,7 @@
   display: flex;
   gap: 0.75rem;
   min-block-size: 3.2rem;
-  padding: 0.5rem 0;
+  /* padding: 0.5rem 0; */
 }
 
 .room-settings-sheet__member:last-child {

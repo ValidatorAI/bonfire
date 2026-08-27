@@ -127,6 +127,12 @@ legend {
 .dialog__close {
   position: absolute;
   inset: calc(var(--block-space) * 1.5) var(--inline-space) auto auto;
+  border: none !important;
+  padding: 2px !important;
+}
+
+.dialog__close:hover {
+  border: none !important;
 }
 
 /* Misc */
