@@ -15,6 +15,27 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "new for project only lists project users and labels human vs ai" do
+    project = Project.create!(
+      name: "Alpha",
+      slug: "alpha-#{SecureRandom.hex(4)}",
+      path: "/tmp/alpha-#{SecureRandom.hex(8)}"
+    )
+    ProjectUser.create!(project: project, user: users(:david))
+    ProjectUser.create!(project: project, user: users(:bender))
+    ProjectUser.create!(project: project, user: users(:kevin))
+
+    get new_rooms_open_url(project_id: project.id)
+
+    assert_response :success
+    assert_select "li[data-value='david']", count: 1
+    assert_select "li[data-value='kevin']", count: 1
+    assert_select "li[data-value='bender bot']", count: 1
+    assert_select "li[data-value='jason']", count: 0
+    assert_select "li[data-value='david'] span", text: "(Human)", count: 1
+    assert_select "li[data-value='bender bot'] span", text: "(AI)", count: 1
+  end
+
   test "create" do
     assert_turbo_stream_broadcasts :rooms, count: 1 do
       post rooms_opens_url, params: { room: { name: "My New Room" } }

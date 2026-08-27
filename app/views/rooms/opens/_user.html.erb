@@ -4,7 +4,10 @@
   </figure>
 
   <div class="min-width">
-    <div class="overflow-ellipsis fill-shade"><strong><%= user.name %></strong></div>
+    <div class="overflow-ellipsis fill-shade">
+      <strong><%= user.name %></strong>
+      <span class="txt-small txt-secondary">(<%= user.bot? ? "AI" : "Human" %>)</span>
+    </div>
   </div>
 
   <hr class="separator" aria-hidden="true">

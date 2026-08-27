@@ -15,8 +15,8 @@ class Rooms::OpensController < RoomsController
 
   def new
     @room = Rooms::Open.new(name: DEFAULT_ROOM_NAME, project: @project, parent_id: @parent_room&.id)
-    @users = User.active.ordered
-    @agents = Agent.active
+    @users = users_scope_for_room_picker(@project)
+    @agents = agents_scope_for_room_picker(@project)
   end
 
   def create
@@ -43,8 +43,8 @@ class Rooms::OpensController < RoomsController
   end
 
   def edit
-    @users = User.active.ordered
-    @agents = Agent.active
+    @users = users_scope_for_room_picker(@room.project)
+    @agents = agents_scope_for_room_picker(@room.project)
   end
 
   def update
@@ -83,6 +83,16 @@ class Rooms::OpensController < RoomsController
     # Allows us to edit a closed room and turn it into an open one on saving.
     def force_room_type
       @room = @room.becomes!(Rooms::Open)
+    end
+
+    def users_scope_for_room_picker(project)
+      scope = project ? project.users : User.all
+      scope.active.ordered
+    end
+
+    def agents_scope_for_room_picker(project)
+      scope = project ? project.agents : Agent.all
+      scope.active.ordered
     end
 
     def broadcast_create_room(room)
