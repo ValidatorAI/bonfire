@@ -35,11 +35,11 @@
               <%= hidden_field_tag :intent, "add_agent" %>
               <label class="for-screen-reader" for="participant_agent">Pick AI teammate</label>
               <%= select_tag :participant_id,
-                    options_for_select(@available_bots.map { |bot| ["#{bot.name} AI", bot.id] }),
+                  options_for_select(@available_ai_teammate_options),
                     id: "participant_agent",
                     class: "input full-width",
-                    disabled: @available_bots.empty? %>
-              <button type="submit" class="btn btn--reversed" <%= "disabled" if @available_bots.empty? %>>Add</button>
+                  disabled: @available_ai_teammate_options.empty? %>
+                <button type="submit" class="btn btn--reversed" <%= "disabled" if @available_ai_teammate_options.empty? %>>Add</button>
             <% end %>
           </details>
         </section>
