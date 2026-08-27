@@ -35,11 +35,11 @@
               <%= hidden_field_tag :intent, "add_agent" %>
               <label class="for-screen-reader" for="participant_agent">Pick AI teammate</label>
               <%= select_tag :participant_id,
-                    options_from_collection_for_select(@available_agents, :id, :name),
+                    options_for_select(@available_bots.map { |bot| ["#{bot.name} AI", bot.id] }),
                     id: "participant_agent",
                     class: "input full-width",
-                    disabled: @available_agents.empty? %>
-              <button type="submit" class="btn btn--reversed" <%= "disabled" if @available_agents.empty? %>>Add</button>
+                    disabled: @available_bots.empty? %>
+              <button type="submit" class="btn btn--reversed" <%= "disabled" if @available_bots.empty? %>>Add</button>
             <% end %>
           </details>
         </section>
@@ -51,7 +51,7 @@
             <span class="room-settings-sheet__avatar room-settings-sheet__avatar--user"><%= user.name.first.upcase %></span>
             <div class="room-settings-sheet__member-name-wrap">
               <strong class="room-settings-sheet__member-name"><%= user.name %></strong>
-              <span class="room-settings-sheet__member-type">(User)</span>
+              <span class="room-settings-sheet__member-type">(Human)</span>
             </div>
 
             <% if Current.user.can_administer?(@room) && user != Current.user %>
@@ -64,23 +64,6 @@
           </li>
         <% end %>
 
-        <% @agents.each do |agent| %>
-          <li class="room-settings-sheet__member">
-            <span class="room-settings-sheet__avatar room-settings-sheet__avatar--agent"><%= agent.name.first.upcase %></span>
-            <div class="room-settings-sheet__member-name-wrap">
-              <strong class="room-settings-sheet__member-name"><%= agent.name %></strong>
-              <span class="room-settings-sheet__member-type">(AI)</span>
-            </div>
-
-            <% if Current.user.can_administer?(@room) %>
-              <%= form_with url: room_settings_path(@room), method: :patch do %>
-                <%= hidden_field_tag :intent, "remove_agent" %>
-                <%= hidden_field_tag :participant_id, agent.id %>
-                <button type="submit" class="btn room-settings-sheet__remove-btn">Remove</button>
-              <% end %>
-            <% end %>
-          </li>
-        <% end %>
       </ul>
 
       <% if Current.user.can_administer?(@room) %>

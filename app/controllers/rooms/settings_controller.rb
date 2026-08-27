@@ -6,9 +6,9 @@ module Rooms
 
     def show
       @users = @room.users.ordered
-      @agents = @room.agents.ordered
+      @bots = @room.agents.ordered
       @available_users = User.active.ordered.where.not(id: @users.select(:id))
-      @available_agents = available_agents_scope.where.not(id: @agents.select(:id))
+      @available_bots = available_bots_scope.where.not(id: @bots.select(:id))
 
       render layout: false
     end
@@ -53,7 +53,7 @@ module Rooms
       end
 
       def add_agent
-        agent = available_agents_scope.find_by(id: params[:participant_id])
+        agent = available_bots_scope.find_by(id: params[:participant_id])
         return if agent.blank?
 
         @room.memberships.grant_to(agent)
@@ -73,6 +73,8 @@ module Rooms
       def available_agents_scope
         @room.project ? @room.project.agents.ordered : Agent.none
       end
+
+      alias_method :available_bots_scope, :available_agents_scope
 
       def broadcast_room_added_for(user)
         html = render_to_string(partial: "users/sidebars/rooms/shared", locals: { room: @room })
