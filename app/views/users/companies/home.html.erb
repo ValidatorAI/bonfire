@@ -1,86 +1,11 @@
-<% @page_title = "Company Home" %>
+<% @page_title = "Home" %>
 <% @body_class = "sidebar" %>
 
 <% content_for :nav do %>
-  <span class="btn btn--reversed btn--faux user-settings-nav__pill">Workspace</span>
-  <h1 class="user-settings-nav__title txt-large">Company Home</h1>
+  <%= account_logo_tag %>
+  <h1 class="user-settings-nav__title txt-large">Home</h1>
 <% end %>
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<div id="message-area" class="message-area">
-  <div class="company-page company-page--home">
-    <section class="company-page-card" aria-label="Company snapshot">
-      <header class="company-page-card__header">
-        <h2 class="company-page-card__title">Company Snapshot</h2>
-        <p class="company-page-card__desc">A quick pulse of workspace activity and team focus.</p>
-      </header>
-
-      <div class="company-page-stat-grid" role="list">
-        <article class="company-page-stat" role="listitem">
-          <span class="company-page-stat__label">Projects</span>
-          <strong class="company-page-stat__value"><%= @projects.size %></strong>
-        </article>
-
-        <article class="company-page-stat" role="listitem">
-          <span class="company-page-stat__label">Shared Rooms</span>
-          <strong class="company-page-stat__value"><%= @rooms_count %></strong>
-        </article>
-
-        <article class="company-page-stat" role="listitem">
-          <span class="company-page-stat__label">Messages (7d)</span>
-          <strong class="company-page-stat__value"><%= @messages_this_week %></strong>
-        </article>
-
-        <article class="company-page-stat" role="listitem">
-          <span class="company-page-stat__label">Active Members</span>
-          <strong class="company-page-stat__value"><%= @users.size %></strong>
-        </article>
-      </div>
-    </section>
-
-    <div class="company-page-grid">
-      <section class="company-page-card" aria-label="Current focus">
-        <header class="company-page-card__header">
-          <h2 class="company-page-card__title">Current Focus</h2>
-          <p class="company-page-card__desc">Top project lanes this week.</p>
-        </header>
-
-        <% if @projects.any? %>
-          <ul class="company-page-list">
-            <% @projects.each do |project| %>
-              <li class="company-page-list__item">
-                <strong><%= project.display_name %></strong>
-                <span>Team is tracking delivery, blockers, and decisions in this lane.</span>
-              </li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="company-page-empty">No projects available yet. Create a project to populate this dashboard.</p>
-        <% end %>
-      </section>
-
-      <section class="company-page-card" aria-label="Suggested next actions">
-        <header class="company-page-card__header">
-          <h2 class="company-page-card__title">Suggested Next Actions</h2>
-          <p class="company-page-card__desc">Based on current workspace activity.</p>
-        </header>
-
-        <ul class="company-page-list">
-          <li class="company-page-list__item">
-            <strong>Run Company Status review</strong>
-            <span>Capture progress, risks, and major decisions in one place.</span>
-          </li>
-          <li class="company-page-list__item">
-            <strong>Pin one weekly priority per project</strong>
-            <span>Keep outcomes explicit and easy to evaluate.</span>
-          </li>
-          <li class="company-page-list__item">
-            <strong>Promote key learnings to knowledge rooms</strong>
-            <span>Turn one-off insights into reusable company context.</span>
-          </li>
-        </ul>
-      </section>
-    </div>
-  </div>
-</div>
+<div id="message-area" class="message-area"></div>
