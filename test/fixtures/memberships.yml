@@ -1,91 +1,91 @@
 david_designers:
   room: designers
-  user: david
+  participant: david (User)
 
 jason_designers:
   room: designers
-  user: jason
+  participant: jason (User)
   involvement: everything
 
 jz_designers:
   room: designers
-  user: jz
+  participant: jz (User)
   involvement: everything
 
 kevin_designers:
   room: designers
-  user: kevin
+  participant: kevin (User)
 
 david_pets:
   room: pets
-  user: david
+  participant: david (User)
   involvement: everything
 
 jason_pets:
   room: pets
-  user: jason
+  participant: jason (User)
   involvement: everything
 
 david_watercooler:
   room: watercooler
-  user: david
+  participant: david (User)
   involvement: everything
 
 jason_watercooler:
   room: watercooler
-  user: jason
+  participant: jason (User)
   involvement: everything
 
 bender_watercooler:
   room: watercooler
-  user: bender
+  participant: bender (User)
 
 david_hq:
   room: hq
-  user: david
+  participant: david (User)
   involvement: everything
 
 jason_hq:
   room: hq
-  user: jason
+  participant: jason (User)
   involvement: everything
 
 jz_hq:
   room: hq
-  user: jz
+  participant: jz (User)
   involvement: everything
 
 kevin_hq:
   room: hq
-  user: kevin
+  participant: kevin (User)
   involvement: everything
 
 david_david_and_jason:
   room: david_and_jason
-  user: david
+  participant: david (User)
   involvement: everything
 
 jason_david_and_jason:
   room: david_and_jason
-  user: jason
+  participant: jason (User)
   involvement: everything
 
 david_david_and_kevin:
   room: david_and_kevin
-  user: david
+  participant: david (User)
   involvement: everything
 
 kevin_david_and_kevin:
   room: david_and_kevin
-  user: kevin
+  participant: kevin (User)
   involvement: everything
 
 bender_bender_and_kevin:
   room: bender_and_kevin
-  user: bender
+  participant: bender (User)
   involvement: everything
 
 kevin_bender_and_kevin:
   room: bender_and_kevin
-  user: kevin
+  participant: kevin (User)
   involvement: everything

@@ -2,29 +2,34 @@
 
 david:
   name: David
+  display_name: David
   email_address: david@37signals.com
   password_digest: <%= password_digest %>
   role: administrator
 
 jason:
   name: Jason
+  display_name: Jason
   email_address: jason@37signals.com
   password_digest: <%= password_digest %>
   role: administrator
 
 jz:
   name: JZ
+  display_name: JZ
   email_address: jz@37signals.com
   password_digest: <%= password_digest %>
   bio: Designer
 
 kevin:
   name: Kevin
+  display_name: Kevin
   email_address: kevin@37signals.com
   password_digest: <%= password_digest %>
   bio: Programmer
 
 bender:
   name: Bender Bot
+  display_name: Bender Bot
   bot_token: <%= User.generate_bot_token %>
   role: bot

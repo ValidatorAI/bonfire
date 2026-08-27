@@ -93,7 +93,7 @@ class Rooms::OpensControllerTest < ActionDispatch::IntegrationTest
 
     put rooms_open_url(room), params: { room: { name: room.name } }
 
-    room.reload
+    room = Room.find(room.id)
     assert_includes room.users, users(:david)
     assert_includes room.users, users(:kevin)
     assert_not_includes room.users, users(:jason)
