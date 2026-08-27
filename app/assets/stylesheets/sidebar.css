@@ -445,7 +445,7 @@
 }
 
 .sidebar-room-settings-modal {
-  --width: min(56rem, calc(100dvw - var(--inline-space) * 2));
+  --width: 440px;
 
   border: 0;
   inset: 0;

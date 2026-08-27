@@ -145,3 +145,9 @@
   font-weight: 600;
   gap: 0.5rem;
 }
+
+.room-settings-sheet__privacy-checkbox {
+  appearance: auto;
+  block-size: 1rem;
+  inline-size: 1rem;
+}

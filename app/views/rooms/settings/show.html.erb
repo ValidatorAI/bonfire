@@ -88,7 +88,7 @@
         <%= form_with model: @room, url: room_settings_path(@room), method: :patch, data: { controller: "form" }, class: "room-settings-sheet__privacy" do |form| %>
           <%= hidden_field_tag :intent, "toggle_private" %>
           <label class="room-settings-sheet__privacy-label">
-            <%= form.check_box :private, data: { action: "change->form#submit" } %>
+            <%= form.check_box :private, class: "room-settings-sheet__privacy-checkbox", data: { action: "change->form#submit" } %>
             <span>Make channel private</span>
           </label>
         <% end %>
