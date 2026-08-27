@@ -444,6 +444,27 @@
   pointer-events: none;
 }
 
+.sidebar-room-settings-modal {
+  --width: min(56rem, calc(100dvw - var(--inline-space) * 2));
+
+  border: 0;
+  inset: 0;
+  margin: auto;
+  overflow: hidden;
+  padding: 0;
+  position: fixed;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.sidebar-room-settings-modal__frame {
+  block-size: min(34rem, calc(100dvh - var(--block-space) * 4));
+  border: 0;
+  inline-size: 100%;
+}
+
 .rooms__new-btn {
   --btn-background: transparent;
   --btn-border-color: color-mix(in oklab, var(--color-text), transparent 70%);

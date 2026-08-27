@@ -74,7 +74,7 @@ Rails.application.routes.draw do
 
     scope module: "rooms" do
       resource :refresh, only: :show
-      resource :settings, only: :show
+      resource :settings, only: %i[ show update ]
       resource :involvement, only: %i[ show update ]
       resource :clear, only: :create
     end

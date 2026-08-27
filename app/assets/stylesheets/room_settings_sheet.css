@@ -1,0 +1,147 @@
+.room-settings-sheet {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.room-settings-sheet__panel {
+  background: var(--color-bg);
+  border-radius: 14px;
+  color: var(--color-text);
+  inline-size: 100%;
+  padding: 1.5rem;
+}
+
+.room-settings-sheet__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-block-end: 1rem;
+}
+
+.room-settings-sheet__title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.room-settings-sheet__actions {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: 1fr 1fr;
+  margin-block-end: 1rem;
+}
+
+.room-settings-sheet__picker {
+  position: relative;
+}
+
+.room-settings-sheet__picker[open] {
+  z-index: 5;
+}
+
+.room-settings-sheet__picker-form {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.6rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  display: grid;
+  gap: 0.5rem;
+  margin-block-start: 0.4rem;
+  padding: 0.6rem;
+  position: absolute;
+  width: 100%;
+}
+
+.room-settings-sheet__add-btn {
+  --btn-background: color-mix(in oklab, var(--color-text), transparent 96%);
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 85%);
+  --btn-border-radius: 10px;
+  --btn-border-size: 1px;
+
+  inline-size: 100%;
+  justify-content: center;
+  list-style: none;
+}
+
+.room-settings-sheet__add-btn::-webkit-details-marker {
+  display: none;
+}
+
+.room-settings-sheet__members {
+  border-block: 1px solid var(--color-border);
+  display: grid;
+  list-style: none;
+  padding: 0;
+}
+
+.room-settings-sheet__member {
+  align-items: center;
+  border-block-end: 1px solid var(--color-border);
+  display: flex;
+  gap: 0.75rem;
+  min-block-size: 3.2rem;
+  padding: 0.5rem 0;
+}
+
+.room-settings-sheet__member:last-child {
+  border-block-end: 0;
+}
+
+.room-settings-sheet__avatar {
+  align-items: center;
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 700;
+  block-size: 1.75rem;
+  inline-size: 1.75rem;
+  justify-content: center;
+}
+
+.room-settings-sheet__avatar--user {
+  background: #3777e6;
+}
+
+.room-settings-sheet__avatar--agent {
+  background: #111111;
+}
+
+.room-settings-sheet__member-name-wrap {
+  align-items: baseline;
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.room-settings-sheet__member-name {
+  font-size: 1rem;
+}
+
+.room-settings-sheet__member-type {
+  color: color-mix(in oklab, var(--color-text), transparent 45%);
+  font-size: 0.95rem;
+}
+
+.room-settings-sheet__remove-btn {
+  --btn-background: transparent;
+  --btn-border-color: transparent;
+  --btn-padding: 0;
+
+  color: #ff2b37 !important;
+  font-weight: 600;
+  margin-inline-start: auto;
+}
+
+.room-settings-sheet__privacy {
+  margin-block-start: 1rem;
+}
+
+.room-settings-sheet__privacy-label {
+  align-items: center;
+  display: inline-flex;
+  font-size: 1.15rem;
+  font-weight: 600;
+  gap: 0.5rem;
+}

@@ -2,8 +2,8 @@
   <%= turbo_stream_from :rooms %>
   <%= turbo_stream_from Current.user, :rooms %>
 
-  <div class="sidebar__container overflow-y overflow-hide-scrollbar"
-      data-controller="badge-dot"
+    <div class="sidebar__container overflow-y overflow-hide-scrollbar"
+      data-controller="badge-dot room-settings-modal"
       data-badge-dot-unread-class="unread"
       data-action="rooms-list:unread@window->badge-dot#update rooms-list:read@window->badge-dot#update turbo:submit-start->turbo-frame#unpermanize">
     <section class="sidebar-company" aria-label="Company">
@@ -132,16 +132,21 @@
                               <span class="overflow-ellipsis"><%= room_display_name(knowledge_membership.room) %></span>
                             <% end %>
 
+                            <% room_settings_url = room_settings_path(knowledge_membership.room) %>
+
                             <%= link_to new_rooms_open_path(project_id: project.id, parent_room_id: knowledge_membership.room.id),
                                   class: "btn sidebar-projects__settings-link sidebar-projects__knowledge-add-link",
                                   aria: { label: "Create room in #{room_display_name(knowledge_membership.room)}" } do %>
                               <span class="sidebar-projects__knowledge-plus" aria-hidden="true">➕</span>
                             <% end %>
 
-                            <%= link_to room_settings_path(knowledge_membership.room),
+                            <%= link_to room_settings_url,
                                   class: "btn sidebar-projects__settings-link sidebar-projects__knowledge-settings-link",
                                   aria: { label: "#{room_display_name(knowledge_membership.room)} settings" },
-                                  data: { turbo: false, turbo_frame: "_top" } do %>
+                                  data: {
+                                    action: "click->room-settings-modal#open",
+                                    room_settings_modal_url_param: room_settings_url
+                                  } do %>
                               <span class="sidebar-projects__knowledge-gear" aria-hidden="true">⚙️</span>
                             <% end %>
                           </div>
@@ -184,6 +189,17 @@
       <%= image_tag "menu.svg", size: 20, aria: { hidden: "true" } %>
       <span class="for-screen-reader">Open menu</span>
     </button>
+
+    <dialog class="dialog sidebar-room-settings-modal border border-radius shadow"
+            aria-label="Room settings"
+            data-room-settings-modal-target="dialog"
+            data-action="click->room-settings-modal#closeOnBackdrop close->room-settings-modal#reset">
+      <button type="button" class="btn dialog__close" data-action="room-settings-modal#close" aria-label="Close room settings">✕</button>
+      <iframe class="sidebar-room-settings-modal__frame"
+              data-room-settings-modal-target="frame"
+              title="Room settings"
+              loading="lazy"></iframe>
+    </dialog>
   </div>
 
   <div class="flex align-end sidebar__tools gap justify-end">
