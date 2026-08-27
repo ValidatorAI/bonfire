@@ -5,7 +5,7 @@ class Rooms::ProjectsController < RoomsController
   before_action :ensure_can_administer, only: %i[ update ]
 
   def edit
-    @agents = @project.agents.ordered
+    @attached_bots = @room.users.active_bots.ordered
     @channels = project_channels_scope
   end
 

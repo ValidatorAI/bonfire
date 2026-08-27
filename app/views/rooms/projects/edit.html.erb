@@ -67,14 +67,14 @@
             </tr>
           </thead>
           <tbody>
-            <% if @agents.any? %>
-              <% @agents.each do |agent| %>
+            <% if @attached_bots.any? %>
+              <% @attached_bots.each do |bot| %>
                 <tr>
-                  <td><%= agent.name %></td>
+                  <td><%= bot.name %></td>
                   <td>Read/Write in project channels</td>
                   <td>
-                    <span class="project-settings-badge <%= agent.online? || agent.idle? ? "project-settings-badge--active" : "project-settings-badge--offline" %>">
-                      <%= agent.status.humanize %>
+                    <span class="project-settings-badge <%= bot.active? ? "project-settings-badge--active" : "project-settings-badge--offline" %>">
+                      <%= bot.status.humanize %>
                     </span>
                   </td>
                 </tr>

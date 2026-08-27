@@ -40,6 +40,19 @@ class Rooms::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Danger Zone", @response.body
   end
 
+  test "edit shows only attached bots in attached AI teammates" do
+    attached_bot = User.create_bot!(name: "Attached Bot", display_name: "Attached Bot")
+    @project_room.memberships.grant_to(attached_bot)
+
+    detached_bot = User.create_bot!(name: "Detached Bot", display_name: "Detached Bot")
+
+    get edit_rooms_project_url(@project.id, by: "project")
+
+    assert_response :success
+    assert_match "Attached Bot", @response.body
+    assert_no_match "Detached Bot", @response.body
+  end
+
   test "update project details syncs project room" do
     patch rooms_project_url(@project_room.id), params: {
       project: {
