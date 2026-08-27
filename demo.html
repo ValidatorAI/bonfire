@@ -3263,8 +3263,8 @@
         <!-- VIEW 4: PROJECT STATUS -->
         <div id="view-project-status" class="view-container">
             <header class="view-header">
-                <div class="header-pill">⚡ B2B Crypto Platform</div>
-                <div class="header-title">Project Status & Alignment</div>
+                <div class="header-pill" id="project-status-pill">⚡ B2B Crypto Platform</div>
+                <div class="header-title" id="project-status-title">Project Status & Alignment</div>
             </header>
 
             <div class="project-status-content">
@@ -3764,7 +3764,7 @@
             <div class="channel-list">
                 <button class="channel-pill sub-item nav-btn briefing-btn" data-target="view-project-briefing">✨ Briefing</button>
                 <button class="channel-pill sub-item nav-btn" data-target="view-project-overview">📌 Overview</button>
-                <button class="channel-pill sub-item nav-btn" data-target="view-project-status">📊 Status</button>
+                <button class="channel-pill sub-item nav-btn" data-target="view-project-status" data-project-name="⚡ B2B Crypto Platform">📊 Status</button>
                 <button class="channel-pill sub-item nav-btn" data-target="view-project-allhands">🎙️ All-Hands</button>
                 <button class="channel-pill sub-item nav-btn" data-target="view-project-knowledge">🧠 Knowledge</button>
 
@@ -4315,6 +4315,14 @@
                 }
 
                 const targetId = btn.getAttribute('data-target');
+                if (targetId === 'view-project-status') {
+                    const statusProjectTag = btn.getAttribute('data-project-name') || '⚡ B2B Crypto Platform';
+                    const statusPill = document.getElementById('project-status-pill');
+                    const statusTitle = document.getElementById('project-status-title');
+                    if (statusPill) statusPill.textContent = statusProjectTag;
+                    if (statusTitle) statusTitle.textContent = 'Project Status & Alignment';
+                }
+
                 views.forEach(view => {
                     view.classList.remove('active');
                     if (view.id === targetId) {
@@ -4871,7 +4879,7 @@
         const projectViews = [
             { label: '✨ Briefing', target: 'view-project-briefing', className: 'briefing-btn' },
             { label: '📌 Overview', target: 'view-project-overview' },
-            { label: '📊 Status', target: 'view-project-status' },
+            { label: '📊 Status', target: 'view-project-status', withProjectName: true },
             { label: '🎙️ All-Hands', target: 'view-project-allhands' },
             { label: '🧠 Knowledge', target: 'view-project-knowledge' }
         ];
@@ -4880,6 +4888,9 @@
             const viewBtn = document.createElement('button');
             viewBtn.className = `channel-pill sub-item nav-btn${viewItem.className ? ` ${viewItem.className}` : ''}`;
             viewBtn.setAttribute('data-target', viewItem.target);
+            if (viewItem.withProjectName) {
+                viewBtn.setAttribute('data-project-name', projectTag);
+            }
             viewBtn.textContent = viewItem.label;
             list.appendChild(viewBtn);
         });

@@ -47,6 +47,7 @@ Rails.application.routes.draw do
         get "company/status", to: "companies#status", as: :company_status
         get "company/settings", to: "companies#settings", as: :company_settings
         get "company/projects/:id/overview", to: "projects#overview", as: :company_project_overview
+        get "company/projects/:id/status", to: "projects#status", as: :company_project_status
         resources :push_subscriptions do
           scope module: "push_subscriptions" do
             resources :test_notifications, only: :create

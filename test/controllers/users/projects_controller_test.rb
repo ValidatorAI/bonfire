@@ -20,4 +20,20 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "status" do
+    project = projects(:basecamp)
+
+    get user_company_project_status_url(id: project.id)
+
+    assert_response :success
+    assert_match project.display_name, @response.body
+    assert_match "Project Status &amp; Alignment", @response.body
+  end
+
+  test "status returns not found for non-member project" do
+    get user_company_project_status_url(id: -1)
+
+    assert_response :not_found
+  end
 end
