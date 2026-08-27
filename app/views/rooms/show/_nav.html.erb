@@ -1,16 +1,22 @@
 <% content_for :nav do %>
   <% room_members = room.users.distinct.to_a.sort_by { |member| [ member.bot? ? 1 : 0, member.name.to_s.downcase ] } %>
+  <% top_level_project_room = room.project.present? && room.parent_id.nil? && !room.direct? %>
 
   <%= account_logo_tag if Current.account.logo.attached? %>
 
-  <%= tag.span class: "btn btn--reversed btn--faux room--current" do %>
-    <h1 class="room__contents txt-medium overflow-ellipsis">
-      <% if room.direct? %>
-        <span class="for-screen-reader">Ping with</span>
-      <% end %>
+  <% if top_level_project_room %>
+    <span class="btn btn--reversed btn--faux room--current user-settings-nav__pill">⚡ <%= room.project.display_name %></span>
+    <h1 class="user-settings-nav__title txt-large"># <%= room_display_name(room) %></h1>
+  <% else %>
+    <%= tag.span class: "btn btn--reversed btn--faux room--current" do %>
+      <h1 class="room__contents txt-medium overflow-ellipsis">
+        <% if room.direct? %>
+          <span class="for-screen-reader">Ping with</span>
+        <% end %>
 
-      <%= room_display_name(room) %>
-    </h1>
+        <%= room_display_name(room) %>
+      </h1>
+    <% end %>
   <% end %>
 
   <% if room_members.any? %>
