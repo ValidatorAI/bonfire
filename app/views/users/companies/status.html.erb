@@ -1,92 +1,11 @@
-<% @page_title = "Company Status" %>
+<% @page_title = "Shared Direction & Status" %>
 <% @body_class = "sidebar" %>
 
 <% content_for :nav do %>
-  <span class="btn btn--reversed btn--faux user-settings-nav__pill">Company</span>
-  <h1 class="user-settings-nav__title txt-large">Company Status</h1>
+  <span class="btn btn--reversed btn--faux user-settings-nav__pill">🏢 Company</span>
+  <h1 class="user-settings-nav__title txt-large">Shared Direction &amp; Status</h1>
 <% end %>
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<div id="message-area" class="message-area">
-  <div class="company-page company-page--status">
-    <section class="company-page-card" aria-label="Company priorities">
-      <header class="company-page-card__header">
-        <h2 class="company-page-card__title">Current Priorities</h2>
-        <p class="company-page-card__desc">Outcome-driven priorities inspired by the demo status board.</p>
-      </header>
-
-      <ul class="company-page-list">
-        <li class="company-page-list__item">
-          <strong>Ship MCP reliability improvements</strong>
-          <span>Outcome: reduce session/auth recovery incidents across agents.</span>
-        </li>
-        <li class="company-page-list__item">
-          <strong>Improve project visibility</strong>
-          <span>Outcome: one source of truth for risks, decisions, and dependencies.</span>
-        </li>
-        <li class="company-page-list__item">
-          <strong>Accelerate knowledge capture</strong>
-          <span>Outcome: more reusable guidance in project knowledge rooms.</span>
-        </li>
-      </ul>
-    </section>
-
-    <div class="company-page-grid">
-      <section class="company-page-card" aria-label="Progress and evidence">
-        <header class="company-page-card__header">
-          <h2 class="company-page-card__title">Progress Supported by Evidence</h2>
-          <p class="company-page-card__desc">Live counters from this workspace plus qualitative status.</p>
-        </header>
-
-        <div class="company-page-meter-stack">
-          <div class="company-page-meter">
-            <div class="company-page-meter__labels">
-              <span>Weekly message throughput</span>
-              <strong><%= @messages_this_week %></strong>
-            </div>
-            <div class="company-page-meter__bar"><span style="width: 72%"></span></div>
-          </div>
-
-          <div class="company-page-meter">
-            <div class="company-page-meter__labels">
-              <span>Project execution coverage</span>
-              <strong><%= @projects.size %> active lanes</strong>
-            </div>
-            <div class="company-page-meter__bar"><span style="width: 64%"></span></div>
-          </div>
-
-          <div class="company-page-meter">
-            <div class="company-page-meter__labels">
-              <span>Cross-team participation</span>
-              <strong><%= @users.size %> members</strong>
-            </div>
-            <div class="company-page-meter__bar"><span style="width: 81%"></span></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="company-page-card" aria-label="Risks and blockers">
-        <header class="company-page-card__header">
-          <h2 class="company-page-card__title">Risks and Blockers</h2>
-          <p class="company-page-card__desc">High-signal issues needing explicit ownership.</p>
-        </header>
-
-        <ul class="company-page-alerts">
-          <li class="company-page-alert company-page-alert--warn">
-            <strong>Dependency drift across projects</strong>
-            <span>Some updates are not yet reflected in related rooms.</span>
-          </li>
-          <li class="company-page-alert company-page-alert--danger">
-            <strong>Unassigned action items</strong>
-            <span>Important follow-ups are visible but ownership is incomplete.</span>
-          </li>
-          <li class="company-page-alert company-page-alert--warn">
-            <strong>Status cadence inconsistency</strong>
-            <span>Teams are updating at different rhythms, reducing comparability.</span>
-          </li>
-        </ul>
-      </section>
-    </div>
-  </div>
-</div>
+<div id="message-area" class="message-area"></div>
