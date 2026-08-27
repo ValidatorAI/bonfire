@@ -8,6 +8,9 @@ class Users::ProjectsController < ApplicationController
   def status
   end
 
+  def all_hands
+  end
+
   private
     def set_company_context
       @account = Current.account
