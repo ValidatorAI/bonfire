@@ -1,0 +1,15 @@
+<% @page_title = "#{@project.display_name} Overview" %>
+<% @body_class = "sidebar" %>
+
+<% content_for :nav do %>
+  <span class="btn btn--reversed btn--faux user-settings-nav__pill">📌 Project</span>
+  <h1 class="user-settings-nav__title txt-large"><%= @project.display_name %></h1>
+
+  <%= link_to "Edit Project Details", edit_rooms_project_path(@project.id, by: "project"),
+        class: "btn btn--reversed",
+        data: { turbo: false, turbo_frame: "_top" } %>
+<% end %>
+
+<% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
+
+<div id="message-area" class="message-area"></div>
