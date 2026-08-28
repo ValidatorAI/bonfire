@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :all, "data-turbo-track": "reload" %>
+  </head>
+  <body class="room-settings-sheet">
+    <section class="room-settings-sheet__panel">
+      <header class="room-settings-sheet__header">
+        <h1 class="room-settings-sheet__title">Add User</h1>
+      </header>
+
+      <% if @new_user&.errors&.any? %>
+        <div class="flash flash--alert margin-block-end">
+          <%= @new_user.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <%= form_with scope: :user, url: account_users_path, class: "flex flex-column gap" do |form| %>
+        <%= hidden_field_tag :return_to, "company_settings" %>
+        <%= hidden_field_tag :modal_source, "company_add_user_modal" %>
+
+        <div>
+          <label for="company_add_user_name">Full Name</label>
+          <%= form.text_field :name,
+                id: "company_add_user_name",
+                class: "input full-width",
+                required: true,
+                value: @new_user&.name %>
+        </div>
+
+        <div>
+          <label for="company_add_user_email">Email</label>
+          <%= form.email_field :email_address,
+                id: "company_add_user_email",
+                class: "input full-width",
+                required: true,
+                value: @new_user&.email_address,
+                autocomplete: "email" %>
+        </div>
+
+        <div>
+          <label for="company_add_user_password">Temporary Password</label>
+          <%= form.password_field :password,
+                id: "company_add_user_password",
+                class: "input full-width",
+                required: true,
+                minlength: 8,
+                autocomplete: "new-password" %>
+        </div>
+
+        <div class="flex align-center gap justify-end margin-block-start">
+          <button type="submit" class="btn btn--reversed">Add User</button>
+        </div>
+      <% end %>
+    </section>
+  </body>
+</html>

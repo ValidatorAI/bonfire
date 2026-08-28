@@ -13,6 +13,14 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
     assert_select "section[aria-label='Organization profile'] input[type='file'][name='account[logo]']"
   end
 
+  test "admin can open add user modal" do
+    get user_company_add_user_url(user_id: "me")
+
+    assert_response :ok
+    assert_select "h1", "Add User"
+    assert_select "form[action='#{account_users_path}']"
+  end
+
   test "non admin cannot see organization avatar upload" do
     sign_in :kevin
 
@@ -20,6 +28,14 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     assert_select "section[aria-label='Organization profile'] input[type='file'][name='account[logo]']", count: 0
+  end
+
+  test "non admin cannot open add user modal" do
+    sign_in :kevin
+
+    get user_company_add_user_url(user_id: "me")
+
+    assert_response :forbidden
   end
 
   test "admin can update allowed bots and deselect removes from all rooms and projects" do

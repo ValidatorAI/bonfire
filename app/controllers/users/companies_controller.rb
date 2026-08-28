@@ -1,6 +1,6 @@
 class Users::CompaniesController < ApplicationController
   before_action :set_company_context
-  before_action :ensure_can_administer, only: :update
+  before_action :ensure_can_administer, only: %i[ update add_user ]
 
   def home
   end
@@ -9,6 +9,12 @@ class Users::CompaniesController < ApplicationController
   end
 
   def settings
+  end
+
+  def add_user
+    @new_user = User.new
+
+    render :add_user_modal, layout: false
   end
 
   def update

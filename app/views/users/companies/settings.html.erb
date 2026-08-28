@@ -64,11 +64,18 @@
         <% end %>
       </section>
 
-      <section class="settings-card" aria-label="Member directory">
+      <section class="settings-card" aria-label="Member directory" data-controller="company-users-modal">
         <div class="settings-section-title settings-section-title--spread">
           <span>👥 Member Directory</span>
           <% if Current.user.can_administer? %>
-            <%= link_to "+ Invite User", edit_account_path, class: "action-btn primary", style: "font-size: 12px;" %>
+            <%= link_to "+ Invite User",
+                  user_company_add_user_path(user_id: "me"),
+                  class: "action-btn primary",
+                  style: "font-size: 12px;",
+                  data: {
+                    action: "company-users-modal#open",
+                    company_users_modal_url_param: user_company_add_user_path(user_id: "me")
+                  } %>
           <% end %>
         </div>
 
@@ -120,6 +127,17 @@
             <% end %>
           </tbody>
         </table>
+
+        <dialog class="dialog sidebar-room-settings-modal border border-radius shadow"
+          aria-label="Add workspace user"
+          data-company-users-modal-target="dialog"
+          data-action="click->company-users-modal#closeOnBackdrop close->company-users-modal#reset">
+          <button type="button" class="btn dialog__close" data-action="company-users-modal#close" aria-label="Close add user modal">✕</button>
+          <iframe class="sidebar-room-settings-modal__frame"
+            data-company-users-modal-target="frame"
+            title="Add workspace user"
+            loading="lazy"></iframe>
+        </dialog>
       </section>
 
       <section class="settings-card" aria-label="Global AI integrations">

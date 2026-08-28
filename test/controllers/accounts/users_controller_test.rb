@@ -29,6 +29,34 @@ class Accounts::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "New User", User.order(:id).last.name
   end
 
+  test "create redirects back to company settings when requested" do
+    sign_in :david
+
+    assert_difference -> { User.count }, 1 do
+      post account_users_url, params: {
+        return_to: "company_settings",
+        user: { name: "Modal User", email_address: "modal.user@example.com", password: "secret123456" }
+      }
+    end
+
+    assert_redirected_to user_company_settings_url(user_id: "me")
+  end
+
+  test "create from company add user modal returns refresh payload" do
+    sign_in :david
+
+    assert_difference -> { User.count }, 1 do
+      post account_users_url, params: {
+        return_to: "company_settings",
+        modal_source: "company_add_user_modal",
+        user: { name: "Modal User Two", email_address: "modal.user.two@example.com", password: "secret123456" }
+      }
+    end
+
+    assert_response :ok
+    assert_includes response.body, "company-users:member-added"
+  end
+
   test "destroy" do
     sign_in :david
     assert_difference -> { User.active.count }, -1 do

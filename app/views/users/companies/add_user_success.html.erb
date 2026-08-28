@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :all, "data-turbo-track": "reload" %>
+  </head>
+  <body class="room-settings-sheet">
+    <section class="room-settings-sheet__panel">
+      <header class="room-settings-sheet__header">
+        <h1 class="room-settings-sheet__title">User Added</h1>
+      </header>
+      <p class="txt-subtle">Refreshing company settings...</p>
+    </section>
+
+    <%= javascript_tag nonce: true do %>
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "company-users:member-added" }, window.location.origin)
+      }
+    <% end %>
+  </body>
+</html>

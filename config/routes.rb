@@ -52,6 +52,7 @@ Rails.application.routes.draw do
         get "company/home", to: "companies#home", as: :company_home
         get "company/status", to: "companies#status", as: :company_status
         get "company/settings", to: "companies#settings", as: :company_settings
+        get "company/settings/add-user", to: "companies#add_user", as: :company_add_user
         patch "company/settings", to: "companies#update", as: :update_company_settings
         get "company/projects/:id/overview", to: "projects#overview", as: :company_project_overview
         get "company/projects/:id/status", to: "projects#status", as: :company_project_status
