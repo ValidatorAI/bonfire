@@ -73,6 +73,7 @@
                 <td>
                   <% if Current.user.can_administer? %>
                     <%= form_with url: account_user_path(user), method: :patch, scope: :user do |form| %>
+                      <%= hidden_field_tag :return_to, "company_settings" %>
                       <%= form.select :role,
                             options_for_select([["Member", "member"], ["Workspace Admin", "administrator"]], user.role),
                             {},
@@ -85,7 +86,11 @@
                 </td>
                 <td>
                   <% if Current.user.can_administer? && user != Current.user %>
-                    <%= button_to "Revoke", account_user_path(user), method: :delete, class: "action-btn action-btn--small" %>
+                    <% if user.deactivated? %>
+                      <%= button_to "Activate", activate_account_user_path(user), method: :patch, params: { return_to: "company_settings" }, class: "action-btn action-btn--small" %>
+                    <% else %>
+                      <%= button_to "Deactivate", account_user_path(user), method: :delete, params: { return_to: "company_settings" }, class: "action-btn action-btn--small" %>
+                    <% end %>
                   <% else %>
                     <span class="company-cell-muted">—</span>
                   <% end %>

@@ -31,7 +31,7 @@ class Users::CompaniesController < ApplicationController
 
     def set_company_context
       @account = Current.account
-      @users = User.active.ordered.limit(50)
+      @users = User.where(status: [ :active, :deactivated ]).without_bots.ordered.limit(50)
       @bots = User.active_bots.ordered
       @allowed_bot_user_ids = @account.allowed_bot_user_ids
       @projects = Current.user.projects.sort_by { |project| project.display_name.to_s.downcase }.first(6)

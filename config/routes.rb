@@ -11,7 +11,11 @@ Rails.application.routes.draw do
 
   resource :account do
     scope module: "accounts" do
-      resources :users
+      resources :users do
+        member do
+          patch :activate
+        end
+      end
 
       resources :bots do
         scope module: "bots" do
