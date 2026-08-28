@@ -2,7 +2,7 @@
 
 <% content_for :nav do %>
   <div class="flex-item-justify-start">
-    <%= link_back_to edit_account_path %>
+    <%= link_back_to(params[:return_to] == "company_settings" ? user_company_settings_path(user_id: "me") : edit_account_path) %>
   </div>
 <% end %>
 
@@ -15,7 +15,7 @@
       <h1 class="margin-none">Chat bots</h1>
       <p class="margin-none-block-start">With Chat bots, other sites and services can post updates directly to Bonfire.</p>
 
-      <%= link_to new_account_bot_path, class: "btn btn--reversed txt-large", aria: { label: "Add a chat bot" } do %>
+      <%= link_to new_account_bot_path(return_to: params[:return_to]), class: "btn btn--reversed txt-large", aria: { label: "Add a chat bot" } do %>
         <%= image_tag "bot.svg", aria: { hidden: "true" }, size: 20 %>
         <%= image_tag "add.svg", aria: { hidden: "true" }, size: 20 %>
       <% end %>
@@ -24,7 +24,7 @@
 
   <div class="pad-inline pad-block-start ">
     <menu class="flex flex-column gap margin-none pad">
-      <%= render partial: "accounts/bots/bot", collection: @bots %>
+      <%= render partial: "accounts/bots/bot", collection: @bots, locals: { return_to: params[:return_to] } %>
     </menu>
   </div>
 </section>

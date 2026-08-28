@@ -5,6 +5,15 @@
   padding: 0;
 }
 
+.room-settings-sheet .input:is(
+  :autofill,
+  :-webkit-autofill,
+  :-webkit-autofill:hover,
+  :-webkit-autofill:focus
+) {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-background, var(--surface)) inset;
+}
+
 .room-settings-sheet__panel {
   background: var(--color-bg);
   border-radius: 14px;
