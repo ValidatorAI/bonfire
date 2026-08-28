@@ -248,11 +248,13 @@ body.sidebar .create-project-feed {
   min-block-size: calc(100dvh - 104px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  width: stretch;
 }
 
 body.sidebar .create-project-page {
-  margin-inline: auto;
-  max-inline-size: 72rem;
+  inline-size: 100%;
+  margin-inline: 0;
+  max-inline-size: none;
   padding: 24px;
 }
 
