@@ -391,6 +391,7 @@ body.sidebar .member-chip-avatar {
 body.sidebar .member-picker-controls {
   display: grid;
   gap: 8px;
+  justify-items: start;
 }
 
 body.sidebar .member-picker-row {
@@ -405,6 +406,44 @@ body.sidebar .member-picker-select {
 
 body.sidebar .member-picker-empty {
   margin: 0;
+}
+
+body.sidebar .member-picker-modal {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+body.sidebar .member-picker-modal::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+body.sidebar .member-picker-modal__panel {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  inline-size: min(460px, calc(100vw - 2rem));
+  padding: 14px;
+}
+
+body.sidebar .member-picker-modal__header {
+  margin-block-end: 10px;
+}
+
+body.sidebar .member-picker-modal__title {
+  font-size: 16px;
+  margin: 0;
+}
+
+body.sidebar .member-picker-modal__body {
+  display: grid;
+  gap: 8px;
+}
+
+body.sidebar .member-picker-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-start: 12px;
 }
 
 body.sidebar .channel-checkboxes {

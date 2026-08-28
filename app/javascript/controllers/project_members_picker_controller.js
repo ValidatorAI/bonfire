@@ -1,8 +1,32 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["list", "select", "addButton", "inputs", "empty"]
+  static targets = ["list", "select", "addButton", "openButton", "dialog", "inputs", "empty"]
   static values = { currentUserId: Number }
+
+  connect() {
+    this.updateControls()
+  }
+
+  openModal() {
+    if (this.dialogTarget.open) return
+
+    this.dialogTarget.showModal()
+  }
+
+  closeModal() {
+    if (this.dialogTarget.open) this.dialogTarget.close()
+  }
+
+  closeOnBackdrop(event) {
+    if (event.target === this.dialogTarget) {
+      this.closeModal()
+    }
+  }
+
+  reset() {
+    this.selectTarget.value = ""
+  }
 
   add() {
     const option = this.selectTarget.selectedOptions[0]
@@ -20,6 +44,10 @@ export default class extends Controller {
     option.remove()
     this.selectTarget.value = ""
     this.updateControls()
+
+    if (this.selectTarget.options.length <= 1) {
+      this.closeModal()
+    }
   }
 
   remove(event) {
@@ -41,6 +69,7 @@ export default class extends Controller {
   updateControls() {
     const noOptions = this.selectTarget.options.length <= 1
     this.addButtonTarget.disabled = noOptions
+    this.openButtonTarget.disabled = noOptions
     this.emptyTarget.hidden = !noOptions
   }
 
