@@ -1,6 +1,37 @@
 class Users::ProjectsController < ApplicationController
   before_action :set_company_context
-  before_action :set_project
+  before_action :ensure_permission_to_create_projects, only: %i[ new create ]
+  before_action :set_project, only: %i[ overview status all_hands knowledge ]
+
+  def new
+    @project = Project.new(private: false)
+  end
+
+  def create
+    @project = Project.new(project_params)
+
+    if @project.name.blank?
+      @project.errors.add(:name, "can't be blank")
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    slug = next_unique_slug(@project.short_code.presence || @project.name)
+    @project.slug = slug
+    @project.path = next_unique_path_for(slug)
+
+    ActiveRecord::Base.transaction do
+      @project.save!
+      @project.project_users.find_or_create_by!(user: Current.user)
+
+      project_room = @project.ensure_project_room!
+      Membership.find_or_create_by!(room: project_room, participant: Current.user)
+    end
+
+    redirect_to user_company_project_overview_path(user_id: "me", id: @project.id), notice: "Project created"
+  rescue ActiveRecord::RecordInvalid
+    render :new, status: :unprocessable_entity
+  end
 
   def overview
   end
@@ -15,6 +46,42 @@ class Users::ProjectsController < ApplicationController
   end
 
   private
+    def ensure_permission_to_create_projects
+      return if Current.user.administrator? || !Current.account.settings.restrict_room_creation_to_administrators?
+
+      head :forbidden
+    end
+
+    def project_params
+      params.fetch(:project, {}).permit(:name, :short_code, :description, :private)
+    end
+
+    def next_unique_slug(base_value)
+      base_slug = base_value.to_s.parameterize.presence || "project"
+      candidate = base_slug
+      suffix = 2
+
+      while Project.exists?(slug: candidate)
+        candidate = "#{base_slug}-#{suffix}"
+        suffix += 1
+      end
+
+      candidate
+    end
+
+    def next_unique_path_for(slug)
+      base_path = "/manual/#{slug}"
+      candidate = base_path
+      suffix = 2
+
+      while Project.exists?(path: candidate)
+        candidate = "#{base_path}-#{suffix}"
+        suffix += 1
+      end
+
+      candidate
+    end
+
     def set_company_context
       @account = Current.account
       @users = User.active.ordered.limit(50)

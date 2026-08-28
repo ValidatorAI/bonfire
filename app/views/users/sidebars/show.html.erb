@@ -179,7 +179,10 @@
       </div>
 
       <% if Current.user.administrator? || !Current.account.settings.restrict_room_creation_to_administrators? %>
-        <%= link_to new_rooms_open_path, class: "rooms__new-btn btn room align-center gap", aria: { label: "New Project" } do %>
+        <%= link_to user_company_project_new_path(user_id: "me"),
+              class: "rooms__new-btn btn room align-center gap",
+              aria: { label: "New Project" },
+              data: { turbo: false, turbo_frame: "_top" } do %>
           <span class="rooms__new-btn-label">+ New project</span>
         <% end %>
       <% end %>

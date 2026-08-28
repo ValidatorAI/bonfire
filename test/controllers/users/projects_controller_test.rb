@@ -5,8 +5,54 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     sign_in :david
   end
 
+  test "new" do
+    get user_company_project_new_url
+
+    assert_response :success
+    assert_match "Create Project", @response.body
+    assert_match "General Details", @response.body
+  end
+
+  test "create creates project and redirects to overview" do
+    assert_difference("Project.count", 1) do
+      post user_company_projects_url, params: {
+        project: {
+          name: "Apollo Program",
+          short_code: "APOLLO",
+          description: "Moonshot planning and delivery",
+          private: "1"
+        }
+      }
+    end
+
+    project = Project.order(:created_at).last
+
+    assert_redirected_to user_company_project_overview_url(id: project.id)
+    assert_equal "Apollo Program", project.name
+    assert_equal "APOLLO", project.short_code
+    assert project.private?
+    assert_includes project.users, users(:david)
+    assert project.project_room.present?
+    assert Membership.exists?(room: project.project_room, participant: users(:david))
+  end
+
+  test "create with blank name returns unprocessable entity" do
+    assert_no_difference("Project.count") do
+      post user_company_projects_url, params: {
+        project: {
+          name: "",
+          short_code: "BLANK",
+          description: "Should fail"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_match "can&#39;t be blank", @response.body
+  end
+
   test "overview" do
-    project = projects(:basecamp)
+    project = create_project_for(users(:david))
 
     get user_company_project_overview_url(id: project.id)
 
@@ -16,13 +62,13 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "overview returns not found for non-member project" do
-    get user_company_project_overview_url(id: -1)
-
-    assert_response :not_found
+    assert_raises(ActiveRecord::RecordNotFound) do
+      get user_company_project_overview_url(id: -1)
+    end
   end
 
   test "status" do
-    project = projects(:basecamp)
+    project = create_project_for(users(:david))
 
     get user_company_project_status_url(id: project.id)
 
@@ -32,13 +78,13 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "status returns not found for non-member project" do
-    get user_company_project_status_url(id: -1)
-
-    assert_response :not_found
+    assert_raises(ActiveRecord::RecordNotFound) do
+      get user_company_project_status_url(id: -1)
+    end
   end
 
   test "all hands" do
-    project = projects(:basecamp)
+    project = create_project_for(users(:david))
 
     get user_company_project_all_hands_url(id: project.id)
 
@@ -48,13 +94,13 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "all hands returns not found for non-member project" do
-    get user_company_project_all_hands_url(id: -1)
-
-    assert_response :not_found
+    assert_raises(ActiveRecord::RecordNotFound) do
+      get user_company_project_all_hands_url(id: -1)
+    end
   end
 
   test "knowledge" do
-    project = projects(:basecamp)
+    project = create_project_for(users(:david))
 
     get user_company_project_knowledge_url(id: project.id)
 
@@ -64,8 +110,21 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "knowledge returns not found for non-member project" do
-    get user_company_project_knowledge_url(id: -1)
-
-    assert_response :not_found
+    assert_raises(ActiveRecord::RecordNotFound) do
+      get user_company_project_knowledge_url(id: -1)
+    end
   end
+
+  private
+    def create_project_for(user)
+      project = Project.create!(
+        name: "Basecamp",
+        path: "/tmp/basecamp-#{SecureRandom.hex(4)}",
+        description: "Project fixture replacement"
+      )
+
+      project.project_users.create!(user: user)
+      project.ensure_project_room!
+      project
+    end
 end

@@ -1,0 +1,150 @@
+<% @page_title = "Create Project" %>
+<% @body_class = "sidebar" %>
+
+<% content_for :nav do %>
+  <span class="btn btn--reversed btn--faux user-settings-nav__pill">🚀 New Space</span>
+  <h1 class="user-settings-nav__title txt-large">Create Project</h1>
+<% end %>
+
+<% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
+
+<div id="message-area" class="message-area">
+  <div class="create-project-feed">
+    <div class="create-project-page" aria-label="Create Project page">
+      <section class="create-project-card" aria-label="Create Project">
+        <header class="create-project-card__header">
+          <h2 class="create-project-card__title">🚀 New Space</h2>
+          <p class="create-project-card__subtitle">Set up a project workspace with teammates and channels.</p>
+        </header>
+
+        <% if @project.errors.any? %>
+          <div class="create-project-errors" role="alert">
+            <p>Please fix the following:</p>
+            <ul>
+              <% @project.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%= form_with model: @project,
+              url: user_company_projects_path(user_id: "me"),
+              method: :post,
+              class: "create-project-form" do |form| %>
+          <section class="form-section" aria-label="General details">
+            <h3 class="form-section-title">📌 General Details</h3>
+
+            <div class="form-row form-row--two">
+              <div class="form-group">
+                <%= form.label :name, "Project Name *", for: "proj-name" %>
+                <%= form.text_field :name, id: "proj-name", class: "input", required: true, autocomplete: "off" %>
+                <% if @project.errors[:name].any? %>
+                  <p class="create-project-error">Project name is required.</p>
+                <% end %>
+              </div>
+
+              <div class="form-group">
+                <%= form.label :short_code, "Project Code", for: "proj-code" %>
+                <%= form.text_field :short_code, id: "proj-code", class: "input", autocomplete: "off" %>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :description, "Description", for: "proj-desc" %>
+              <%= form.text_area :description, id: "proj-desc", class: "input", rows: 3 %>
+            </div>
+          </section>
+
+          <section class="form-section" aria-label="Assign AI teammates">
+            <h3 class="form-section-title">🤖 Assign AI Teammates (Bots)</h3>
+            <p class="form-section-copy">Assign specialist bots now and map them later in project settings.</p>
+
+            <div class="bot-selection-grid">
+              <label class="bot-card selected">
+                <input type="checkbox" name="ui_bot_ids[]" value="assistant" checked>
+                <span class="bot-card-icon" aria-hidden="true">🤖</span>
+                <span class="bot-card-info">
+                  <span class="bot-card-name">W Assistant</span>
+                  <span class="bot-card-role">General Support</span>
+                  <span class="bot-card-desc">Daily project coordination and quick answers.</span>
+                </span>
+              </label>
+
+              <label class="bot-card selected">
+                <input type="checkbox" name="ui_bot_ids[]" value="researcher" checked>
+                <span class="bot-card-icon" aria-hidden="true">🔬</span>
+                <span class="bot-card-info">
+                  <span class="bot-card-name">Researcher</span>
+                  <span class="bot-card-role">Insight Discovery</span>
+                  <span class="bot-card-desc">Find context, sources, and technical references.</span>
+                </span>
+              </label>
+
+              <label class="bot-card">
+                <input type="checkbox" name="ui_bot_ids[]" value="builder">
+                <span class="bot-card-icon" aria-hidden="true">⚡</span>
+                <span class="bot-card-info">
+                  <span class="bot-card-name">Builder</span>
+                  <span class="bot-card-role">Implementation</span>
+                  <span class="bot-card-desc">Break down tasks and draft implementation steps.</span>
+                </span>
+              </label>
+
+              <label class="bot-card">
+                <input type="checkbox" name="ui_bot_ids[]" value="reviewer">
+                <span class="bot-card-icon" aria-hidden="true">🛡️</span>
+                <span class="bot-card-info">
+                  <span class="bot-card-name">Reviewer</span>
+                  <span class="bot-card-role">Quality Guard</span>
+                  <span class="bot-card-desc">Review quality, regressions, and release readiness.</span>
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-label="Human team members">
+            <h3 class="form-section-title">👥 Human Team Members</h3>
+
+            <div class="member-pills">
+              <span class="member-chip"><span class="member-chip-avatar">S</span> Siavash</span>
+              <span class="member-chip"><span class="member-chip-avatar">A</span> Alex</span>
+              <button type="button" class="action-btn">+ Add Member</button>
+            </div>
+          </section>
+
+          <section class="form-section" aria-label="Default channels and access">
+            <h3 class="form-section-title">💬 Default Channels &amp; Access</h3>
+
+            <div class="channel-checkboxes">
+              <label class="checkbox-item">
+                <input type="checkbox" checked disabled>
+                <span>🔒 # general</span>
+              </label>
+
+              <label class="checkbox-item">
+                <input type="checkbox" checked>
+                <span>💬 # specifications</span>
+              </label>
+
+              <label class="checkbox-item">
+                <input type="checkbox" checked>
+                <span>🚀 # releases</span>
+              </label>
+
+              <label class="checkbox-item">
+                <%= form.check_box :private, id: "proj-private" %>
+                <span>Private Project (Only visible to added members)</span>
+              </label>
+            </div>
+          </section>
+
+          <div class="form-actions">
+            <%= link_to "Cancel", user_company_home_path(user_id: "me"), class: "action-btn" %>
+            <%= form.button "Create Project", class: "action-btn primary", type: :submit %>
+          </div>
+        <% end %>
+      </section>
+    </div>
+  </div>
+</div>
