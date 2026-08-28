@@ -777,6 +777,20 @@ body.sidebar .input--disabled {
   cursor: not-allowed;
 }
 
+body.sidebar .workspace-url-field {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+body.sidebar .workspace-url-field .input {
+  min-inline-size: 0;
+}
+
+body.sidebar .workspace-url-copy-btn {
+  flex-shrink: 0;
+}
+
 body.sidebar .data-table {
   border-collapse: collapse;
   inline-size: 100%;

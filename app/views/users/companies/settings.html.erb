@@ -7,6 +7,7 @@
 <% end %>
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
+<% invite_url = join_url(@account.join_code) %>
 
 <div id="message-area" class="message-area">
   <div class="feed-container company-settings-feed">
@@ -24,7 +25,10 @@
 
               <div class="form-group">
                 <label>Workspace URL</label>
-                <input class="input input--disabled" type="text" value="<%= @account.join_code %>.w.app" disabled>
+                <div class="workspace-url-field">
+                  <input class="input" type="text" value="<%= invite_url %>" readonly>
+                  <%= tag.button "Copy", type: "button", class: "action-btn action-btn--small workspace-url-copy-btn", aria: { label: "Copy workspace invite link" }, data: { controller: "copy-to-clipboard", action: "copy-to-clipboard#copy", copy_to_clipboard_success_class: "btn--success", copy_to_clipboard_content_value: invite_url } %>
+                </div>
               </div>
             </div>
           <% end %>
@@ -37,7 +41,10 @@
 
             <div class="form-group">
               <label>Workspace URL</label>
-              <input class="input input--disabled" type="text" value="<%= @account.join_code %>.w.app" disabled>
+              <div class="workspace-url-field">
+                <input class="input" type="text" value="<%= invite_url %>" readonly>
+                <%= tag.button "Copy", type: "button", class: "action-btn action-btn--small workspace-url-copy-btn", aria: { label: "Copy workspace invite link" }, data: { controller: "copy-to-clipboard", action: "copy-to-clipboard#copy", copy_to_clipboard_success_class: "btn--success", copy_to_clipboard_content_value: invite_url } %>
+              </div>
             </div>
           </div>
         <% end %>
