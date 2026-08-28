@@ -338,6 +338,11 @@ body.sidebar .member-pills {
   gap: 8px;
 }
 
+body.sidebar .member-picker {
+  display: grid;
+  gap: 10px;
+}
+
 body.sidebar .member-chip {
   align-items: center;
   background: var(--surface-alt);
@@ -351,6 +356,25 @@ body.sidebar .member-chip {
   padding: 6px 10px;
 }
 
+body.sidebar .member-chip-role {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+body.sidebar .member-chip-remove {
+  background: transparent;
+  border: 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0;
+}
+
+body.sidebar .member-chip-remove:hover {
+  color: var(--text-primary);
+}
+
 body.sidebar .member-chip-avatar {
   align-items: center;
   background: #111111;
@@ -362,6 +386,25 @@ body.sidebar .member-chip-avatar {
   block-size: 20px;
   inline-size: 20px;
   justify-content: center;
+}
+
+body.sidebar .member-picker-controls {
+  display: grid;
+  gap: 8px;
+}
+
+body.sidebar .member-picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body.sidebar .member-picker-select {
+  min-inline-size: 220px;
+}
+
+body.sidebar .member-picker-empty {
+  margin: 0;
 }
 
 body.sidebar .channel-checkboxes {

@@ -13,6 +13,18 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "General Details", @response.body
   end
 
+  test "new lists only active non-bot users in human member picker" do
+    deactivated_user = users(:jz)
+    deactivated_user.update!(status: :deactivated)
+
+    get user_company_project_new_url
+
+    assert_response :success
+    assert_match 'option value="' + users(:kevin).id.to_s + '"', @response.body
+    assert_no_match(/<select id="project_member_user_picker"[^>]*>.*#{Regexp.escape(users(:bender).effective_display_name)}.*<\/select>/m, @response.body)
+    assert_no_match deactivated_user.effective_display_name, @response.body
+  end
+
   test "new renders only workspace allowed bots" do
     account = accounts(:signal)
     allowed_bot = users(:bender)
@@ -64,6 +76,63 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_includes project.users, users(:david)
     assert project.project_room.present?
     assert Membership.exists?(room: project.project_room, participant: users(:david))
+  end
+
+  test "create adds selected human team members to project and project room" do
+    selected_user = users(:kevin)
+
+    assert_difference("Project.count", 1) do
+      post user_company_projects_url, params: {
+        project: {
+          name: "Project Mercury",
+          short_code: "MERC",
+          description: "Crewed mission planning"
+        },
+        member_user_ids: [ users(:david).id.to_s, selected_user.id.to_s ]
+      }
+    end
+
+    project = Project.order(:created_at).last
+
+    assert_redirected_to user_company_project_overview_url(id: project.id)
+    assert_includes project.users, users(:david)
+    assert_includes project.users, selected_user
+    assert Membership.exists?(room: project.project_room, participant: selected_user)
+  end
+
+  test "create ignores duplicate invalid inactive and bot member ids" do
+    inactive_user = users(:jz)
+    inactive_user.update!(status: :deactivated)
+
+    assert_difference("Project.count", 1) do
+      post user_company_projects_url, params: {
+        project: {
+          name: "Project Gemini",
+          short_code: "GEM",
+          description: "Docking tests"
+        },
+        member_user_ids: [
+          users(:david).id.to_s,
+          users(:kevin).id.to_s,
+          users(:kevin).id.to_s,
+          users(:bender).id.to_s,
+          inactive_user.id.to_s,
+          "999999",
+          "bad-id"
+        ]
+      }
+    end
+
+    project = Project.order(:created_at).last
+
+    assert_includes project.users, users(:david)
+    assert_includes project.users, users(:kevin)
+    assert_equal 1, project.project_users.where(user: users(:kevin)).count
+    assert_not_includes project.users, users(:bender)
+    assert_not_includes project.users, inactive_user
+    assert Membership.exists?(room: project.project_room, participant: users(:kevin))
+    assert_not Membership.exists?(room: project.project_room, participant: users(:bender))
+    assert_not Membership.exists?(room: project.project_room, participant: inactive_user)
   end
 
   test "create with blank name returns unprocessable entity" do

@@ -82,10 +82,69 @@
           <section class="form-section" aria-label="Human team members">
             <h3 class="form-section-title">👥 Human Team Members</h3>
 
-            <div class="member-pills">
-              <span class="member-chip"><span class="member-chip-avatar">S</span> Siavash</span>
-              <span class="member-chip"><span class="member-chip-avatar">A</span> Alex</span>
-              <button type="button" class="action-btn">+ Add Member</button>
+            <div class="member-picker"
+                 data-controller="project-members-picker"
+                 data-project-members-picker-current-user-id-value="<%= Current.user.id %>">
+              <div class="member-pills" data-project-members-picker-target="list">
+                <% @selected_member_users.each do |member| %>
+                  <span class="member-chip"
+                        data-member-id="<%= member.id %>"
+                        data-member-name="<%= member.effective_display_name %>"
+                        data-member-initials="<%= member.initials.first(1).upcase %>">
+                    <span class="member-chip-avatar"><%= member.initials.first(1).upcase %></span>
+                    <span><%= member.effective_display_name %></span>
+                    <% if member.id == Current.user.id %>
+                      <span class="member-chip-role">(You)</span>
+                    <% else %>
+                      <button type="button"
+                              class="member-chip-remove"
+                              data-member-id="<%= member.id %>"
+                              data-action="click->project-members-picker#remove"
+                              aria-label="Remove <%= member.effective_display_name %>">
+                        Remove
+                      </button>
+                    <% end %>
+                  </span>
+                <% end %>
+              </div>
+
+              <div class="member-picker-controls">
+                <label class="for-screen-reader" for="project_member_user_picker">Pick member</label>
+                <div class="member-picker-row">
+                  <select id="project_member_user_picker"
+                          class="input member-picker-select"
+                          data-project-members-picker-target="select">
+                    <option value="">Select a person...</option>
+                    <% available_members = @users.reject { |user| @selected_member_users.any? { |member| member.id == user.id } } %>
+                    <% available_members.each do |user| %>
+                      <option value="<%= user.id %>"
+                              data-name="<%= user.effective_display_name %>"
+                              data-initials="<%= user.initials.first(1).upcase %>">
+                        <%= user.effective_display_name %>
+                      </option>
+                    <% end %>
+                  </select>
+
+                  <button type="button"
+                          class="action-btn"
+                          data-project-members-picker-target="addButton"
+                          data-action="click->project-members-picker#add"
+                          <%= "disabled" if available_members.empty? %>>
+                    + Add Member
+                  </button>
+                </div>
+                <p class="company-cell-muted member-picker-empty"
+                   data-project-members-picker-target="empty"
+                   <%= "hidden" unless available_members.empty? %>>
+                  No additional active human members are available.
+                </p>
+              </div>
+
+              <div data-project-members-picker-target="inputs">
+                <% @selected_member_users.each do |member| %>
+                  <input type="hidden" name="member_user_ids[]" value="<%= member.id %>">
+                <% end %>
+              </div>
             </div>
           </section>
 
