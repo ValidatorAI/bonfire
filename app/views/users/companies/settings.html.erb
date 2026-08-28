@@ -16,7 +16,21 @@
         <div class="settings-section-title">📌 Organization Profile</div>
 
         <% if Current.user.can_administer? %>
-          <%= form_with model: @account, url: account_path, method: :patch, class: "company-settings-form", html: { id: "company-settings-form" } do |form| %>
+          <%= form_with model: @account, url: account_path, method: :patch, class: "company-settings-form", html: { id: "company-settings-form" }, data: { controller: "form upload-preview" } do |form| %>
+            <%= hidden_field_tag :return_to, "company_settings" %>
+
+            <div class="form-group">
+              <label>Organization Avatar</label>
+              <div class="align-center avatar__form gap">
+                <label class="btn avatar input--file account-logo txt-xx-large">
+                  <%= image_tag fresh_account_logo_path(size: :small), alt: "Organization avatar", size: 96, data: { upload_preview_target: "image" } %>
+                  <%= form.file_field :logo, class: "input", accept: "image/*", style: "visibility: hidden;",
+                        data: { upload_preview_target: "input", action: "upload-preview#previewImage change->form#submit" } %>
+                  <span class="for-screen-reader">Upload organization avatar</span>
+                </label>
+              </div>
+            </div>
+
             <div class="form-row form-row--two">
               <div class="form-group">
                 <label>Company Name</label>

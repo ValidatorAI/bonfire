@@ -9,8 +9,7 @@ class Accounts::LogosController < ApplicationController
       expires_in 5.minutes, public: true, stale_while_revalidate: 1.week
 
       if Current.account&.logo&.attached?
-        logo = Current.account.logo.variant(logo_variant).processed
-        send_png_file ActiveStorage::Blob.service.path_for(logo.key)
+        send_uploaded_logo
       else
         send_stock_icon
       end
@@ -40,6 +39,17 @@ class Accounts::LogosController < ApplicationController
 
     def logo_variant
       small_logo? ? SMALL_SQUARE_PNG_VARIANT : LARGE_SQUARE_PNG_VARIANT
+    end
+
+    def send_uploaded_logo
+      logo = Current.account.logo
+
+      if logo.variable?
+        variant = logo.variant(logo_variant).processed
+        send_png_file ActiveStorage::Blob.service.path_for(variant.key)
+      else
+        send_data logo.download, content_type: logo.content_type, disposition: :inline
+      end
     end
 
     def small_logo?

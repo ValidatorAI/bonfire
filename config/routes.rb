@@ -30,7 +30,9 @@ Rails.application.routes.draw do
   end
 
   direct :fresh_account_logo do |options|
-    route_for :account_logo, v: Current.account&.updated_at&.to_fs(:number), size: options[:size]
+    account = Current.account
+    version = account&.logo&.attachment&.blob&.key || account&.updated_at&.to_fs(:number)
+    route_for :account_logo, v: version, size: options[:size]
   end
 
   get "join/:join_code", to: "users#new", as: :join

@@ -10,6 +10,16 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
     assert_select "section[aria-label='Global AI integrations']"
+    assert_select "section[aria-label='Organization profile'] input[type='file'][name='account[logo]']"
+  end
+
+  test "non admin cannot see organization avatar upload" do
+    sign_in :kevin
+
+    get user_company_settings_url(user_id: "me")
+
+    assert_response :ok
+    assert_select "section[aria-label='Organization profile'] input[type='file'][name='account[logo]']", count: 0
   end
 
   test "admin can update allowed bots and deselect removes from all rooms and projects" do

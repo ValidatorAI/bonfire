@@ -30,6 +30,16 @@ class Accounts::LogosControllerTest < ActionDispatch::IntegrationTest
     assert_valid_png_response size: 192
   end
 
+  test "show custom svg" do
+    accounts(:signal).update! logo: fixture_file_upload("logo.svg", "image/svg+xml")
+
+    get account_logo_url(size: :small)
+
+    assert_response :ok
+    assert_equal "image/svg+xml", @response.headers["content-type"]
+    assert_includes @response.body, "<svg"
+  end
+
   test "destroy" do
     accounts(:signal).update! logo: fixture_file_upload("moon.jpg", "image/jpeg")
 

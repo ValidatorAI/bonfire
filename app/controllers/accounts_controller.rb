@@ -10,7 +10,7 @@ class AccountsController < ApplicationController
 
   def update
     @account.update!(account_params)
-    redirect_to edit_account_url, notice: "✓"
+    redirect_after_update
   end
 
   private
@@ -20,6 +20,14 @@ class AccountsController < ApplicationController
 
     def account_params
       params.require(:account).permit(:name, :logo, settings: {})
+    end
+
+    def redirect_after_update
+      if params[:return_to] == "company_settings"
+        redirect_to user_company_settings_path(user_id: "me"), notice: "✓"
+      else
+        redirect_to edit_account_url, notice: "✓"
+      end
     end
 
     def account_users
