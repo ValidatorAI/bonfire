@@ -707,7 +707,10 @@ body.sidebar .company-members-table th {
 
 body.sidebar .company-settings-feed {
   background-color: var(--surface-alt);
+  max-block-size: calc(100dvh - 104px);
   min-block-size: calc(100dvh - 104px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 body.sidebar .settings-container {
