@@ -8,7 +8,7 @@ class Users::ProfilesController < ApplicationController
 
   def update
     @user.update user_params
-    redirect_to user_profile_url, notice: update_notice
+    redirect_to redirect_target_url, notice: update_notice
   end
 
   private
@@ -22,5 +22,11 @@ class Users::ProfilesController < ApplicationController
 
     def update_notice
       params[:user][:avatar] ? "It may take up to 30 minutes to change everywhere." : "✓"
+    end
+
+    def redirect_target_url
+      return user_settings_url if params[:return_to] == "settings"
+
+      user_profile_url
     end
 end

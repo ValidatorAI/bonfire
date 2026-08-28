@@ -145,7 +145,7 @@
 
 /* Variants */
 .btn--reversed {
-  /* --btn-background: var(--color-text); */
+  --btn-background: var(--color-text);
   --btn-color: var(--color-text-reversed);
   border: 1px solid var(--color-border-darker);
 }
