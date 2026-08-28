@@ -1295,6 +1295,16 @@ body.sidebar .user-settings-form .input {
   inline-size: 100%;
 }
 
+/* Keep browser autofill aligned with light input surfaces in sidebar screens. */
+body.sidebar .input:autofill,
+body.sidebar .input:-webkit-autofill,
+body.sidebar .input:-webkit-autofill:hover,
+body.sidebar .input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--input-background, var(--surface)) inset;
+  box-shadow: 0 0 0 1000px var(--input-background, var(--surface)) inset;
+}
+
 body.sidebar .user-settings-option {
   display: flex;
   align-items: center;

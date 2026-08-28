@@ -22,8 +22,9 @@
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--color-text);
-    -webkit-box-shadow: 0 0 0px 1000px var(--color-selected) inset;
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
   }
 
   &:where(:not(:active)):focus {
@@ -84,8 +85,8 @@
     :-webkit-autofill,
     :-webkit-autofill:hover,
     :-webkit-autofill:focus)) {
-    -webkit-text-fill-color: var(--color-text);
-    -webkit-box-shadow: 0 0 0px 1000px var(--color-selected) inset;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+    color:#000000;
   }
 
   .btn:not(.avatar) {
