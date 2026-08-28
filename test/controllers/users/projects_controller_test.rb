@@ -124,6 +124,31 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert Membership.exists?(room: project.project_room, participant: selected_user)
   end
 
+  test "create broadcasts sidebar refresh for creator and selected members" do
+    selected_user = users(:kevin)
+
+    assert_difference("Project.count", 1) do
+      post user_company_projects_url, params: {
+        project: {
+          name: "Project Orion",
+          short_code: "ORION",
+          description: "Deep-space coordination"
+        },
+        member_user_ids: [ users(:david).id.to_s, selected_user.id.to_s ]
+      }
+    end
+
+    assert_redirected_to user_company_project_overview_url(id: Project.order(:created_at).last.id)
+
+    [ users(:david), selected_user ].each do |user|
+      target = ActionView::RecordIdentifier.dom_id(user, :sidebar_refresh)
+      stream = send(:find_broadcasts_for, user, :rooms)
+
+      assert_equal 1, stream.scan(%(target="#{target}")).count
+      assert_match(/data-sidebar-refresh-trigger-value="true"/, stream)
+    end
+  end
+
   test "create ignores duplicate invalid inactive and bot member ids" do
     inactive_user = users(:jz)
     inactive_user.update!(status: :deactivated)

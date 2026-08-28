@@ -1,6 +1,7 @@
 <%= sidebar_turbo_frame_tag do %>
   <%= turbo_stream_from :rooms %>
   <%= turbo_stream_from Current.user, :rooms %>
+  <%= render "users/sidebars/refresh_signal", user: Current.user, trigger: false %>
 
     <div class="sidebar__container overflow-y overflow-hide-scrollbar"
       data-controller="badge-dot room-settings-modal"

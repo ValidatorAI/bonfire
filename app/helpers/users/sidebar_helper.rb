@@ -1,4 +1,8 @@
 module Users::SidebarHelper
+  def sidebar_refresh_dom_id(user)
+    dom_id(user, :sidebar_refresh)
+  end
+
   def each_membership_in_room_tree(memberships, &block)
     return enum_for(:each_membership_in_room_tree, memberships) unless block
 

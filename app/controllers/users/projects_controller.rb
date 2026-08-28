@@ -46,6 +46,8 @@ class Users::ProjectsController < ApplicationController
       create_default_channels!(project_room, selected_channel_names)
     end
 
+    broadcast_sidebar_refresh_for(selected_member_users)
+
     redirect_to user_company_project_overview_path(user_id: "me", id: @project.id), notice: "Project created"
   rescue ActiveRecord::RecordInvalid
     render :new, status: :unprocessable_entity
@@ -153,5 +155,14 @@ class Users::ProjectsController < ApplicationController
     def set_project
       @project = Current.user.projects.find_by(id: params[:id])
       raise ActiveRecord::RecordNotFound if @project.blank?
+    end
+
+    def broadcast_sidebar_refresh_for(users)
+      users.uniq.each do |user|
+        broadcast_replace_to user, :rooms,
+          target: helpers.sidebar_refresh_dom_id(user),
+          partial: "users/sidebars/refresh_signal",
+          locals: { user: user, trigger: true }
+      end
     end
 end
