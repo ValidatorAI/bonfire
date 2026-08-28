@@ -7,7 +7,7 @@
 <% end %>
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
-<% invite_url = join_url(@account.join_code) %>
+<% invite_url = "#{request.base_url}#{join_path(@account.join_code)}" %>
 
 <div id="message-area" class="message-area">
   <div class="feed-container company-settings-feed">
