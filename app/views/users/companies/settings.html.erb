@@ -16,7 +16,7 @@
         <div class="settings-section-title">📌 Organization Profile</div>
 
         <% if Current.user.can_administer? %>
-          <%= form_with model: @account, url: account_path, method: :patch, class: "company-settings-form", html: { id: "company-settings-form" }, data: { controller: "form upload-preview" } do |form| %>
+          <%= form_with model: @account, url: account_path(return_to: "company_settings"), method: :patch, class: "company-settings-form", html: { id: "company-settings-form" }, data: { controller: "form upload-preview" } do |form| %>
             <%= hidden_field_tag :return_to, "company_settings" %>
 
             <div class="form-group">
