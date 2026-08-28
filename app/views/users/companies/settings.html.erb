@@ -9,74 +9,133 @@
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
 <div id="message-area" class="message-area">
-  <div class="company-page company-page--settings">
-    <section class="company-page-card" aria-label="Organization profile">
-      <header class="company-page-card__header">
-        <h2 class="company-page-card__title">Organization Profile</h2>
-        <p class="company-page-card__desc">Manage the primary identity shown across your workspace.</p>
-      </header>
+  <div class="feed-container company-settings-feed">
+    <div class="settings-container">
+      <section class="settings-card" aria-label="Organization profile">
+        <div class="settings-section-title">📌 Organization Profile</div>
 
-      <% if Current.user.can_administer? %>
-        <%= form_with model: @account, url: account_path, method: :patch, class: "company-settings-form" do |form| %>
-          <div class="company-settings-form__grid">
-            <label class="company-settings-form__group">
-              <span>Company Name</span>
-              <%= form.text_field :name, class: "input", autocomplete: "organization", required: true %>
-            </label>
+        <% if Current.user.can_administer? %>
+          <%= form_with model: @account, url: account_path, method: :patch, class: "company-settings-form", html: { id: "company-settings-form" } do |form| %>
+            <div class="form-row form-row--two">
+              <div class="form-group">
+                <label>Company Name</label>
+                <%= form.text_field :name, class: "input", autocomplete: "organization", required: true %>
+              </div>
 
-            <label class="company-settings-form__group">
-              <span>Workspace URL</span>
-              <input class="input" type="text" value="<%= @account.join_code %>.w.app" readonly>
-            </label>
-          </div>
+              <div class="form-group">
+                <label>Workspace URL</label>
+                <input class="input input--disabled" type="text" value="<%= @account.join_code %>.w.app" disabled>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="form-row form-row--two">
+            <div class="form-group">
+              <label>Company Name</label>
+              <input class="input input--disabled" type="text" value="<%= @account.name %>" disabled>
+            </div>
 
-          <div class="company-page-actions">
-            <%= form.button "Save Changes", class: "btn btn--reversed", type: :submit %>
+            <div class="form-group">
+              <label>Workspace URL</label>
+              <input class="input input--disabled" type="text" value="<%= @account.join_code %>.w.app" disabled>
+            </div>
           </div>
         <% end %>
-      <% else %>
-        <div class="company-settings-form__grid">
-          <label class="company-settings-form__group">
-            <span>Company Name</span>
-            <input class="input" type="text" value="<%= @account.name %>" readonly>
-          </label>
+      </section>
 
-          <label class="company-settings-form__group">
-            <span>Workspace URL</span>
-            <input class="input" type="text" value="<%= @account.join_code %>.w.app" readonly>
-          </label>
+      <section class="settings-card" aria-label="Member directory">
+        <div class="settings-section-title settings-section-title--spread">
+          <span>👥 Member Directory</span>
+          <% if Current.user.can_administer? %>
+            <%= link_to "+ Invite User", edit_account_path, class: "action-btn primary", style: "font-size: 12px;" %>
+          <% end %>
         </div>
-      <% end %>
-    </section>
 
-    <section class="company-page-card" aria-label="Member directory">
-      <header class="company-page-card__header company-page-card__header--inline">
-        <div>
-          <h2 class="company-page-card__title">Member Directory</h2>
-          <p class="company-page-card__desc">Workspace participants and their current roles.</p>
-        </div>
-      </header>
-
-      <div class="company-members-table-wrap">
-        <table class="company-members-table">
+        <table class="data-table">
           <thead>
             <tr>
               <th>User</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <% @users.each do |user| %>
               <tr>
-                <td><%= user.effective_display_name %></td>
-                <td><%= user.email_address %></td>
-                <td><%= user.role.to_s.humanize %></td>
+                <td>
+                  <div class="member-row-info">
+                    <div class="top-avatar"><%= user.initials.first(1).upcase %></div>
+                    <%= user.effective_display_name %>
+                  </div>
+                </td>
+                <td class="company-cell-muted"><%= user.email_address %></td>
+                <td>
+                  <% if Current.user.can_administer? %>
+                    <%= form_with url: account_user_path(user), method: :patch, scope: :user do |form| %>
+                      <%= form.select :role,
+                            options_for_select([["Member", "member"], ["Workspace Admin", "administrator"]], user.role),
+                            {},
+                            class: "role-select",
+                            onchange: "this.form.requestSubmit()" %>
+                    <% end %>
+                  <% else %>
+                    <span><%= user.role.to_s.humanize %></span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if Current.user.can_administer? && user != Current.user %>
+                    <%= button_to "Revoke", account_user_path(user), method: :delete, class: "action-btn action-btn--small" %>
+                  <% else %>
+                    <span class="company-cell-muted">—</span>
+                  <% end %>
+                </td>
               </tr>
             <% end %>
           </tbody>
         </table>
+      </section>
+
+      <section class="settings-card" aria-label="Global AI integrations">
+        <div class="settings-section-title">🤖 Global AI Integrations</div>
+        <p class="settings-section-copy">
+          Enable which specialized AI agents are allowed to be added to projects across your workspace.
+        </p>
+
+        <div class="bot-selection-grid">
+          <% if @bots.any? %>
+            <% @bots.each_with_index do |bot, index| %>
+              <label class="bot-card selected">
+                <input type="checkbox" checked>
+                <div class="bot-card-icon"><%= bot.initials.first(1).upcase %></div>
+                <div class="bot-card-info">
+                  <div class="bot-card-name"><%= bot.effective_display_name %></div>
+                  <div class="bot-card-role">Workspace Bot</div>
+                </div>
+              </label>
+            <% end %>
+          <% else %>
+            <label class="bot-card selected">
+              <input type="checkbox" checked>
+              <div class="bot-card-icon">🤖</div>
+              <div class="bot-card-info">
+                <div class="bot-card-name">W Assistant</div>
+                <div class="bot-card-role">Core Utility</div>
+              </div>
+            </label>
+          <% end %>
+        </div>
+
+        <div class="settings-row-actions">
+          <%= link_to "+ Register Custom Agent Webhook", account_bots_path, class: "action-btn action-btn--dashed" %>
+        </div>
+      </section>
+
+      <div class="settings-footer-actions">
+        <% if Current.user.can_administer? %>
+          <button type="submit" class="action-btn primary" form="company-settings-form">Save Workspace Changes</button>
+        <% end %>
       </div>
-    </section>
+    </div>
   </div>
 </div>

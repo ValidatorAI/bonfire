@@ -705,10 +705,235 @@ body.sidebar .company-members-table th {
   text-transform: uppercase;
 }
 
+body.sidebar .company-settings-feed {
+  background-color: var(--surface-alt);
+  min-block-size: calc(100dvh - 104px);
+}
+
+body.sidebar .settings-container {
+  display: grid;
+  gap: 16px;
+  margin-inline: auto;
+  max-inline-size: 72rem;
+  padding: 24px;
+}
+
+body.sidebar .settings-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: 22px;
+}
+
+body.sidebar .settings-section-title {
+  align-items: center;
+  display: flex;
+  font-size: 15px;
+  font-weight: 600;
+  justify-content: flex-start;
+  margin: 0 0 14px;
+}
+
+body.sidebar .settings-section-title--spread {
+  justify-content: space-between;
+}
+
+body.sidebar .settings-section-copy {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+body.sidebar .company-settings-form {
+  display: block;
+}
+
+body.sidebar .form-row {
+  display: grid;
+  gap: 14px;
+}
+
+body.sidebar .form-row--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.sidebar .form-group {
+  display: grid;
+  gap: 6px;
+}
+
+body.sidebar .form-group label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.sidebar .input--disabled {
+  background: var(--msg-bg);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+body.sidebar .data-table {
+  border-collapse: collapse;
+  inline-size: 100%;
+}
+
+body.sidebar .data-table th,
+body.sidebar .data-table td {
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+  padding: 10px 8px;
+  text-align: left;
+}
+
+body.sidebar .data-table th {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+body.sidebar .company-cell-muted {
+  color: var(--text-secondary);
+}
+
+body.sidebar .action-btn {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  text-decoration: none;
+}
+
+body.sidebar .action-btn:hover {
+  background: color-mix(in oklab, var(--surface), #000000 4%);
+}
+
+body.sidebar .action-btn.primary {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+}
+
+body.sidebar .action-btn.primary:hover {
+  background: #111111;
+}
+
+body.sidebar .action-btn--small {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+body.sidebar .action-btn--dashed {
+  border-style: dashed;
+}
+
+body.sidebar .role-select {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 8px;
+}
+
+body.sidebar .member-row-info {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
+body.sidebar .top-avatar {
+  align-items: center;
+  background: #3b82f6;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 700;
+  block-size: 24px;
+  inline-size: 24px;
+  justify-content: center;
+}
+
+body.sidebar .bot-selection-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+body.sidebar .bot-card {
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: default;
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+}
+
+body.sidebar .bot-card.selected {
+  border-color: color-mix(in oklab, #000000, var(--border-color) 55%);
+}
+
+body.sidebar .bot-card input[type="checkbox"] {
+  accent-color: #000000;
+}
+
+body.sidebar .bot-card-icon {
+  align-items: center;
+  background: #000000;
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  block-size: 28px;
+  inline-size: 28px;
+  justify-content: center;
+}
+
+body.sidebar .bot-card-info {
+  display: grid;
+  gap: 2px;
+}
+
+body.sidebar .bot-card-name {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.sidebar .bot-card-role {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+body.sidebar .settings-row-actions {
+  margin-top: 16px;
+}
+
+body.sidebar .settings-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 @media (max-width: 900px) {
   body.sidebar .company-page-grid,
   body.sidebar .company-settings-form__grid,
   body.sidebar .company-page-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.sidebar .settings-container,
+  body.sidebar .form-row--two {
     grid-template-columns: 1fr;
   }
 }
