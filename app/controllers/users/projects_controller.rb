@@ -84,7 +84,8 @@ class Users::ProjectsController < ApplicationController
 
     def set_company_context
       @account = Current.account
-      @users = User.active.ordered.limit(50)
+      @users = User.active.without_bots.ordered.limit(50)
+      @bots = @account.allowed_bot_users
       @projects = Current.user.projects.sort_by { |project| project.display_name.to_s.downcase }.first(6)
       @rooms_count = Current.user.rooms.without_directs.active.count
       @messages_this_week = Current.user.reachable_messages.where(created_at: 1.week.ago..Time.current).count

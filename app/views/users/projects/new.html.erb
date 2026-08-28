@@ -61,45 +61,21 @@
             <p class="form-section-copy">Assign specialist bots now and map them later in project settings.</p>
 
             <div class="bot-selection-grid">
-              <label class="bot-card selected">
-                <input type="checkbox" name="ui_bot_ids[]" value="assistant" checked>
-                <span class="bot-card-icon" aria-hidden="true">🤖</span>
-                <span class="bot-card-info">
-                  <span class="bot-card-name">W Assistant</span>
-                  <span class="bot-card-role">General Support</span>
-                  <span class="bot-card-desc">Daily project coordination and quick answers.</span>
-                </span>
-              </label>
-
-              <label class="bot-card selected">
-                <input type="checkbox" name="ui_bot_ids[]" value="researcher" checked>
-                <span class="bot-card-icon" aria-hidden="true">🔬</span>
-                <span class="bot-card-info">
-                  <span class="bot-card-name">Researcher</span>
-                  <span class="bot-card-role">Insight Discovery</span>
-                  <span class="bot-card-desc">Find context, sources, and technical references.</span>
-                </span>
-              </label>
-
-              <label class="bot-card">
-                <input type="checkbox" name="ui_bot_ids[]" value="builder">
-                <span class="bot-card-icon" aria-hidden="true">⚡</span>
-                <span class="bot-card-info">
-                  <span class="bot-card-name">Builder</span>
-                  <span class="bot-card-role">Implementation</span>
-                  <span class="bot-card-desc">Break down tasks and draft implementation steps.</span>
-                </span>
-              </label>
-
-              <label class="bot-card">
-                <input type="checkbox" name="ui_bot_ids[]" value="reviewer">
-                <span class="bot-card-icon" aria-hidden="true">🛡️</span>
-                <span class="bot-card-info">
-                  <span class="bot-card-name">Reviewer</span>
-                  <span class="bot-card-role">Quality Guard</span>
-                  <span class="bot-card-desc">Review quality, regressions, and release readiness.</span>
-                </span>
-              </label>
+              <% if @bots.any? %>
+                <% @bots.each do |bot| %>
+                  <label class="bot-card">
+                    <input type="checkbox" name="ui_bot_ids[]" value="<%= bot.id %>">
+                    <span class="bot-card-icon" aria-hidden="true"><%= bot.initials.first(1).upcase %></span>
+                    <span class="bot-card-info">
+                      <span class="bot-card-name"><%= bot.effective_display_name %></span>
+                      <span class="bot-card-role">Workspace Bot</span>
+                      <span class="bot-card-desc"><%= bot.bio.presence || "Available for project collaboration." %></span>
+                    </span>
+                  </label>
+                <% end %>
+              <% else %>
+                <p class="company-cell-muted">No workspace bots are allowed yet.</p>
+              <% end %>
             </div>
           </section>
 

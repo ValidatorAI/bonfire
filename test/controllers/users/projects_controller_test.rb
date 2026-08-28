@@ -13,6 +13,36 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "General Details", @response.body
   end
 
+  test "new renders only workspace allowed bots" do
+    account = accounts(:signal)
+    allowed_bot = users(:bender)
+    disallowed_bot = User.create_bot!(
+      name: "Ops Bot",
+      display_name: "Ops Bot",
+      email_address: "ops-bot-#{SecureRandom.hex(4)}@example.com"
+    )
+
+    account.update!(settings: account.settings_with_allowed_bot_user_ids([ allowed_bot.id ]))
+
+    get user_company_project_new_url
+
+    assert_response :success
+    assert_match allowed_bot.effective_display_name, @response.body
+    assert_no_match disallowed_bot.effective_display_name, @response.body
+    assert_no_match "value=\"assistant\"", @response.body
+  end
+
+  test "new shows empty state when no workspace bots are allowed" do
+    account = accounts(:signal)
+    account.update!(settings: account.settings_with_allowed_bot_user_ids([]))
+
+    get user_company_project_new_url
+
+    assert_response :success
+    assert_match "No workspace bots are allowed yet.", @response.body
+    assert_no_match users(:bender).effective_display_name, @response.body
+  end
+
   test "create creates project and redirects to overview" do
     assert_difference("Project.count", 1) do
       post user_company_projects_url, params: {
