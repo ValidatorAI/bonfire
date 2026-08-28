@@ -102,29 +102,55 @@
           Enable which specialized AI agents are allowed to be added to projects across your workspace.
         </p>
 
-        <div class="bot-selection-grid">
-          <% if @bots.any? %>
-            <% @bots.each_with_index do |bot, index| %>
-              <label class="bot-card selected">
-                <input type="checkbox" checked>
-                <div class="bot-card-icon"><%= bot.initials.first(1).upcase %></div>
-                <div class="bot-card-info">
-                  <div class="bot-card-name"><%= bot.effective_display_name %></div>
-                  <div class="bot-card-role">Workspace Bot</div>
-                </div>
-              </label>
-            <% end %>
-          <% else %>
-            <label class="bot-card selected">
-              <input type="checkbox" checked>
-              <div class="bot-card-icon">🤖</div>
-              <div class="bot-card-info">
-                <div class="bot-card-name">W Assistant</div>
-                <div class="bot-card-role">Core Utility</div>
-              </div>
-            </label>
+        <% if Current.user.can_administer? %>
+          <%= form_with url: user_update_company_settings_path(user_id: "me"), method: :patch, class: "company-settings-form", html: { id: "company-bot-settings-form" }, data: { controller: "form" } do %>
+            <%= hidden_field_tag "account[settings][allowed_bot_user_ids][]", "" %>
+
+            <div class="bot-selection-grid">
+              <% if @bots.any? %>
+                <% @bots.each do |bot| %>
+                  <% selected = @allowed_bot_user_ids.include?(bot.id) %>
+
+                  <label class="bot-card <%= "selected" if selected %>">
+                    <input type="checkbox"
+                          name="account[settings][allowed_bot_user_ids][]"
+                          value="<%= bot.id %>"
+                        data-action="change->form#submit"
+                          <%= "checked" if selected %>>
+                    <div class="bot-card-icon"><%= bot.initials.first(1).upcase %></div>
+                    <div class="bot-card-info">
+                      <div class="bot-card-name"><%= bot.effective_display_name %></div>
+                      <div class="bot-card-role">Workspace Bot</div>
+                    </div>
+                  </label>
+                <% end %>
+              <% else %>
+                <p class="company-cell-muted">No workspace bots are registered yet.</p>
+              <% end %>
+            </div>
+
+            <p class="company-cell-muted">Changes are saved automatically.</p>
           <% end %>
-        </div>
+        <% else %>
+          <div class="bot-selection-grid">
+            <% if @bots.any? %>
+              <% @bots.each do |bot| %>
+                <% selected = @allowed_bot_user_ids.include?(bot.id) %>
+
+                <label class="bot-card <%= "selected" if selected %>">
+                  <input type="checkbox" <%= "checked" if selected %> disabled>
+                  <div class="bot-card-icon"><%= bot.initials.first(1).upcase %></div>
+                  <div class="bot-card-info">
+                    <div class="bot-card-name"><%= bot.effective_display_name %></div>
+                    <div class="bot-card-role">Workspace Bot</div>
+                  </div>
+                </label>
+              <% end %>
+            <% else %>
+              <p class="company-cell-muted">No workspace bots are registered yet.</p>
+            <% end %>
+          </div>
+        <% end %>
 
         <div class="settings-row-actions">
           <%= link_to "+ Register Custom Agent Webhook", account_bots_path, class: "action-btn action-btn--dashed" %>

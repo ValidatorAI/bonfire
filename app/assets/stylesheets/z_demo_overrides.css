@@ -876,13 +876,17 @@ body.sidebar .bot-card {
   align-items: center;
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  cursor: default;
+  cursor: pointer;
   display: flex;
   gap: 10px;
   padding: 12px;
 }
 
 body.sidebar .bot-card.selected {
+  border-color: color-mix(in oklab, #000000, var(--border-color) 55%);
+}
+
+body.sidebar .bot-card:has(input[type="checkbox"]:checked) {
   border-color: color-mix(in oklab, #000000, var(--border-color) 55%);
 }
 

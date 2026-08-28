@@ -117,7 +117,7 @@ module Rooms
         end
 
         def available_bot_users_scope
-          User.active_bots.ordered
+          User.active_bots.where(id: Current.account.allowed_bot_user_ids).ordered
         end
 
         def available_bot_user_options

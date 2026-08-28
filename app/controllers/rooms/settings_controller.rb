@@ -80,7 +80,9 @@ module Rooms
       end
 
       def available_bot_users_scope
-        @room.project ? @room.project.users.active_bots.ordered : User.none
+        return User.none unless @room.project
+
+        @room.project.users.active_bots.where(id: Current.account.allowed_bot_user_ids).ordered
       end
 
       def available_ai_teammate_options
