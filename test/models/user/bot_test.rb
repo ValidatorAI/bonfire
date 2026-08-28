@@ -10,6 +10,7 @@ class User::BotTest < ActiveSupport::TestCase
 
     bot = User.create_bot!(name: "Bender")
     assert_equal "#{bot.id}-#{token}", bot.bot_key
+    assert_equal "Bender", bot.display_name
   end
 
   test "reset bot key" do
