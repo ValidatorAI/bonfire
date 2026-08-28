@@ -31,6 +31,7 @@ class Project < ApplicationRecord
     project_room || rooms.create!(
       type: "Rooms::Project",
       name: slug,
+      private: private,
       creator: default_room_creator
     )
   end

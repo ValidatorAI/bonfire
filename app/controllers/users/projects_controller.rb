@@ -1,4 +1,9 @@
 class Users::ProjectsController < ApplicationController
+  DEFAULT_CHANNEL_DEFINITIONS = {
+    "specifications" => "specifications",
+    "releases" => "releases"
+  }.freeze
+
   before_action :set_company_context
   before_action :ensure_permission_to_create_projects, only: %i[ new create ]
   before_action :set_project, only: %i[ overview status all_hands knowledge ]
@@ -10,6 +15,7 @@ class Users::ProjectsController < ApplicationController
   def create
     @project = Project.new(project_params)
     selected_member_users = selected_human_member_users
+    selected_channel_names = selected_default_channel_names
 
     if @project.name.blank?
       @project.errors.add(:name, "can't be blank")
@@ -27,6 +33,7 @@ class Users::ProjectsController < ApplicationController
       @project.project_users.find_or_create_by!(user: Current.user)
 
       project_room = @project.ensure_project_room!
+      project_room.update!(private: @project.private?) if project_room.private != @project.private?
       Membership.find_or_create_by!(room: project_room, participant: Current.user)
 
       selected_member_users.each do |user|
@@ -35,6 +42,8 @@ class Users::ProjectsController < ApplicationController
         @project.project_users.find_or_create_by!(user: user)
         Membership.find_or_create_by!(room: project_room, participant: user)
       end
+
+      create_default_channels!(project_room, selected_channel_names)
     end
 
     redirect_to user_company_project_overview_path(user_id: "me", id: @project.id), notice: "Project created"
@@ -95,10 +104,39 @@ class Users::ProjectsController < ApplicationController
       @account = Current.account
       @users = User.active.without_bots.ordered.limit(50)
       @selected_member_users = selected_human_member_users
+      @selected_default_channel_keys = selected_default_channel_keys
       @bots = @account.allowed_bot_users
       @projects = Current.user.projects.sort_by { |project| project.display_name.to_s.downcase }.first(6)
       @rooms_count = Current.user.rooms.without_directs.active.count
       @messages_this_week = Current.user.reachable_messages.where(created_at: 1.week.ago..Time.current).count
+    end
+
+    def selected_default_channel_keys
+      values = params[:default_channel_keys]
+      return DEFAULT_CHANNEL_DEFINITIONS.keys if values.nil?
+
+      Array(values)
+        .filter_map { |value| value.to_s.presence }
+        .select { |value| DEFAULT_CHANNEL_DEFINITIONS.key?(value) }
+        .uniq
+    end
+
+    def selected_default_channel_names
+      selected_default_channel_keys.map { |key| DEFAULT_CHANNEL_DEFINITIONS[key] }
+    end
+
+    def create_default_channels!(project_room, channel_names)
+      channel_names.each do |channel_name|
+        Rooms::Open.create_for(
+          {
+            name: channel_name,
+            project_id: @project.id,
+            parent_id: project_room.id,
+            private: @project.private?
+          },
+          users: Current.user
+        )
+      end
     end
 
     def selected_human_member_users

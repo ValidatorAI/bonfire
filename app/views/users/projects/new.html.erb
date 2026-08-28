@@ -177,18 +177,26 @@
             <h3 class="form-section-title">💬 Default Channels &amp; Access</h3>
 
             <div class="channel-checkboxes">
+              <input type="hidden" name="default_channel_keys[]" value="">
+
               <label class="checkbox-item">
                 <input type="checkbox" checked disabled>
                 <span>🔒 # general</span>
               </label>
 
               <label class="checkbox-item">
-                <input type="checkbox" checked>
+                <input type="checkbox"
+                       name="default_channel_keys[]"
+                       value="specifications"
+                       <%= "checked" if @selected_default_channel_keys.include?("specifications") %>>
                 <span>💬 # specifications</span>
               </label>
 
               <label class="checkbox-item">
-                <input type="checkbox" checked>
+                <input type="checkbox"
+                       name="default_channel_keys[]"
+                       value="releases"
+                       <%= "checked" if @selected_default_channel_keys.include?("releases") %>>
                 <span>🚀 # releases</span>
               </label>
 

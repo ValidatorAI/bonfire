@@ -75,7 +75,31 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert project.private?
     assert_includes project.users, users(:david)
     assert project.project_room.present?
+    assert project.project_room.private?
     assert Membership.exists?(room: project.project_room, participant: users(:david))
+
+    channel_names = project.rooms.opens.where(parent_id: project.project_room.id).pluck(:name)
+    assert_equal [ "releases", "specifications" ], channel_names.sort
+  end
+
+  test "create only creates selected default channels" do
+    assert_difference("Project.count", 1) do
+      post user_company_projects_url, params: {
+        project: {
+          name: "Project Skylab",
+          short_code: "SKYLAB",
+          description: "Orbital workshop"
+        },
+        default_channel_keys: [ "", "releases" ]
+      }
+    end
+
+    project = Project.order(:created_at).last
+    channel_names = project.rooms.opens.where(parent_id: project.project_room.id).pluck(:name)
+
+    assert_equal [ "releases" ], channel_names
+    assert_not project.private?
+    assert_not project.project_room.private?
   end
 
   test "create adds selected human team members to project and project room" do
