@@ -150,6 +150,12 @@
   border: 1px solid var(--color-border-darker);
 }
 
+.bg-white{
+  background: white;
+  color: black;
+  border: 1px solid var(--color-border-darker);
+}
+
 .bg-black{
   background: black;
   color: white;

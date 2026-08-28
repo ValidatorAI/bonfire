@@ -8,7 +8,7 @@ module Users::ProfilesHelper
   end
 
   def profile_form_submit_button
-    tag.button class: "btn btn--reversed center txt-large", type: "submit" do
+    tag.button class: "btn btn--reversed center bg-white txt-large", type: "submit" do
       image_tag("check.svg", aria: { hidden: "true" }, size: 20) +
       tag.span("Save changes", class: "for-screen-reader")
     end
