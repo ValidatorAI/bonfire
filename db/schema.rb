@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_26_113000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_29_120000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -108,6 +108,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_26_113000) do
   end
 
   create_table "attention_items", force: :cascade do |t|
+    t.string "action_label"
     t.boolean "ai_confirm", default: false, null: false
     t.string "category"
     t.datetime "created_at", null: false
@@ -121,12 +122,17 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_26_113000) do
     t.integer "source_id"
     t.string "source_type"
     t.integer "status", default: 0, null: false
+    t.integer "target_id"
+    t.string "target_type"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.integer "user_id"
     t.index ["due_at"], name: "index_attention_items_on_due_at"
     t.index ["project_id", "status", "due_at"], name: "index_attention_items_on_project_id_and_status_and_due_at"
     t.index ["project_id"], name: "index_attention_items_on_project_id"
     t.index ["status"], name: "index_attention_items_on_status"
+    t.index ["user_id", "status", "category"], name: "index_attention_items_on_user_id_and_status_and_category"
+    t.index ["user_id"], name: "index_attention_items_on_user_id"
   end
 
   create_table "bans", force: :cascade do |t|
@@ -315,6 +321,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_26_113000) do
   add_foreign_key "approval_requests", "users", column: "resolved_by_id"
   add_foreign_key "attention_items", "projects"
   add_foreign_key "attention_items", "rooms"
+  add_foreign_key "attention_items", "users"
   add_foreign_key "attention_items", "users", column: "resolved_by_id"
   add_foreign_key "bans", "users"
   add_foreign_key "boosts", "messages"

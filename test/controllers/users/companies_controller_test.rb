@@ -5,6 +5,24 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
     sign_in :david
   end
 
+  test "home renders attention inbox and signals" do
+    AttentionItem.create!(
+      title: "Approve smart contract audit",
+      category: "decisions_waiting",
+      status: :pending,
+      overdue: true
+    )
+
+    get user_company_home_url(user_id: "me")
+
+    assert_response :ok
+    assert_select "h2", "What needs your attention?"
+    assert_select "[data-home-attention-target='openCount']", text: "1"
+    assert_select "[data-home-attention-target='overdueCount']", text: "1"
+    assert_select ".home-attention-card", count: 7
+    assert_select ".list-item-title", text: "Approve smart contract audit"
+  end
+
   test "settings" do
     get user_company_settings_url(user_id: "me")
 

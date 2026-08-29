@@ -40,6 +40,13 @@ Rails.application.routes.draw do
 
   resources :qr_code, only: :show
 
+  resources :attention_items, only: %i[ update ] do
+    member do
+      patch :resolve
+      patch :dismiss
+    end
+  end
+
   resources :users, only: :show do
     scope module: "users" do
       resource :avatar, only: %i[ show destroy ]

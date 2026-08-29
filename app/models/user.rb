@@ -17,6 +17,8 @@ class User < ApplicationRecord
 
   has_many :sessions, dependent: :destroy
   has_many :bans, dependent: :destroy
+  has_many :attention_items, dependent: :nullify
+  has_many :resolved_attention_items, class_name: "AttentionItem", foreign_key: :resolved_by_id, dependent: :nullify
 
   enum :status, %i[ active deactivated banned ], default: :active
 
