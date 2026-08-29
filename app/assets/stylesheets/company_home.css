@@ -1,9 +1,33 @@
 /* Company Home / Attention Dashboard Styles */
 
+#message-area:has(.home-attention-feed),
+.message-area:has(.home-attention-feed),
+.message-area[data-controller~="home-attention"],
+.home-message-area {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  flex: 1 1 0% !important;
+  overflow: hidden !important;
+  place-content: initial !important;
+  place-items: initial !important;
+  width: 100% !important;
+}
+
+#message-area:has(.home-attention-feed) > *,
+.message-area:has(.home-attention-feed) > *,
+.message-area[data-controller~="home-attention"] > *,
+.home-message-area > * {
+  grid-area: auto !important;
+}
+
 .home-attention-feed {
   padding: 24px;
   overflow-y: auto;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   box-sizing: border-box;
 }
 
@@ -161,9 +185,15 @@
 }
 
 .home-ask-input-area {
+  flex-shrink: 0;
   padding: 16px 24px;
   background: var(--surface);
   border-top: 1px solid var(--border-color);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .home-input-pill {
