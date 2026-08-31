@@ -344,4 +344,85 @@ if june_period.company_status_items.empty?
   ])
 end
 
+puts "Seeding Demo Projects and Project Status..."
+
+b2b_project = Project.find_or_create_by!(slug: "b2b-crypto-platform") do |project|
+  project.name = "B2B Crypto Platform"
+  project.path = "/projects/b2b-crypto-platform"
+  project.short_code = "B2B"
+  project.description = "B2B Crypto Platform is focused on secure institutional liquidity settlement with strong multi-signature governance and low-latency transaction confirmation workflows."
+  project.current_phase = "Phase 2: Core Platform Development"
+  project.progress_percent = 65
+  project.recently_completed = "Tailwind CSS styling applied to profile settings and card-based booking selectors. Leaflet map integrations merged to main."
+  project.private = false
+end
+
+b2b_project.update!(
+  name: "B2B Crypto Platform",
+  path: "/projects/b2b-crypto-platform",
+  short_code: "B2B",
+  description: "B2B Crypto Platform is focused on secure institutional liquidity settlement with strong multi-signature governance and low-latency transaction confirmation workflows.",
+  current_phase: "Phase 2: Core Platform Development",
+  progress_percent: 65,
+  recently_completed: "Tailwind CSS styling applied to profile settings and card-based booking selectors. Leaflet map integrations merged to main."
+)
+
+user_to_assign = overseer || User.first
+if user_to_assign
+  b2b_project.project_users.find_or_create_by!(user: user_to_assign)
+  project_room = b2b_project.ensure_project_room!
+  Membership.find_or_create_by!(room: project_room, participant: user_to_assign)
+end
+
+if b2b_project.bottlenecks.empty?
+  b2b_project.bottlenecks.create!([
+    {
+      title: "Obsidian Vault Indexing Timeout",
+      description: "The Hermes agent is failing to scan larger directories when connected to the Obsidian Model Context Protocol server. We need to implement pagination or optimize the context window parsing.",
+      severity: "active",
+      position: 1
+    }
+  ])
+end
+
+if b2b_project.todos.empty?
+  b2b_project.todos.create!([
+    {
+      title: "Finalize Express.js API Routes",
+      meta_text: "Connect the Node.js backend to the newly merged frontend booking selectors.",
+      completed: false,
+      position: 1
+    },
+    {
+      title: "Review Buzz Platform Workflows",
+      meta_text: "Validate the latest decentralized agent workflows running on Block's Buzz project.",
+      completed: false,
+      position: 2
+    }
+  ])
+end
+
+if b2b_project.knowledge_items.empty?
+  b2b_project.knowledge_items.create!([
+    {
+      title: "Infrastructure Routing",
+      badge: "Architecture",
+      description: "Our VPS is exclusively hosted on Infomaniak. Nginx Proxy Manager handles reverse proxy routing, and server administration is managed via Cockpit. Firewall rules have been updated to allow external binding.",
+      position: 1
+    },
+    {
+      title: "Custom Agent Delegation",
+      badge: "AI Integration",
+      description: "All queries regarding workspace documentation or generalized team knowledge should be @-mentioned to @orgknowledge in the relevant chatrooms, rather than querying external LLMs directly.",
+      position: 2
+    },
+    {
+      title: "Frontend Stack",
+      badge: "Tech Stack",
+      description: "The marketplace strictly adheres to vanilla JavaScript, HTML, and Tailwind CSS for mockups to ensure lightweight rendering before React/Vue integration.",
+      position: 3
+    }
+  ])
+end
+
 puts "Done!"
