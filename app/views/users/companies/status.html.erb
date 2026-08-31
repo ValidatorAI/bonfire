@@ -8,7 +8,7 @@
       <h1 class="user-settings-nav__title txt-large">Shared Direction &amp; Status</h1>
     </div>
     <div class="company-status-nav-right">
-      <select class="period-selector" id="company-month-selector" aria-label="Select month" data-action="change->company-status#changeMonth@window">
+      <select class="period-selector" id="company-month-selector" aria-label="Select month">
         <% if @periods.present? %>
           <% @periods.each do |period| %>
             <option value="<%= period.slug %>" <%= "selected" if period == @selected_period %>><%= period.name %></option>

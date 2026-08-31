@@ -289,31 +289,56 @@ export default class extends Controller {
     const serverData = this.hasPeriodsValue ? this.periodsValue : null
     this.statusData = (serverData && Object.keys(serverData).length > 0) ? serverData : COMPANY_STATUS_DATA
 
-    this.currentMonth = this.hasSelectedPeriodValue ? (this.selectedPeriodValue || "august-2026") : "august-2026"
+    this.handleMonthChange = this.handleMonthChange.bind(this)
+    this.handleContentClick = this.handleContentClick.bind(this)
 
-    const selector = document.getElementById("company-month-selector")
-    if (selector) {
-      this.currentMonth = selector.value || this.currentMonth
+    this.monthSelector = document.getElementById("company-month-selector")
+    if (this.monthSelector) {
+      this.monthSelector.addEventListener("change", this.handleMonthChange)
+      this.currentMonth = this.monthSelector.value || this.selectedPeriodValue || "august-2026"
+    } else {
+      this.currentMonth = this.hasSelectedPeriodValue ? (this.selectedPeriodValue || "august-2026") : "august-2026"
     }
 
     this.renderCompanyStatus(this.currentMonth)
 
-    this.handleContentClick = this.handleContentClick.bind(this)
     if (this.hasContentTarget) {
       this.contentTarget.addEventListener("click", this.handleContentClick)
     }
   }
 
   disconnect() {
+    if (this.monthSelector) {
+      this.monthSelector.removeEventListener("change", this.handleMonthChange)
+    }
     if (this.hasContentTarget) {
       this.contentTarget.removeEventListener("click", this.handleContentClick)
     }
   }
 
-  changeMonth(event) {
+  handleMonthChange(event) {
     const monthId = event?.target?.value || "august-2026"
+    this.changeMonth(monthId)
+  }
+
+  changeMonth(monthId) {
     this.currentMonth = monthId
+
+    if (this.monthSelector && this.monthSelector.value !== monthId) {
+      this.monthSelector.value = monthId
+    }
+
+    this.closeDrawer()
+    this.updateUrlParam(monthId)
     this.renderCompanyStatus(monthId)
+  }
+
+  updateUrlParam(monthId) {
+    if (window.history && window.history.replaceState) {
+      const url = new URL(window.location)
+      url.searchParams.set("period", monthId)
+      window.history.replaceState({}, "", url)
+    }
   }
 
   renderCompanyStatus(monthId) {

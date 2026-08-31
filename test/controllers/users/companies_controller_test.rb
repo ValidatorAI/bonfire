@@ -39,6 +39,12 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller~='company-status']"
     assert_select "#company-detail-drawer"
 
+    # Selecting a specific period via query parameter
+    get user_company_status_url(user_id: "me", period: "september-2026")
+    assert_response :ok
+    assert_select "select#company-month-selector option[value='september-2026'][selected]", text: "September 2026 (Upcoming)"
+    assert_select "[data-company-status-selected-period-value='september-2026']"
+
     get user_company_status_url(user_id: "me", format: :json)
     assert_response :ok
     json = response.parsed_body
