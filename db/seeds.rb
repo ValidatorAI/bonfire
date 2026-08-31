@@ -848,4 +848,103 @@ File.write(
   HTML
 )
 
+puts "Seeding Action & Approval Messages in Chat Rooms..."
+
+target_rooms = [ b2b_project.project_room, Room.find_by(name: "All Talk"), Room.find_by(name: "som") ].compact.uniq
+
+w_assistant = Agent.find_or_create_by!(project: b2b_project, name: "W Assistant") do |agent|
+  agent.model = "claude-3-5-sonnet-20241022"
+  agent.program = "assistant"
+  agent.task_description = "Architecture & Decision Tracking Assistant"
+  agent.status = :online
+end
+
+researcher = Agent.find_or_create_by!(project: b2b_project, name: "Researcher") do |agent|
+  agent.model = "claude-3-5-sonnet-20241022"
+  agent.program = "researcher"
+  agent.task_description = "Research and Playbook Synthesis"
+  agent.status = :online
+end
+
+target_rooms.each do |room|
+  Membership.find_or_create_by!(room: room, participant: w_assistant)
+  Membership.find_or_create_by!(room: room, participant: researcher)
+  Membership.find_or_create_by!(room: room, participant: user_to_assign) if user_to_assign
+
+  # 1. Pending Decision Confirmation Action
+  msg1 = room.messages.create!(
+    creator: user_to_assign || w_assistant,
+    body: "We should stick with the current gas optimization pattern for the ERC-4337 router.",
+    client_message_id: SecureRandom.uuid
+  )
+
+  msg2 = room.messages.create!(
+    creator: w_assistant,
+    body: "I synthesized the proposal and drafted an architectural decision record for the router pattern.",
+    client_message_id: SecureRandom.uuid
+  )
+
+  ar1 = ApprovalRequest.find_or_create_by!(message: msg2) do |req|
+    req.room = room
+    req.agent = w_assistant
+    req.request_type = "decision"
+    req.payload = { "decision" => "Use gas optimization pattern for ERC-4337 router." }
+    req.status = :pending
+    req.requested_at = 15.minutes.ago
+  end
+
+  # Link attention item if present
+  if (att1 = AttentionItem.find_by(title: "Confirm multi-sig threshold update policy"))
+    att1.update(room: room, source: ar1, project: b2b_project)
+  end
+
+  # 2. Pending Knowledge Proposal Approval Action
+  msg3 = room.messages.create!(
+    creator: user_to_assign || researcher,
+    body: "@Researcher propose this benchmark analysis as reusable company knowledge for future smart contract reviews.",
+    client_message_id: SecureRandom.uuid
+  )
+
+  msg4 = room.messages.create!(
+    creator: researcher,
+    body: "Benchmark analysis compiled with gas profiling metrics across Base Sepolia and Arbitrum One testnets.",
+    client_message_id: SecureRandom.uuid
+  )
+
+  ar2 = ApprovalRequest.find_or_create_by!(message: msg4) do |req|
+    req.room = room
+    req.agent = researcher
+    req.request_type = "knowledge_proposal"
+    req.payload = { "decision" => "Approve benchmark playbook from ERC-4337 review as company knowledge." }
+    req.status = :pending
+    req.requested_at = 45.minutes.ago
+  end
+
+  if (att2 = AttentionItem.find_by(title: "Approve benchmark playbook from ERC-4337 review"))
+    att2.update(room: room, source: ar2, project: b2b_project)
+  end
+
+  # 3. Approved / Resolved Decision Action
+  msg5 = room.messages.create!(
+    creator: w_assistant,
+    body: "Mainnet deployment configuration requires final signer threshold verification.",
+    client_message_id: SecureRandom.uuid
+  )
+
+  ar3 = ApprovalRequest.find_or_create_by!(message: msg5) do |req|
+    req.room = room
+    req.agent = w_assistant
+    req.request_type = "decision"
+    req.payload = { "decision" => "Standardize on 3-of-5 multisig for mainnet deployment." }
+    req.status = :approved
+    req.resolved_by = user_to_assign
+    req.resolved_at = 1.day.ago
+    req.requested_at = 2.days.ago
+  end
+
+  ar3.approval_request_actions.find_or_create_by!(action: "confirm", actor: user_to_assign) do |action|
+    action.note = "Confirmed in consensus during all-hands sync"
+  end
+end
+
 puts "Done!"

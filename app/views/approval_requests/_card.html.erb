@@ -1,0 +1,46 @@
+<div id="<%= dom_id(approval_request) %>" class="approval-card <%= "approval-card--#{approval_request.status}" %>">
+  <div class="approval-card__header">
+    <% if approval_request.request_type == "decision" %>
+      <strong>Record this as a decision?</strong>
+    <% elsif approval_request.request_type.present? %>
+      <strong>Approval required: <%= approval_request.request_type.humanize %></strong>
+    <% else %>
+      <strong>Approval required</strong>
+    <% end %>
+  </div>
+
+  <% if approval_request.decision_text.present? %>
+    <div class="approval-card__text">
+      <% if approval_request.request_type == "decision" %>
+        <span class="approval-card__label">Decision:</span> <%= approval_request.decision_text %>
+      <% else %>
+        <%= approval_request.decision_text %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if approval_request.pending? %>
+    <div class="action-btn-group approval-card__actions">
+      <% if approval_request.request_type == "decision" %>
+        <%= button_to "Confirm", confirm_approval_request_path(approval_request), method: :patch, class: "action-btn primary" %>
+        <%= button_to "Deny", deny_approval_request_path(approval_request), method: :patch, class: "action-btn secondary" %>
+      <% else %>
+        <%= button_to "Approve", approve_approval_request_path(approval_request), method: :patch, class: "action-btn primary" %>
+        <%= button_to "Deny", deny_approval_request_path(approval_request), method: :patch, class: "action-btn secondary" %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="approval-card__resolved">
+      <% badge_class = approval_request.approved? ? "badge--green" : "badge--red" %>
+      <span class="approval-card__badge <%= badge_class %>">
+        <%= approval_request.approved? ? "✓ Approved" : "✕ #{approval_request.status.capitalize}" %>
+      </span>
+      <% if approval_request.resolved_by %>
+        <span class="approval-card__resolved-by">by <strong><%= approval_request.resolved_by.name %></strong></span>
+      <% end %>
+      <% if approval_request.resolved_at %>
+        <span class="approval-card__resolved-at"><%= time_ago_in_words(approval_request.resolved_at) %> ago</span>
+      <% end %>
+    </div>
+  <% end %>
+</div>

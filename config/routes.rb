@@ -47,6 +47,15 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :approval_requests, only: %i[ show update ] do
+    member do
+      patch :approve
+      patch :confirm
+      patch :deny
+      patch :cancel
+    end
+  end
+
   resources :users, only: :show do
     scope module: "users" do
       resource :avatar, only: %i[ show destroy ]
