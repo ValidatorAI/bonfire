@@ -66,6 +66,7 @@ Rails.application.routes.draw do
         get "company/projects/:id/overview", to: "projects#overview", as: :company_project_overview
         get "company/projects/:id/status", to: "projects#status", as: :company_project_status
         patch "company/projects/:project_id/todos/:id/toggle", to: "projects/todos#toggle", as: :company_project_todo_toggle
+        patch "company/projects/:project_id/action_items/:id/toggle", to: "projects/action_items#toggle", as: :company_project_action_item_toggle
         get "company/projects/:id/all-hands", to: "projects#all_hands", as: :company_project_all_hands
         get "company/projects/:id/knowledge", to: "projects#knowledge", as: :company_project_knowledge
         resources :push_subscriptions do

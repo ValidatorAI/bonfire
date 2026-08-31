@@ -1,0 +1,36 @@
+class Users::Projects::ActionItemsController < ApplicationController
+  before_action :set_project
+  before_action :set_action_item
+
+  def toggle
+    @action_item.toggle_completed!
+    @action_items = @meeting.action_items.ordered
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "all_hands_action_items_card",
+          partial: "users/projects/all_hands/action_items_card",
+          locals: { action_items: @action_items, project: @project }
+        )
+      end
+      format.html { redirect_to user_company_project_all_hands_path(user_id: "me", id: @project.id) }
+    end
+  end
+
+  private
+    def set_project
+      @project = Current.user.projects.find_by(id: params[:project_id])
+      raise ActiveRecord::RecordNotFound if @project.blank?
+    end
+
+    def set_action_item
+      @action_item = ProjectAllHandsActionItem.joins(:meeting).where(
+        project_all_hands_meetings: { project_id: @project.id },
+        id: params[:id]
+      ).first
+      raise ActiveRecord::RecordNotFound if @action_item.blank?
+
+      @meeting = @action_item.meeting
+    end
+end

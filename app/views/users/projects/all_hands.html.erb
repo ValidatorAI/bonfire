@@ -36,36 +36,7 @@
           <% end %>
         </div>
 
-        <div class="all-hands-card">
-          <h3 class="all-hands-card-title">
-            <span>Action Items</span>
-            <% pending_count = @action_items.count(&:pending?) %>
-            <% if pending_count > 0 %>
-              <span class="all-hands-badge all-hands-badge--orange"><%= pending_count %> Pending</span>
-            <% else %>
-              <span class="all-hands-badge all-hands-badge--blue">All Complete</span>
-            <% end %>
-          </h3>
-
-          <% if @action_items.any? %>
-            <% @action_items.each do |item| %>
-              <div class="all-hands-list-item">
-                <label class="all-hands-checkbox-label <%= 'all-hands-checkbox-label--completed' if item.completed? %>">
-                  <input type="checkbox" <%= 'checked disabled' if item.completed? %> class="all-hands-checkbox-input">
-                  <span><%= item.title %></span>
-                </label>
-                <% meta_parts = [] %>
-                <% meta_parts << "Assignee: @#{item.assignee_name}" if item.assignee_name.present? %>
-                <% meta_parts << (item.completed? ? "Completed" : "Due: #{item.due_date}") if item.due_date.present? || item.completed? %>
-                <% if meta_parts.any? %>
-                  <span class="all-hands-item-meta" style="margin-left: 24px;"><%= meta_parts.join(" • ") %></span>
-                <% end %>
-              </div>
-            <% end %>
-          <% else %>
-            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">No action items recorded for this meeting.</p>
-          <% end %>
-        </div>
+        <%= render "users/projects/all_hands/action_items_card", action_items: @action_items, project: @project %>
       </div>
 
       <% if @decisions.any? %>
