@@ -131,33 +131,16 @@
                   </div>
                   <div class="knowledge-activity-content">
                     <div class="knowledge-activity-text">
-                      <strong><%= activity.actor_name %></strong> <%= activity.action_text.html_safe %>
+                      <strong><%= activity.actor_name %></strong> <%= activity.formatted_action_html %>
                     </div>
                     <div class="knowledge-activity-time"><%= time_ago_in_words(activity.created_at) %> ago</div>
                   </div>
                 </div>
               <% end %>
             <% else %>
-              <div class="knowledge-activity-item">
-                <div class="knowledge-avatar" style="background-color: var(--accent-blue);">S</div>
-                <div class="knowledge-activity-content">
-                  <div class="knowledge-activity-text"><strong>Sarah</strong> created new note <a href="#" style="color: var(--accent-blue); text-decoration: none;">[[Postgres Migration Plan]]</a></div>
-                  <div class="knowledge-activity-time">2 hours ago</div>
-                </div>
-              </div>
-              <div class="knowledge-activity-item">
-                <div class="knowledge-avatar" style="background-color: var(--accent-green);">M</div>
-                <div class="knowledge-activity-content">
-                  <div class="knowledge-activity-text"><strong>Mike</strong> updated the <strong>Multi-Sig Deployment</strong> runbook</div>
-                  <div class="knowledge-activity-time">Yesterday at 4:15 PM</div>
-                </div>
-              </div>
-              <div class="knowledge-activity-item">
-                <div class="knowledge-avatar" style="background-color: var(--text-secondary);">A</div>
-                <div class="knowledge-activity-content">
-                  <div class="knowledge-activity-text"><strong>Alex</strong> changed status of <strong>ADR-004</strong> to Accepted</div>
-                  <div class="knowledge-activity-time">Aug 10, 2024</div>
-                </div>
+              <div class="knowledge-empty-state">
+                <span class="tree-icon" aria-hidden="true">⏱️</span>
+                <span>No recent knowledge activity found in this project.</span>
               </div>
             <% end %>
           </div>

@@ -434,6 +434,18 @@
   color: var(--text-primary);
 }
 
+.knowledge-activity-text a,
+.knowledge-activity-text .knowledge-link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.knowledge-activity-text a:hover,
+.knowledge-activity-text .knowledge-link:hover {
+  text-decoration: underline;
+}
+
 .knowledge-activity-time {
   font-size: 12px;
   color: var(--text-secondary);

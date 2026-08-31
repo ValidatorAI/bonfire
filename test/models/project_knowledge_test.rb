@@ -56,11 +56,14 @@ class ProjectKnowledgeTest < ActiveSupport::TestCase
     activity = @project.knowledge_activities.create!(
       actor_name: "Sarah",
       actor_color: "var(--accent-blue)",
-      action_text: "created new note [[Architecture]]"
+      action_text: "created new note [[Architecture]]",
+      target_path: "01_Architecture/Design.md"
     )
 
     assert_equal 1, @project.knowledge_activities.count
     assert_equal "S", activity.actor_initial
+    assert_includes activity.formatted_action_html, "data-knowledge-file-viewer-path-param=\"01_Architecture/Design.md\""
+    assert_includes activity.formatted_action_html, "[[Architecture]]"
   end
 
   test "creates hierarchical directory items and builds database tree" do

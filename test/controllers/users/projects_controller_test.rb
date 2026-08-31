@@ -408,6 +408,8 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match "obsidian-container", @response.body
     assert_match "No files or directories found in this project.", @response.body
     assert_match "No decision records found in this project.", @response.body
+    assert_match "No recent knowledge activity found in this project.", @response.body
+    assert_no_match "Sarah", @response.body
   end
 
   test "knowledge_file serves markdown as json" do
