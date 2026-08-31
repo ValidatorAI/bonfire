@@ -321,6 +321,13 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match project.display_name, @response.body
     assert_match "Knowledge Base", @response.body
+    assert_match "Networked Notes (Obsidian Sync)", @response.body
+    assert_match "External Assets &amp; Playbooks", @response.body
+    assert_match "Architectural Decision Records (ADRs)", @response.body
+    assert_match "Directory Explorer", @response.body
+    assert_match "Recent Knowledge Activity", @response.body
+    assert_match "Smart Contract Vault (V1)", @response.body
+    assert_match "ADR-004", @response.body
   end
 
   test "knowledge returns not found for non-member project" do

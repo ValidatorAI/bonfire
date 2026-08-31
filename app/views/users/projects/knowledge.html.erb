@@ -2,10 +2,159 @@
 <% @body_class = "sidebar" %>
 
 <% content_for :nav do %>
-  <span class="btn btn--reversed btn--faux user-settings-nav__pill">⚡ <%= @project.display_name %></span>
-  <h1 class="user-settings-nav__title txt-large">Knowledge Base</h1>
+  <div class="project-overview-header-left">
+    <span class="btn btn--reversed btn--faux user-settings-nav__pill">⚡ <%= @project.display_name %></span>
+    <h1 class="user-settings-nav__title txt-large">Knowledge Base</h1>
+  </div>
 <% end %>
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<div id="message-area" class="message-area"></div>
+<div id="message-area" class="message-area project-knowledge-area">
+  <div class="project-knowledge-content">
+    <div>
+      <h2 class="knowledge-section-header">🌌 Networked Notes (Obsidian Sync)</h2>
+      <div class="obsidian-container">
+        <div class="obsidian-graph">
+          <div class="obs-header"><span>Graph View</span><span>⚙️</span></div>
+          <div class="graph-visual">
+            <div class="graph-line" style="width: 80px; top: 50%; left: 50%; transform: rotate(-35deg);"></div>
+            <div class="graph-line" style="width: 120px; top: 50%; left: 50%; transform: rotate(115deg);"></div>
+            <div class="graph-line" style="width: 60px; top: 30%; left: 20%; transform: rotate(15deg);"></div>
+            <div style="position: absolute; top: 53%; left: 52%; color: #d4d4d4; font-size: 11px;">Smart Contract Vault</div>
+            <div style="position: absolute; top: 25%; left: 22%; color: #666; font-size: 10px;">ERC-4337 Specs</div>
+          </div>
+        </div>
+
+        <div class="obsidian-note">
+          <h1 class="obs-title">Smart Contract Vault (V1)</h1>
+          <div class="obs-tags">
+            <span class="obs-tag">#architecture</span>
+            <span class="obs-tag">#smart-contracts</span>
+          </div>
+          <div class="obs-content">
+            <p>This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.</p>
+            <p><strong>Dependencies:</strong> We are relying heavily on the updated <span class="obs-link">[[ERC-4337 Gas Optimization]]</span> patterns discussed in last week's sync.</p>
+            <h3 style="color: white; margin: 24px 0 12px 0; font-size: 16px;">Security Clearances</h3>
+            <p>As per the decision logged in the <span class="obs-link">[[August 17 All-Hands]]</span>, the mainnet deployment requires a <span class="obs-link">[[Multi-Sig Threshold]]</span> of 3-of-5.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="knowledge-section-header">🔗 External Assets &amp; Playbooks</h2>
+      <div class="external-docs-grid">
+        <div class="doc-card">
+          <div class="doc-icon">📄</div>
+          <div class="doc-info">
+            <span class="doc-title">Trail of Bits Audit</span>
+            <span class="doc-meta">PDF • Updated Aug 15</span>
+          </div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">🎨</div>
+          <div class="doc-info">
+            <span class="doc-title">Platform UI / UX Design</span>
+            <span class="doc-meta">Figma • External Link</span>
+          </div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">📘</div>
+          <div class="doc-info">
+            <span class="doc-title">Multi-Sig Deployment</span>
+            <span class="doc-meta">Runbook • Playbook</span>
+          </div>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">⚙️</div>
+          <div class="doc-info">
+            <span class="doc-title">API Documentation</span>
+            <span class="doc-meta">Swagger UI • Live</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-bottom-grid">
+      <div class="knowledge-column">
+        <div>
+          <h2 class="knowledge-section-header">🏛️ Architectural Decision Records (ADRs)</h2>
+          <table class="knowledge-data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ADR-004</td>
+                <td><strong>Use ECDSA for State Channel Signatures</strong></td>
+                <td>2024-08-10</td>
+                <td><span class="status-badge accepted">Accepted</span></td>
+              </tr>
+              <tr>
+                <td>ADR-005</td>
+                <td><strong>Transition to Postgres for Off-chain Indexing</strong></td>
+                <td>2024-08-18</td>
+                <td><span class="status-badge proposed">Proposed</span></td>
+              </tr>
+              <tr>
+                <td>ADR-002</td>
+                <td><strong>Use MongoDB for Order Book</strong></td>
+                <td>2024-01-15</td>
+                <td><span class="status-badge deprecated">Deprecated</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="knowledge-column">
+        <div>
+          <h2 class="knowledge-section-header">📁 Directory Explorer</h2>
+          <div class="knowledge-folder-tree">
+            <div class="tree-item"><span class="tree-icon">📂</span> 01_Architecture</div>
+            <div class="tree-item tree-indent"><span class="tree-icon">📄</span> System_Design.md</div>
+            <div class="tree-item tree-indent"><span class="tree-icon">📄</span> DB_Schemas.md</div>
+            <div class="tree-item"><span class="tree-icon">📂</span> 02_Smart_Contracts</div>
+            <div class="tree-item tree-indent"><span class="tree-icon">📂</span> Audits</div>
+            <div class="tree-item tree-indent"><span class="tree-icon">📄</span> Vault_V1.md</div>
+            <div class="tree-item"><span class="tree-icon">📂</span> 03_Meetings</div>
+            <div class="tree-item"><span class="tree-icon">📂</span> 99_Archives</div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="knowledge-section-header">⏱️ Recent Knowledge Activity</h2>
+          <div class="knowledge-activity-feed">
+            <div class="knowledge-activity-item">
+              <div class="knowledge-avatar" style="background-color: var(--accent-blue);">S</div>
+              <div class="knowledge-activity-content">
+                <div class="knowledge-activity-text"><strong>Sarah</strong> created new note <a href="#" style="color: var(--accent-blue); text-decoration: none;">[[Postgres Migration Plan]]</a></div>
+                <div class="knowledge-activity-time">2 hours ago</div>
+              </div>
+            </div>
+            <div class="knowledge-activity-item">
+              <div class="knowledge-avatar" style="background-color: var(--accent-green);">M</div>
+              <div class="knowledge-activity-content">
+                <div class="knowledge-activity-text"><strong>Mike</strong> updated the <strong>Multi-Sig Deployment</strong> runbook</div>
+                <div class="knowledge-activity-time">Yesterday at 4:15 PM</div>
+              </div>
+            </div>
+            <div class="knowledge-activity-item">
+              <div class="knowledge-avatar" style="background-color: var(--text-secondary);">A</div>
+              <div class="knowledge-activity-content">
+                <div class="knowledge-activity-text"><strong>Alex</strong> changed status of <strong>ADR-004</strong> to Accepted</div>
+                <div class="knowledge-activity-time">Aug 10, 2024</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
