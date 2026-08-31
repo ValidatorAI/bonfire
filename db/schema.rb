@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_29_120000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_29_140000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -152,6 +152,50 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_29_120000) do
     t.datetime "updated_at", null: false
     t.index ["booster_id"], name: "index_boosts_on_booster_id"
     t.index ["message_id"], name: "index_boosts_on_message_id"
+  end
+
+  create_table "company_status_items", force: :cascade do |t|
+    t.json "actions", default: []
+    t.string "category", null: false
+    t.string "color"
+    t.integer "company_status_period_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "detail_category"
+    t.text "evidence"
+    t.string "from_name"
+    t.string "icon"
+    t.text "impact"
+    t.string "owner"
+    t.integer "percent"
+    t.integer "position", default: 0, null: false
+    t.string "severity"
+    t.string "status"
+    t.text "subtitle"
+    t.string "target_date"
+    t.text "text"
+    t.string "title"
+    t.string "to_name"
+    t.datetime "updated_at", null: false
+    t.index ["company_status_period_id", "category"], name: "idx_on_company_status_period_id_category_c472881932"
+    t.index ["company_status_period_id"], name: "index_company_status_items_on_company_status_period_id"
+    t.index ["position"], name: "index_company_status_items_on_position"
+  end
+
+  create_table "company_status_periods", force: :cascade do |t|
+    t.integer "account_id"
+    t.datetime "created_at", null: false
+    t.boolean "current", default: false, null: false
+    t.date "ends_on"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "slug", null: false
+    t.date "starts_on"
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_company_status_periods_on_account_id"
+    t.index ["current"], name: "index_company_status_periods_on_current"
+    t.index ["position"], name: "index_company_status_periods_on_position"
+    t.index ["slug"], name: "index_company_status_periods_on_slug", unique: true
   end
 
   create_table "file_reservations", force: :cascade do |t|
@@ -325,6 +369,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_29_120000) do
   add_foreign_key "attention_items", "users", column: "resolved_by_id"
   add_foreign_key "bans", "users"
   add_foreign_key "boosts", "messages"
+  add_foreign_key "company_status_items", "company_status_periods"
+  add_foreign_key "company_status_periods", "accounts"
   add_foreign_key "file_reservations", "agents"
   add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
