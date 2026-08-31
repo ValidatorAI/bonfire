@@ -118,6 +118,14 @@ class Room < ApplicationRecord
     "mentions"
   end
 
+  def has_child_topics?
+    children.active.exists?
+  end
+
+  def child_topics
+    children.active.ordered
+  end
+
   # Get all participants (users + agents)
   def participants
     memberships.includes(:participant).map(&:participant)

@@ -36,7 +36,7 @@ class RoomTest < ActiveSupport::TestCase
   end
 
   test "auto-joins all agents when a new room is created" do
-    project = Project.create!(path: "/tmp/bonfire-room-auto-join")
+    project = Project.create!(name: "Bonfire Auto Join", path: "/tmp/bonfire-room-auto-join")
     alpha = project.agents.create!(name: "Agent Alpha", program: "Codex", model: "gpt-5.3-codex")
     beta = project.agents.create!(name: "Agent Beta", program: "Claude Code", model: "claude-sonnet")
 
@@ -47,7 +47,7 @@ class RoomTest < ActiveSupport::TestCase
   end
 
   test "does not auto-join agents for direct rooms" do
-    project = Project.create!(path: "/tmp/bonfire-direct-room-auto-join")
+    project = Project.create!(name: "Bonfire Direct Auto Join", path: "/tmp/bonfire-direct-room-auto-join")
     project.agents.create!(name: "Agent Gamma", program: "Codex", model: "gpt-5.3-codex")
 
     room = Rooms::Direct.find_or_create_for(User.where(id: [ users(:david).id, users(:kevin).id ]))

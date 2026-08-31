@@ -34,6 +34,16 @@ class MessageTest < ActiveSupport::TestCase
     assert_includes message.errors[:body], "can't be blank"
   end
 
+  test "creating a message in child room broadcasts to parent room stream" do
+    parent_room = rooms(:designers)
+    child_room = Rooms::Open.create_for({ name: "Child Topic", creator: users(:david), parent: parent_room }, users: [ users(:david) ])
+
+    assert_turbo_stream_broadcasts [ parent_room, :messages ], count: 2 do
+      message = child_room.messages.create!(creator: users(:david), body: "Syncing to parent", client_message_id: "test-sync")
+      message.broadcast_create
+    end
+  end
+
   private
     def create_new_message_in(room)
       room.messages.create!(creator: users(:jason), body: "Hello", client_message_id: "123")
