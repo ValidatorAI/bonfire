@@ -70,17 +70,17 @@
       <div class="knowledge-column">
         <div>
           <h2 class="knowledge-section-header">🏛️ Decision Records</h2>
-          <table class="knowledge-data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if @adrs.any? %>
+          <% if @adrs.any? %>
+            <table class="knowledge-data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
                 <% @adrs.each do |adr| %>
                   <tr class="<%= 'knowledge-row--clickable' if adr.file_path.present? %>"
                       <% if adr.file_path.present? %>
@@ -94,28 +94,14 @@
                     <td><span class="status-badge <%= adr.status %>"><%= adr.status.titleize %></span></td>
                   </tr>
                 <% end %>
-              <% else %>
-                <tr>
-                  <td>ADR-004</td>
-                  <td><strong>Use ECDSA for State Channel Signatures</strong></td>
-                  <td>2024-08-10</td>
-                  <td><span class="status-badge accepted">Accepted</span></td>
-                </tr>
-                <tr>
-                  <td>ADR-005</td>
-                  <td><strong>Transition to Postgres for Off-chain Indexing</strong></td>
-                  <td>2024-08-18</td>
-                  <td><span class="status-badge proposed">Proposed</span></td>
-                </tr>
-                <tr>
-                  <td>ADR-002</td>
-                  <td><strong>Use MongoDB for Order Book</strong></td>
-                  <td>2024-01-15</td>
-                  <td><span class="status-badge deprecated">Deprecated</span></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="knowledge-empty-state">
+              <span class="tree-icon" aria-hidden="true">📄</span>
+              <span>No decision records found in this project.</span>
+            </div>
+          <% end %>
         </div>
       </div>
 
