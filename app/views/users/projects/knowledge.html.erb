@@ -15,67 +15,21 @@
      data-knowledge-file-viewer-file-url-value="<%= user_company_project_knowledge_file_path(user_id: 'me', id: @project.id) %>">
   <div class="project-knowledge-content">
 
-    <!-- 1. Networked Notes (Obsidian Sync) -->
-    <div>
-      <h2 class="knowledge-section-header">🌌 Networked Notes (Obsidian Sync)</h2>
-      <div class="obsidian-container">
-        <div class="obsidian-graph">
-          <div class="obs-header"><span>Graph View</span><span>⚙️</span></div>
-          <% if @primary_note&.html_source_path.present? %>
-            <% if @primary_note.external_source? %>
-              <iframe src="<%= @primary_note.html_source_path %>" class="obsidian-graph-iframe" title="Obsidian Graph"></iframe>
-            <% else %>
-              <iframe src="<%= user_company_project_knowledge_file_path(user_id: 'me', id: @project.id, path: @primary_note.html_source_path) %>" class="obsidian-graph-iframe" title="Obsidian Graph"></iframe>
-            <% end %>
+    <%# 1. Networked Notes (Obsidian Sync) %>
+    <% if @primary_note&.html_source_path.present? %>
+      <div>
+        <h2 class="knowledge-section-header">🌌 Networked Notes (Obsidian Sync)</h2>
+        <div id="obsidian-container" class="obsidian-container">
+          <% if @primary_note.external_source? %>
+            <iframe src="<%= @primary_note.html_source_path %>" class="obsidian-iframe" title="Obsidian Sync" allowfullscreen></iframe>
           <% else %>
-            <div class="graph-visual">
-              <div class="graph-line" style="width: 80px; top: 50%; left: 50%; transform: rotate(-35deg);"></div>
-              <div class="graph-line" style="width: 120px; top: 50%; left: 50%; transform: rotate(115deg);"></div>
-              <div class="graph-line" style="width: 60px; top: 30%; left: 20%; transform: rotate(15deg);"></div>
-              <div style="position: absolute; top: 53%; left: 52%; color: #d4d4d4; font-size: 11px;">Smart Contract Vault</div>
-              <div style="position: absolute; top: 25%; left: 22%; color: #666; font-size: 10px;">ERC-4337 Specs</div>
-            </div>
-          <% end %>
-        </div>
-
-        <div class="obsidian-note">
-          <% if @primary_note.present? %>
-            <h1 class="obs-title"><%= @primary_note.title %></h1>
-            <% if @primary_note.tag_list.any? %>
-              <div class="obs-tags">
-                <% @primary_note.tag_list.each do |tag| %>
-                  <span class="obs-tag"><%= tag %></span>
-                <% end %>
-              </div>
-            <% end %>
-            <div class="obs-content">
-              <% if @primary_note.content.present? %>
-                <%= ProjectKnowledge.render_markdown(@primary_note.content).html_safe %>
-              <% else %>
-                <p>This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.</p>
-                <p><strong>Dependencies:</strong> We are relying heavily on the updated <span class="obs-link">[[ERC-4337 Gas Optimization]]</span> patterns discussed in last week's sync.</p>
-                <h3 style="color: white; margin: 24px 0 12px 0; font-size: 16px;">Security Clearances</h3>
-                <p>As per the decision logged in the <span class="obs-link">[[August 17 All-Hands]]</span>, the mainnet deployment requires a <span class="obs-link">[[Multi-Sig Threshold]]</span> of 3-of-5.</p>
-              <% end %>
-            </div>
-          <% else %>
-            <h1 class="obs-title">Smart Contract Vault (V1)</h1>
-            <div class="obs-tags">
-              <span class="obs-tag">#architecture</span>
-              <span class="obs-tag">#smart-contracts</span>
-            </div>
-            <div class="obs-content">
-              <p>This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.</p>
-              <p><strong>Dependencies:</strong> We are relying heavily on the updated <span class="obs-link">[[ERC-4337 Gas Optimization]]</span> patterns discussed in last week's sync.</p>
-              <h3 style="color: white; margin: 24px 0 12px 0; font-size: 16px;">Security Clearances</h3>
-              <p>As per the decision logged in the <span class="obs-link">[[August 17 All-Hands]]</span>, the mainnet deployment requires a <span class="obs-link">[[Multi-Sig Threshold]]</span> of 3-of-5.</p>
-            </div>
+            <iframe src="<%= user_company_project_knowledge_file_path(user_id: 'me', id: @project.id, path: @primary_note.html_source_path) %>" class="obsidian-iframe" title="Obsidian Sync" allowfullscreen></iframe>
           <% end %>
         </div>
       </div>
-    </div>
+    <% end %>
 
-    <!-- 2. External Assets & Playbooks -->
+    <%# 2. External Assets & Playbooks %>
     <div>
       <h2 class="knowledge-section-header">🔗 External Assets &amp; Playbooks</h2>
       <div class="external-docs-grid">
@@ -135,7 +89,7 @@
       </div>
     </div>
 
-    <!-- 3. Bottom Grid: ADRs & Directory + Activity -->
+    <%# 3. Bottom Grid: ADRs & Directory + Activity %>
     <div class="knowledge-bottom-grid">
       <div class="knowledge-column">
         <div>

@@ -344,12 +344,24 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match project.display_name, @response.body
     assert_match "Knowledge Base", @response.body
     assert_match "Networked Notes (Obsidian Sync)", @response.body
+    assert_match "id=\"obsidian-container\"", @response.body
+    assert_match "class=\"obsidian-iframe\"", @response.body
+    assert_match "path=obsidian%2Fgraph.html", @response.body
     assert_match "External Assets &amp; Playbooks", @response.body
     assert_match "Architectural Decision Records (ADRs)", @response.body
     assert_match "Directory Explorer", @response.body
     assert_match "Recent Knowledge Activity", @response.body
-    assert_match "Smart Contract Vault (V1)", @response.body
     assert_match "ADR-004", @response.body
+  end
+
+  test "knowledge does not show obsidian section when project has no obsidian file" do
+    project = create_project_for(users(:david))
+
+    get user_company_project_knowledge_url(id: project.id)
+
+    assert_response :success
+    assert_no_match "Networked Notes (Obsidian Sync)", @response.body
+    assert_no_match "obsidian-container", @response.body
   end
 
   test "knowledge_file serves markdown as json" do

@@ -654,7 +654,127 @@ File.write(
 
 File.write(
   demo_storage_dir.join("obsidian", "graph.html"),
-  "<!DOCTYPE html><html><head><style>body{margin:0;background:#252526;color:#d4d4d4;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;font-size:12px;}.node{position:absolute;background:#4ec9b0;border-radius:50%;width:10px;height:10px;box-shadow:0 0 8px rgba(78,201,176,0.6);}.label{position:absolute;color:#9cdcfe;font-size:10px;white-space:nowrap;}</style></head><body><div class='node' style='top:50%;left:50%;'></div><div class='label' style='top:55%;left:45%;'>Smart Contract Vault</div><div class='node' style='top:30%;left:25%;background:#c586c0;'></div><div class='label' style='top:22%;left:20%;'>ERC-4337</div><div class='node' style='top:75%;left:70%;background:#569cd6;'></div><div class='label' style='top:80%;left:65%;'>ADR-004</div></body></html>"
+  <<~HTML
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Obsidian Sync View</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          background-color: #1e1e1e;
+          color: #d4d4d4;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          height: 100vh;
+          overflow: hidden;
+          display: flex;
+        }
+        .obsidian-graph {
+          width: 32%;
+          background-color: #252526;
+          border-right: 1px solid #333333;
+          position: relative;
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          flex-shrink: 0;
+        }
+        .obs-header {
+          color: #d4d4d4;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-weight: 600;
+          margin-bottom: 16px;
+          display: flex;
+          justify-content: space-between;
+        }
+        .graph-visual {
+          flex: 1;
+          position: relative;
+          background-image:
+            radial-gradient(circle at 50% 50%, #c586c0 5px, transparent 6px),
+            radial-gradient(circle at 20% 30%, #4ec9b0 4px, transparent 5px),
+            radial-gradient(circle at 80% 70%, #d4d4d4 4px, transparent 5px),
+            radial-gradient(circle at 30% 80%, #d4d4d4 4px, transparent 5px);
+          background-size: 100% 100%;
+        }
+        .graph-line {
+          position: absolute;
+          background-color: #444444;
+          height: 1px;
+          transform-origin: 0 0;
+        }
+        .graph-node-label {
+          position: absolute;
+          font-size: 11px;
+          font-weight: 500;
+        }
+        .obsidian-note {
+          flex: 1;
+          padding: 24px 32px;
+          color: #d4d4d4;
+          overflow-y: auto;
+        }
+        .obs-title {
+          font-size: 22px;
+          color: #ffffff;
+          margin-bottom: 14px;
+          font-weight: 600;
+        }
+        .obs-tags {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 20px;
+        }
+        .obs-tag {
+          color: #9cdcfe;
+          background: rgba(156, 220, 254, 0.12);
+          padding: 3px 10px;
+          border-radius: 12px;
+          font-size: 12px;
+        }
+        .obs-content p {
+          margin-bottom: 14px;
+          line-height: 1.6;
+          font-size: 14px;
+        }
+        .obs-content strong { color: #ffffff; }
+        .obs-link { color: #4ec9b0; text-decoration: none; cursor: pointer; }
+        .obs-link:hover { text-decoration: underline; }
+        .obs-content h3 { color: #ffffff; margin: 20px 0 10px 0; font-size: 15px; }
+      </style>
+    </head>
+    <body>
+      <div class="obsidian-graph">
+        <div class="obs-header"><span>Graph View</span><span>⚙️</span></div>
+        <div class="graph-visual">
+          <div class="graph-line" style="width: 80px; top: 50%; left: 50%; transform: rotate(-35deg);"></div>
+          <div class="graph-line" style="width: 120px; top: 50%; left: 50%; transform: rotate(115deg);"></div>
+          <div class="graph-line" style="width: 60px; top: 30%; left: 20%; transform: rotate(15deg);"></div>
+          <div class="graph-node-label" style="top: 53%; left: 52%; color: #d4d4d4;">Smart Contract Vault</div>
+          <div class="graph-node-label" style="top: 25%; left: 22%; color: #888888; font-size: 10px;">ERC-4337 Specs</div>
+        </div>
+      </div>
+
+      <div class="obsidian-note">
+        <h1 class="obs-title">Smart Contract Vault (V1)</h1>
+        <div class="obs-tags">
+          <span class="obs-tag">#architecture</span>
+          <span class="obs-tag">#smart-contracts</span>
+        </div>
+        <div class="obs-content">
+          <p>This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.</p>
+          <p><strong>Dependencies:</strong> We are relying heavily on the updated <span class="obs-link">[[ERC-4337 Gas Optimization]]</span> patterns discussed in last week's sync.</p>
+          <h3>Security Clearances</h3>
+          <p>As per the decision logged in the <span class="obs-link">[[August 17 All-Hands]]</span>, the mainnet deployment requires a <span class="obs-link">[[Multi-Sig Threshold]]</span> of 3-of-5.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  HTML
 )
 
 puts "Done!"
