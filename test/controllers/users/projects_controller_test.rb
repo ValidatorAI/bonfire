@@ -283,6 +283,8 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
       title: "Sprint Planning: Kickoff",
       held_at: Time.zone.parse("2026-08-13 11:00:00"),
       duration_minutes: 30,
+      leader_name: "Sarah",
+      notes: "Sprint backlog grooming and team capacity planning.",
       position: 2
     )
 
@@ -299,6 +301,9 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Adopt WebSocket compression by default.", @response.body
     assert_match "Impact: #infra", @response.body
     assert_match "Sprint Planning: Kickoff", @response.body
+    assert_match "View Notes", @response.body
+    assert_match "Sprint backlog grooming and team capacity planning.", @response.body
+    assert_match "all-hands-notes-dialog", @response.body
     assert_no_match "Watch Recording", @response.body
   end
 

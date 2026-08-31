@@ -10,7 +10,7 @@
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<div id="message-area" class="message-area project-all-hands-area">
+<div id="message-area" class="message-area project-all-hands-area" data-controller="all-hands-notes">
   <div class="project-all-hands-content">
     <% if @latest_meeting.present? %>
       <div class="all-hands-meeting-header">
@@ -71,11 +71,19 @@
                 <% prev_meta = [] %>
                 <% prev_meta << meeting.formatted_held_date if meeting.formatted_held_date.present? %>
                 <% prev_meta << "#{meeting.duration_minutes} mins" if meeting.duration_minutes.present? %>
+                <% prev_meta << "Led by @#{meeting.leader_name}" if meeting.leader_name.present? %>
                 <% if prev_meta.any? %>
                   <div class="all-hands-item-meta"><%= prev_meta.join(" • ") %></div>
                 <% end %>
               </div>
-              <button class="all-hands-secondary-btn" type="button">View Notes</button>
+              <button class="all-hands-secondary-btn"
+                      type="button"
+                      data-action="click->all-hands-notes#open"
+                      data-all-hands-notes-title-param="<%= meeting.title %>"
+                      data-all-hands-notes-meta-param="<%= meeting.metadata_line.presence || prev_meta.join(' • ') %>"
+                      data-all-hands-notes-notes-param="<%= meeting.notes %>">
+                View Notes
+              </button>
             </div>
           <% end %>
         </div>
@@ -86,5 +94,27 @@
         <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">This project does not have any recorded All-Hands meetings or sync summaries yet.</p>
       </div>
     <% end %>
+
+    <dialog class="all-hands-notes-dialog"
+            aria-label="Meeting Notes"
+            data-all-hands-notes-target="dialog"
+            data-action="click->all-hands-notes#closeOnBackdrop">
+      <div class="all-hands-notes-panel">
+        <header class="all-hands-notes-header">
+          <div class="all-hands-notes-header-text">
+            <span class="all-hands-badge all-hands-badge--blue" style="align-self: flex-start;">Meeting Notes</span>
+            <h3 class="all-hands-notes-title" data-all-hands-notes-target="title">Meeting Title</h3>
+            <span class="all-hands-notes-meta" data-all-hands-notes-target="meta">Meeting Meta</span>
+          </div>
+          <button class="all-hands-notes-close-btn" type="button" aria-label="Close notes" data-action="click->all-hands-notes#close">&times;</button>
+        </header>
+        <div class="all-hands-notes-body">
+          <div data-all-hands-notes-target="notes"></div>
+        </div>
+        <footer class="all-hands-notes-footer">
+          <button class="all-hands-secondary-btn" type="button" data-action="click->all-hands-notes#close">Close</button>
+        </footer>
+      </div>
+    </dialog>
   </div>
 </div>

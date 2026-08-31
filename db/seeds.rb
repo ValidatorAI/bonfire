@@ -431,6 +431,7 @@ if b2b_project.all_hands_meetings.empty?
     held_at: Time.zone.parse("2026-08-17 10:00:00"),
     duration_minutes: 45,
     leader_name: "Sarah",
+    notes: "Q3 alignment kickoff covering the core vault security audit results, target mainnet release schedule on September 15th, and liquidity provider outreach strategy.",
     position: 1
   )
 
@@ -491,12 +492,16 @@ if b2b_project.all_hands_meetings.empty?
       title: "Weekly Sync: Testing Phase 1",
       held_at: Time.zone.parse("2026-08-10 10:00:00"),
       duration_minutes: 30,
+      leader_name: "Sarah",
+      notes: "Discussed test coverage for vault smart contracts on testnet nodes and resolved state synchronization race conditions across multi-sig participants.",
       position: 2
     },
     {
       title: "Monthly Review: July Growth Metrics",
       held_at: Time.zone.parse("2026-08-03 10:00:00"),
       duration_minutes: 60,
+      leader_name: "Alex",
+      notes: "July retro and metric evaluation. Liquidity volumes grew by 24% month-over-month. Identified bottlenecks in client onboarding flow and API key generation.",
       position: 3
     }
   ])

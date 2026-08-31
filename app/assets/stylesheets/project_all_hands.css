@@ -208,3 +208,109 @@
 .all-hands-secondary-btn:hover {
   background: var(--surface-alt);
 }
+
+/* Meeting Notes Dialog Modal */
+.all-hands-notes-dialog {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  outline: none;
+  margin: auto;
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
+.all-hands-notes-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.all-hands-notes-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  inline-size: min(540px, calc(100vw - 2rem));
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.all-hands-notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.all-hands-notes-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.all-hands-notes-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.all-hands-notes-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.all-hands-notes-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.all-hands-notes-close-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-alt);
+}
+
+.all-hands-notes-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.all-hands-notes-paragraph {
+  margin: 0 0 12px 0;
+}
+
+.all-hands-notes-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.all-hands-notes-empty {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0;
+}
+
+.all-hands-notes-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
