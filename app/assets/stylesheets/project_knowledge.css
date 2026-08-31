@@ -71,6 +71,19 @@
   gap: 16px;
 }
 
+.knowledge-empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
 .doc-card {
   display: flex;
   align-items: center;

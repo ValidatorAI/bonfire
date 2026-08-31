@@ -37,10 +37,10 @@
           <% @external_assets.each do |asset| %>
             <% if asset.external_source? %>
               <a href="<%= asset.url %>" target="_blank" rel="noopener noreferrer" class="doc-card doc-card--link">
-                <div class="doc-icon"><%= asset.icon.presence || '📄' %></div>
+                <div class="doc-icon"><%= asset.icon.presence || '�' %></div>
                 <div class="doc-info">
                   <span class="doc-title"><%= asset.title %></span>
-                  <span class="doc-meta"><%= asset.meta_text.presence || asset.doc_type&.upcase %></span>
+                  <span class="doc-meta"><%= asset.meta_text.presence || asset.doc_type&.upcase || 'External Link' %></span>
                 </div>
               </a>
             <% else %>
@@ -51,39 +51,15 @@
                 <div class="doc-icon"><%= asset.icon.presence || '📄' %></div>
                 <div class="doc-info">
                   <span class="doc-title"><%= asset.title %></span>
-                  <span class="doc-meta"><%= asset.meta_text.presence || 'Internal Doc' %></span>
+                  <span class="doc-meta"><%= asset.meta_text.presence || asset.doc_type&.upcase || 'Internal Doc' %></span>
                 </div>
               </div>
             <% end %>
           <% end %>
         <% else %>
-          <div class="doc-card">
-            <div class="doc-icon">📄</div>
-            <div class="doc-info">
-              <span class="doc-title">Trail of Bits Audit</span>
-              <span class="doc-meta">PDF • Updated Aug 15</span>
-            </div>
-          </div>
-          <div class="doc-card">
-            <div class="doc-icon">🎨</div>
-            <div class="doc-info">
-              <span class="doc-title">Platform UI / UX Design</span>
-              <span class="doc-meta">Figma • External Link</span>
-            </div>
-          </div>
-          <div class="doc-card">
-            <div class="doc-icon">📘</div>
-            <div class="doc-info">
-              <span class="doc-title">Multi-Sig Deployment</span>
-              <span class="doc-meta">Runbook • Playbook</span>
-            </div>
-          </div>
-          <div class="doc-card">
-            <div class="doc-icon">⚙️</div>
-            <div class="doc-info">
-              <span class="doc-title">API Documentation</span>
-              <span class="doc-meta">Swagger UI • Live</span>
-            </div>
+          <div class="knowledge-empty-state">
+            <span class="tree-icon" aria-hidden="true">📄</span>
+            <span>No external assets or playbooks found in this project.</span>
           </div>
         <% end %>
       </div>

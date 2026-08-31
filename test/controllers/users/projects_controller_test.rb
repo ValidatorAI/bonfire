@@ -331,7 +331,16 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     project.external_assets.create!(
       title: "Trail of Bits Audit",
       url: "https://example.com/audit.pdf",
-      source_type: "external_url"
+      source_type: "external_url",
+      icon: "📄",
+      meta_text: "PDF • Validated"
+    )
+    project.external_assets.create!(
+      title: "Multi-Sig Runbook",
+      url: "02_Smart_Contracts/Vault_V1.md",
+      source_type: "internal_file",
+      icon: "📘",
+      meta_text: "Runbook • Playbook"
     )
     project.knowledge_activities.create!(
       actor_name: "Sarah",
@@ -360,6 +369,10 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "class=\"obsidian-iframe\"", @response.body
     assert_match "path=obsidian%2Fgraph.html", @response.body
     assert_match "External Assets &amp; Playbooks", @response.body
+    assert_match "Trail of Bits Audit", @response.body
+    assert_match "https://example.com/audit.pdf", @response.body
+    assert_match "Multi-Sig Runbook", @response.body
+    assert_match "02_Smart_Contracts/Vault_V1.md", @response.body
     assert_match "Architectural Decision Records (ADRs)", @response.body
     assert_match "Directory Explorer", @response.body
     assert_match "01_Architecture", @response.body
