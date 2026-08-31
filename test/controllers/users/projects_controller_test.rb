@@ -201,12 +201,18 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
   test "overview" do
     project = create_project_for(users(:david))
+    project.update!(description: "Core platform description", short_code: "B2B")
 
     get user_company_project_overview_url(id: project.id)
 
     assert_response :success
     assert_match project.display_name, @response.body
     assert_match "Edit Project Details", @response.body
+    assert_select ".project-overview-metrics-grid"
+    assert_select ".project-overview-metric-card", count: 4
+    assert_select ".project-overview-card-title", text: "Project Summary & Objectives"
+    assert_select ".project-overview-card-title", text: "Key Milestones & Alignment"
+    assert_match "Core platform description", @response.body
   end
 
   test "overview returns not found for non-member project" do

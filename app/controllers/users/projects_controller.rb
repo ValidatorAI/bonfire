@@ -54,6 +54,12 @@ class Users::ProjectsController < ApplicationController
   end
 
   def overview
+    @project_users = @project.users.order(:name)
+    @agents = @project.agents.order(:name)
+    @project_rooms = @project.rooms.without_directs.order(:name)
+    @attention_items = @project.attention_items.open_items.ordered
+    @total_rooms_count = @project_rooms.count
+    @messages_count = Message.where(room_id: @project.rooms.select(:id)).count
   end
 
   def status
