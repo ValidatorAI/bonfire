@@ -373,7 +373,7 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "https://example.com/audit.pdf", @response.body
     assert_match "Multi-Sig Runbook", @response.body
     assert_match "02_Smart_Contracts/Vault_V1.md", @response.body
-    assert_match "Architectural Decision Records (ADRs)", @response.body
+    assert_match "Decision Records", @response.body
     assert_match "Directory Explorer", @response.body
     assert_match "01_Architecture", @response.body
     assert_match "System_Design.md", @response.body
