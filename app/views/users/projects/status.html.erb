@@ -1,0 +1,29 @@
+<% @page_title = "#{@project.display_name} Project Status & Alignment" %>
+<% @body_class = "sidebar" %>
+
+<% content_for :nav do %>
+  <div class="project-overview-header-left">
+    <span class="btn btn--reversed btn--faux user-settings-nav__pill">⚡ <%= @project.display_name %></span>
+    <h1 class="user-settings-nav__title txt-large">Project Status &amp; Alignment</h1>
+  </div>
+<% end %>
+
+<% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
+
+<div id="message-area" class="message-area project-status-area">
+  <div class="project-status-content">
+    <%= render "users/projects/status/progress_section", project: @project %>
+
+    <div class="status-grid">
+      <div class="status-column">
+        <%= render "users/projects/status/bottlenecks_card", bottlenecks: @bottlenecks %>
+        <%= render "users/projects/status/todos_card", todos: @todos, project: @project %>
+      </div>
+
+      <div class="status-column">
+        <%= render "users/projects/status/knowledge_card", knowledge_items: @knowledge_items %>
+      </div>
+    </div>
+  </div>
+</div>
+

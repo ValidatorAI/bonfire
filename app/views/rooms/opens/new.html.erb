@@ -1,3 +1,3 @@
 <%= render layout: "rooms/layouts/new" do %>
-  <%= render "rooms/opens/form", room: @room, users: @users, type_change_path: new_rooms_closed_path %>
+  <%= render "rooms/opens/form", room: @room, users: @users, type_change_path: new_rooms_closed_path(project_id: @room.project_id, parent_room_id: @room.parent_id, from_project_settings: params[:from_project_settings]) %>
 <% end %>

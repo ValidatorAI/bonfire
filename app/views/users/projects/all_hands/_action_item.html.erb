@@ -1,0 +1,25 @@
+<div id="<%= dom_id(item) %>" class="all-hands-list-item">
+  <div class="all-hands-action-item-row">
+    <%= button_to user_company_project_action_item_toggle_path(user_id: "me", project_id: project.id, id: item.id),
+                  method: :patch,
+                  class: "all-hands-checkbox-btn",
+                  data: { turbo: true },
+                  form: { class: "all-hands-checkbox-form" } do %>
+      <input type="checkbox"
+             class="all-hands-checkbox-input"
+             <%= "checked" if item.completed? %>
+             tabindex="-1"
+             aria-hidden="true"
+             onclick="this.form.requestSubmit()">
+    <% end %>
+    <span class="all-hands-item-title <%= 'all-hands-item-title--completed' if item.completed? %>">
+      <%= item.title %>
+    </span>
+  </div>
+  <% meta_parts = [] %>
+  <% meta_parts << "Assignee: @#{item.assignee_name}" if item.assignee_name.present? %>
+  <% meta_parts << (item.completed? ? "Completed" : "Due: #{item.due_date}") if item.due_date.present? || item.completed? %>
+  <% if meta_parts.any? %>
+    <span class="all-hands-item-meta" style="margin-left: 24px;"><%= meta_parts.join(" • ") %></span>
+  <% end %>
+</div>

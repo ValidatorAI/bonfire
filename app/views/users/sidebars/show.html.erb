@@ -1,44 +1,190 @@
 <%= sidebar_turbo_frame_tag do %>
   <%= turbo_stream_from :rooms %>
   <%= turbo_stream_from Current.user, :rooms %>
+  <%= render "users/sidebars/refresh_signal", user: Current.user, trigger: false %>
 
-  <div class="sidebar__container overflow-y overflow-hide-scrollbar"
-      data-controller="badge-dot"
+    <div class="sidebar__container overflow-y overflow-hide-scrollbar"
+      data-controller="badge-dot room-settings-modal"
       data-badge-dot-unread-class="unread"
       data-action="rooms-list:unread@window->badge-dot#update rooms-list:read@window->badge-dot#update turbo:submit-start->turbo-frame#unpermanize">
-    <turbo-frame id="direct_rooms_control" target="_top">
-      <div class="directs gap overflow-x overflow-hide-scrollbar">
-        <%= link_to new_rooms_direct_path, class: "direct direct__new", data: { turbo_frame: "_self" } do %>
-          <span class="avatar avatar--icon">
-            <%= image_tag "messages-add.svg", size: 20, aria: { hidden: "true" }, class: "colorize--black" %>
-          </span>
+    <section class="sidebar-company" aria-label="Company">
+      <div class="sidebar-company__header">
+        <h2 class="sidebar-company__title">Company</h2>
+        <%= link_to user_company_settings_path(user_id: "me"), class: "btn sidebar-company__settings", aria: { label: "Company settings" } do %>
+          <span aria-hidden="true">⚙️</span>
+        <% end %>
+      </div>
 
-          <span class="direct__author flex max-width min-width border-radius pad-inline-half">
-            <span class="for-screen-reader">New</span>
-            <span class="txt-small overflow-clip">Ping</span>
-          </span>
+      <div class="sidebar-company__buttons flex flex-column gap">
+        <%= link_to user_company_home_path(user_id: "me"), class: "room btn txt-nowrap sidebar-company__button", aria: { label: "Company Home" } do %>
+          <span aria-hidden="true">🏠</span>
+          <span>Home</span>
         <% end %>
 
-        <div id="direct_rooms" contents data-controller="sorted-list" data-action="rooms-list:unread@window->sorted-list#updateItem">
-          <%= render partial: "users/sidebars/rooms/direct", collection: @direct_memberships, as: :membership, cached: true %>
-        </div>
-
-        <div contents>
-          <%= render partial: "users/sidebars/rooms/direct_placeholder", collection: @direct_placeholder_users, as: :user %>
-        </div>
+        <%= link_to user_company_status_path(user_id: "me"), class: "room btn txt-nowrap sidebar-company__button", aria: { label: "Company Status" } do %>
+          <span aria-hidden="true">📊</span>
+          <span>Company Status</span>
+        <% end %>
       </div>
-    </turbo-frame>
+    </section>
+
+    <% if @projects.any? %>
+      <section class="sidebar-projects" aria-label="Projects">
+        <div class="sidebar-section-separator" aria-hidden="true"></div>
+        <h2 class="sidebar-projects__title">Projects</h2>
+
+        <div class="sidebar-projects__list flex flex-column gap">
+          <% project_actions = [
+            ["📌", "Overview"],
+            ["📊", "Status"],
+            ["🗣️", "All-Hands"]
+          ] %>
+
+          <% @projects.each do |project| %>
+            <div class="sidebar-projects__item">
+              <% project_room = project.project_room %>
+              <div class="sidebar-projects__row">
+                <% if project_room %>
+                  <% membership = @project_memberships_by_room_id[project_room.id] %>
+                  <%= link_to_room project_room,
+                        class: [ "room btn txt-nowrap sidebar-projects__button", "unread": membership&.unread? ] do %>
+                    <span class="sidebar-projects__main">
+                      <span aria-hidden="true">⚡</span>
+                      <span class="overflow-ellipsis sidebar-projects__name"><%= project.display_name %></span>
+                    </span>
+                  <% end %>
+                <% else %>
+                  <span class="room btn txt-nowrap sidebar-projects__button sidebar-projects__button--inactive">
+                    <span class="sidebar-projects__main">
+                      <span aria-hidden="true">⚡</span>
+                      <span class="overflow-ellipsis sidebar-projects__name"><%= project.display_name %></span>
+                    </span>
+                  </span>
+                <% end %>
+
+                <div class="sidebar-projects__controls">
+                  <%= link_to new_rooms_open_path(project_id: project.id),
+                        class: "btn sidebar-projects__settings-link",
+                        aria: { label: "Create room in #{project.display_name}" } do %>
+                    <span class="sidebar-projects__plus" aria-hidden="true">➕</span>
+                  <% end %>
+
+                  <%= link_to edit_rooms_project_path(project.id, by: "project"),
+                        class: "btn sidebar-projects__settings-link",
+                        aria: { label: "#{project.display_name} settings" },
+                        data: { turbo: false, turbo_frame: "_top" } do %>
+                    <span class="sidebar-projects__gear" aria-hidden="true">⚙️</span>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="sidebar-projects__actions flex flex-column gap">
+                <% project_actions.each do |emoji, label| %>
+                  <% if label == "Overview" %>
+                    <%= link_to user_company_project_overview_path(user_id: "me", id: project.id),
+                          class: "room btn txt-nowrap sidebar-projects__action-btn",
+                          aria: { label: "#{project.display_name} #{label}" },
+                          data: { turbo: false, turbo_frame: "_top" } do %>
+                      <span aria-hidden="true"><%= emoji %></span>
+                      <span class="overflow-ellipsis"><%= label %></span>
+                    <% end %>
+                  <% elsif label == "Status" %>
+                    <%= link_to user_company_project_status_path(user_id: "me", id: project.id),
+                          class: "room btn txt-nowrap sidebar-projects__action-btn",
+                          aria: { label: "#{project.display_name} #{label}" },
+                          data: { turbo: false, turbo_frame: "_top" } do %>
+                      <span aria-hidden="true"><%= emoji %></span>
+                      <span class="overflow-ellipsis"><%= label %></span>
+                    <% end %>
+                  <% elsif label == "All-Hands" %>
+                    <%= link_to user_company_project_all_hands_path(user_id: "me", id: project.id),
+                          class: "room btn txt-nowrap sidebar-projects__action-btn",
+                          aria: { label: "#{project.display_name} #{label}" },
+                          data: { turbo: false, turbo_frame: "_top" } do %>
+                      <span aria-hidden="true"><%= emoji %></span>
+                      <span class="overflow-ellipsis"><%= label %></span>
+                    <% end %>
+                  <% else %>
+                    <button type="button" class="room btn txt-nowrap sidebar-projects__action-btn" aria-label="<%= "#{project.display_name} #{label}" %>">
+                      <span aria-hidden="true"><%= emoji %></span>
+                      <span class="overflow-ellipsis"><%= label %></span>
+                    </button>
+                  <% end %>
+                <% end %>
+
+                <div class="sidebar-projects__knowledge">
+                  <%= link_to user_company_project_knowledge_path(user_id: "me", id: project.id),
+                        class: "room btn txt-nowrap sidebar-projects__action-btn sidebar-projects__knowledge-label",
+                        aria: { label: "#{project.display_name} Knowledge" },
+                        data: { turbo: false, turbo_frame: "_top" } do %>
+                    <span aria-hidden="true">🧠</span>
+                    <span class="overflow-ellipsis">Knowledge</span>
+                  <% end %>
+
+                  <% knowledge_memberships = @project_memberships_by_project_id.fetch(project.id, []) %>
+                  <% if knowledge_memberships.any? %>
+                    <div class="sidebar-projects__knowledge-rooms flex flex-column gap">
+                      <% each_membership_in_room_tree(knowledge_memberships) do |knowledge_membership, depth| %>
+                        <% if depth.zero? %>
+                          <div class="sidebar-projects__knowledge-room-row">
+                            <%= link_to_room knowledge_membership.room,
+                                  class: [ "room btn txt-nowrap sidebar-projects__knowledge-room", "unread": knowledge_membership.unread? ] do %>
+                              <span aria-hidden="true">#</span>
+                              <span class="overflow-ellipsis"><%= room_display_name(knowledge_membership.room) %></span>
+                            <% end %>
+
+                            <% room_settings_url = room_settings_path(knowledge_membership.room) %>
+
+                            <%= link_to new_rooms_open_path(project_id: project.id, parent_room_id: knowledge_membership.room.id),
+                                  class: "btn sidebar-projects__settings-link sidebar-projects__knowledge-add-link",
+                                  aria: { label: "Create room in #{room_display_name(knowledge_membership.room)}" } do %>
+                              <span class="sidebar-projects__knowledge-plus" aria-hidden="true">➕</span>
+                            <% end %>
+
+                            <%= link_to room_settings_url,
+                                  class: "btn sidebar-projects__settings-link sidebar-projects__knowledge-settings-link",
+                                  aria: { label: "#{room_display_name(knowledge_membership.room)} settings" },
+                                  data: {
+                                    action: "click->room-settings-modal#open",
+                                    room_settings_modal_url_param: room_settings_url
+                                  } do %>
+                              <span class="sidebar-projects__knowledge-gear" aria-hidden="true">⚙️</span>
+                            <% end %>
+                          </div>
+                        <% else %>
+                          <%= link_to_room knowledge_membership.room,
+                                class: [ "room btn txt-nowrap sidebar-projects__knowledge-room", "sidebar-projects__knowledge-room--child", "unread": knowledge_membership.unread? ],
+                                style: "--room-depth: #{depth}" do %>
+                            <span aria-hidden="true">💬</span>
+                            <span class="overflow-ellipsis"><%= room_display_name(knowledge_membership.room) %></span>
+                          <% end %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    <span class="room btn txt-nowrap sidebar-projects__knowledge-empty">No rooms yet</span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
 
     <div class="rooms position-relative flex flex-column gap">
-      <div id="shared_rooms" contents data-controller="sorted-list">
-        <% @other_memberships.each do |membership| %>
-          <%= render "users/sidebars/rooms/shared", room: membership.room, unread: membership.unread? %>
+      <div id="shared_rooms" contents>
+        <% each_membership_in_room_tree(@other_memberships) do |membership, depth| %>
+          <%= render "users/sidebars/rooms/shared", room: membership.room, unread: membership.unread?, depth: depth %>
         <% end %>
       </div>
 
       <% if Current.user.administrator? || !Current.account.settings.restrict_room_creation_to_administrators? %>
-        <%= link_to new_rooms_open_path, class: "rooms__new-btn btn room align-center gap txt-reversed", aria: { label: "New Chat Room" } do %>
-          <%= image_tag "add.svg", size: 20, aria: { hidden: "true" }, style: "view-transition-name: new-room" %>
+        <%= link_to user_company_project_new_path(user_id: "me"),
+              class: "rooms__new-btn btn room align-center gap",
+              aria: { label: "New Project" },
+              data: { turbo: false, turbo_frame: "_top" } do %>
+          <span class="rooms__new-btn-label">+ New project</span>
         <% end %>
       <% end %>
     </div>
@@ -47,17 +193,28 @@
       <%= image_tag "menu.svg", size: 20, aria: { hidden: "true" } %>
       <span class="for-screen-reader">Open menu</span>
     </button>
+
+    <dialog class="dialog sidebar-room-settings-modal border border-radius shadow"
+            aria-label="Room settings"
+            data-room-settings-modal-target="dialog"
+            data-action="click->room-settings-modal#closeOnBackdrop close->room-settings-modal#reset">
+      <button type="button" class="btn dialog__close" data-action="room-settings-modal#close" aria-label="Close room settings">✕</button>
+      <iframe class="sidebar-room-settings-modal__frame"
+              data-room-settings-modal-target="frame"
+              title="Room settings"
+              loading="lazy"></iframe>
+    </dialog>
   </div>
 
   <div class="flex align-end sidebar__tools gap justify-end">
-    <%= link_to user_profile_path, class: "btn avatar flex-item-no-shrink sidebar__tool" do %>
+    <%= link_to user_settings_path, class: "btn avatar flex-item-no-shrink sidebar__tool" do %>
       <%= image_tag fresh_user_avatar_path(Current.user), size: 48, aria: { hidden: "true" }, style: "view-transition-name: avatar-#{Current.user.id}" %>
       <span class="for-screen-reader">My Settings</span>
     <% end %>
 
-    <%= link_to edit_account_path, class: "btn align-center gap txt-reversed sidebar__tool" do %>
-      <%= image_tag "settings.svg", size: 20, aria: { hidden: "true" }, style: "view-transition-name: account-settings" %>
-      <span class="for-screen-reader">Account Settings</span>
+    <%= link_to user_settings_path, class: "btn align-center txt-reversed sidebar__tool sidebar__tool--settings" do %>
+      <span aria-hidden="true" style="view-transition-name: account-settings">⚙️</span>
+      <span class="for-screen-reader">User Settings</span>
     <% end %>
   </div>
 <% end %>

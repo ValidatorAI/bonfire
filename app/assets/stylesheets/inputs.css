@@ -1,8 +1,8 @@
 /* Text inputs */
 .input {
   accent-color: var(--input-accent-color, var(--color-text));
-  background-color: var(--input-background, transparent);
-  border-radius: var(--input-border-radius, 0.5em);
+  background-color: var(--input-background, var(--surface));
+  border-radius: var(--input-border-radius, 0.5rem);
   border: var(--input-border-size, 1px) solid var(--input-border-color, var(--color-border-darker));
   color: var(--input-color, var(--color-text));
   font-size: max(16px, 1em);
@@ -22,17 +22,18 @@
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--color-text);
-    -webkit-box-shadow: 0 0 0px 1000px var(--color-selected) inset;
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
   }
 
   &:where(:not(:active)):focus {
-    --input-border-color: var(--color-selected-dark);
-    --hover-color: var(--color-selected-dark);
+    --input-border-color: #000000;
+    --hover-color: #000000;
     --outline-size: 0;
 
     filter: var(--hover-filter);
-    box-shadow: 0 0 0 var(--hover-size) var(--hover-color);
+    box-shadow: 0 0 0 1px var(--hover-color);
   }
 }
 
@@ -56,14 +57,15 @@
 
 .input--actor {
   transition: box-shadow 150ms ease, outline-offset 150ms ease;
+  border-radius: var(--input-border-radius, 0.5rem);
 
   &:focus-within {
-    --input-border-color: var(--color-selected-dark);
-    --hover-color: var(--color-selected-dark);
+    --input-border-color: #000000;
+    --hover-color: #000000;
     --outline-size: 0;
 
     filter: var(--hover-filter);
-    box-shadow: 0 0 0 var(--hover-size) var(--hover-color);
+    box-shadow: 0 0 0 1px var(--hover-color);
   }
 
   .input {
@@ -83,8 +85,8 @@
     :-webkit-autofill,
     :-webkit-autofill:hover,
     :-webkit-autofill:focus)) {
-    -webkit-text-fill-color: var(--color-text);
-    -webkit-box-shadow: 0 0 0px 1000px var(--color-selected) inset;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+    color:#000000;
   }
 
   .btn:not(.avatar) {
@@ -101,6 +103,8 @@
 }
 
 .input--file {
+  position: relative;
+
   input[type="file"] {
     --hover-size: 0;
 
@@ -108,8 +112,11 @@
     border: 0;
     border-radius: 50%;
     inline-size: 100%;
+    inset: 0;
+    opacity: 0;
     overflow: clip;
     padding: 0;
+    position: absolute;
 
     &::file-selector-button {
       appearance: none;

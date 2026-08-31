@@ -11,7 +11,11 @@ Rails.application.routes.draw do
 
   resource :account do
     scope module: "accounts" do
-      resources :users
+      resources :users do
+        member do
+          patch :activate
+        end
+      end
 
       resources :bots do
         scope module: "bots" do
@@ -26,13 +30,31 @@ Rails.application.routes.draw do
   end
 
   direct :fresh_account_logo do |options|
-    route_for :account_logo, v: Current.account&.updated_at&.to_fs(:number), size: options[:size]
+    account = Current.account
+    version = account&.logo&.attachment&.blob&.key || account&.updated_at&.to_fs(:number)
+    route_for :account_logo, v: version, size: options[:size]
   end
 
   get "join/:join_code", to: "users#new", as: :join
   post "join/:join_code", to: "users#create"
 
   resources :qr_code, only: :show
+
+  resources :attention_items, only: %i[ update ] do
+    member do
+      patch :resolve
+      patch :dismiss
+    end
+  end
+
+  resources :approval_requests, only: %i[ show update ] do
+    member do
+      patch :approve
+      patch :confirm
+      patch :deny
+      patch :cancel
+    end
+  end
 
   resources :users, only: :show do
     scope module: "users" do
@@ -42,6 +64,21 @@ Rails.application.routes.draw do
       scope defaults: { user_id: "me" } do
         resource :sidebar, only: :show
         resource :profile
+        resource :settings, only: :show
+        get "company/home", to: "companies#home", as: :company_home
+        get "company/status", to: "companies#status", as: :company_status
+        get "company/settings", to: "companies#settings", as: :company_settings
+        get "company/settings/add-user", to: "companies#add_user", as: :company_add_user
+        patch "company/settings", to: "companies#update", as: :update_company_settings
+        get "company/projects/new", to: "projects#new", as: :company_project_new
+        post "company/projects", to: "projects#create", as: :company_projects
+        get "company/projects/:id/overview", to: "projects#overview", as: :company_project_overview
+        get "company/projects/:id/status", to: "projects#status", as: :company_project_status
+        patch "company/projects/:project_id/todos/:id/toggle", to: "projects/todos#toggle", as: :company_project_todo_toggle
+        patch "company/projects/:project_id/action_items/:id/toggle", to: "projects/action_items#toggle", as: :company_project_action_item_toggle
+        get "company/projects/:id/all-hands", to: "projects#all_hands", as: :company_project_all_hands
+        get "company/projects/:id/knowledge", to: "projects#knowledge", as: :company_project_knowledge
+        get "company/projects/:id/knowledge/file", to: "projects#knowledge_file", as: :company_project_knowledge_file
         resources :push_subscriptions do
           scope module: "push_subscriptions" do
             resources :test_notifications, only: :create
@@ -66,7 +103,7 @@ Rails.application.routes.draw do
 
     scope module: "rooms" do
       resource :refresh, only: :show
-      resource :settings, only: :show
+      resource :settings, only: %i[ show update ]
       resource :involvement, only: %i[ show update ]
       resource :clear, only: :create
     end
@@ -78,7 +115,9 @@ Rails.application.routes.draw do
     resources :opens
     resources :closeds
     resources :directs
-    resources :projects, only: %i[ edit update ]
+    resources :projects, only: %i[ edit update ] do
+      resource :users_settings, only: %i[ show update ], controller: "projects/users_settings"
+    end
   end
 
   get "pooling_messages", to: "messages#last_messages", as: :pooling_messages

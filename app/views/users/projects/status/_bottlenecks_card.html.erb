@@ -1,0 +1,12 @@
+<div class="status-card status-card--bottlenecks">
+  <div class="status-card-header status-card-header--bottlenecks">
+    🚧 Active Bottlenecks
+  </div>
+  <% if bottlenecks.any? %>
+    <div class="status-bottlenecks-list">
+      <%= render partial: "users/projects/status/bottleneck_item", collection: bottlenecks, as: :bottleneck %>
+    </div>
+  <% else %>
+    <p class="status-empty-text">No active bottlenecks reported.</p>
+  <% end %>
+</div>

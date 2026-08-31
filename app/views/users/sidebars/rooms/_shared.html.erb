@@ -1,4 +1,5 @@
-<div class="room-item" id="<%= dom_id(room, :list) %>" data-sorted-list-target="item" data-sorted_list_name="<%= room.name %>">
+<% depth = local_assigns.fetch(:depth, room.parent_id.present? ? 1 : 0) %>
+<div class="room-item <%= "room-item--child" if depth.positive? %>" id="<%= dom_id(room, :list) %>" style="--room-depth: <%= depth %>">
   <%= link_to_room room,
         class: [ "room-item__link room btn txt-nowrap", "unread": local_assigns[:unread] ] do %>
     <span class="overflow-ellipsis"><%= room.name %></span>

@@ -4,6 +4,9 @@ class Rooms::Open < Room
 
   private
     def grant_access_to_all_users
-      memberships.grant_to(User.active) if type_previously_changed?(to: "Rooms::Open")
+      return unless type_previously_changed?(to: "Rooms::Open")
+
+      users_scope = project ? project.users : User.all
+      memberships.grant_to(users_scope.active)
     end
 end

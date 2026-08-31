@@ -2,12 +2,12 @@
 
 <% content_for :nav do %>
   <div class="flex-item-justify-start">
-    <%= link_back_to account_bots_path %>
+    <%= link_back_to account_bots_path(return_to: params[:return_to]) %>
   </div>
 <% end %>
 
 <section class="panel">
-  <%= form_with model: @bot, url: account_bots_path, class: "flex flex-column gap" do |form| %>
+  <%= form_with model: @bot, url: account_bots_path(return_to: params[:return_to]), class: "flex flex-column gap" do |form| %>
     <%= render "accounts/bots/form", form: form, bot: @bot %>
   <% end %>
 </section>

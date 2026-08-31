@@ -1,4 +1,18 @@
 :root {
+  /* Demo semantic layer */
+  --bg-purple: #742e7b;
+  --surface: #ffffff;
+  --surface-alt: #fafafa;
+  --text-primary: #111111;
+  --text-secondary: #777777;
+  --border-color: #eaeaea;
+  --msg-bg: #f4f4f3;
+  --pill-hover: #f0f0f0;
+  --accent-red: #e63946;
+  --accent-green: #10b981;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+
   /* Named color values */
   --lch-black: 0% 0 0;
   --lch-white: 100% 0 0;
@@ -14,16 +28,16 @@
   --lch-always-black: 0% 0 0;
 
   /* Abstractions */
-  --color-negative: oklch(var(--lch-red));
-  --color-positive: oklch(var(--lch-green));
-  --color-bg: oklch(var(--lch-white));
-  --color-message-bg: oklch(var(--lch-gray));
-  --color-text: oklch(var(--lch-black));
-  --color-text-reversed: oklch(var(--lch-white));
-  --color-link: oklch(var(--lch-blue));
-  --color-border: oklch(var(--lch-gray));
-  --color-border-dark: oklch(var(--lch-gray-dark));
-  --color-border-darker: oklch(var(--lch-gray-darker));
+  --color-negative: var(--accent-red);
+  --color-positive: var(--accent-green);
+  --color-bg: var(--surface);
+  --color-message-bg: var(--msg-bg);
+  --color-text: var(--text-primary);
+  --color-text-reversed: var(--surface);
+  --color-link: var(--accent-blue);
+  --color-border: var(--border-color);
+  --color-border-dark: #dddddd;
+  --color-border-darker: #b9b9b9;
   --color-selected: oklch(var(--lch-blue-light));
   --color-selected-dark: oklch(var(--lch-blue-dark));
   --color-alert: oklch(var(--lch-orange));

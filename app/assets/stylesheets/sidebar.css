@@ -5,8 +5,9 @@
 }
 
 .sidebar__container {
-  block-size: 100dvh;
-  max-block-size: 100dvh;
+  block-size: 100%;
+  max-block-size: 100%;
+  min-block-size: 0;
   padding-block-end: var(--sidebar-tools-height);
 }
 
@@ -200,10 +201,298 @@
   padding-inline: var(--sidebar-inline-space);
 }
 
+.sidebar-company {
+  display: grid;
+  gap: 0.6em;
+  padding: var(--block-space) var(--sidebar-inline-space) 0;
+}
+
+.sidebar-company__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sidebar-company__title {
+  color: color-mix(in oklab, var(--color-text), transparent 55%);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.sidebar-company__settings {
+  --btn-background: transparent;
+  --btn-border-color: transparent;
+  --btn-padding: 0.2em;
+
+  min-block-size: auto;
+}
+
+.sidebar-company__buttons {
+  --row-gap: 0.4em;
+}
+
+.sidebar-company__button {
+  --column-gap: 0.45em;
+
+  align-items: center;
+  display: inline-flex;
+  justify-content: flex-start;
+  max-inline-size: max-content;
+}
+
+.sidebar-projects {
+  display: grid;
+  gap: 0.55em;
+  padding: 0 var(--sidebar-inline-space);
+}
+
+.sidebar-section-separator {
+  block-size: 1px;
+  background: color-mix(in oklab, var(--color-text), transparent 85%);
+  margin-block: 0.15em 0.25em;
+}
+
+.sidebar-projects__title {
+  color: color-mix(in oklab, var(--color-text), transparent 65%);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.sidebar-projects__list {
+  --row-gap: 0.45em;
+}
+
+.sidebar-projects__item {
+  display: grid;
+  gap: 0.42em;
+}
+
+.sidebar-projects__row {
+  align-items: center;
+  column-gap: 0.35em;
+  display: flex;
+  min-inline-size: 0;
+}
+
+.sidebar-projects__button {
+  --btn-padding: 0.5em 0.35em 0.5em 1.1em;
+  --column-gap: 0.45em;
+
+  align-items: center;
+  color: #000 !important;
+  display: flex;
+  font-weight: 700;
+  flex: 1;
+  inline-size: auto;
+  justify-content: space-between;
+  max-inline-size: none;
+  min-inline-size: 0;
+}
+
+.sidebar-projects__main {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.45em;
+  min-inline-size: 0;
+}
+
+.sidebar-projects__name {
+  color: #000 !important;
+  font-weight: 700;
+}
+
+.sidebar-projects__gear {
+  color: var(--color-text) !important;
+  flex-shrink: 0;
+  opacity: 1;
+}
+
+.sidebar-projects__plus {
+  color: var(--color-text) !important;
+  flex-shrink: 0;
+  opacity: 1;
+}
+
+.sidebar-projects__controls {
+  align-items: center;
+  column-gap: 0.25em;
+  display: inline-flex;
+}
+
+.sidebar-projects__settings-link {
+  --btn-background: transparent;
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 78%);
+  --btn-border-radius: 999px;
+  --btn-border-size: 1px;
+  --btn-padding: 0.42em;
+
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+
+  border: 0px !important;
+}
+
+.sidebar-projects__settings-link--inactive {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.sidebar-projects__button--inactive {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.sidebar-projects__actions {
+  --row-gap: 0.4em;
+
+  margin-inline-start: 1.9em;
+}
+
+.sidebar-projects__action-btn {
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 78%);
+  --btn-padding: 0.36em 0.9em;
+
+  align-items: center;
+  color: color-mix(in oklab, var(--color-text), transparent 32%) !important;
+  display: inline-flex;
+  font-size: 0.84rem;
+  font-weight: 500;
+  justify-content: flex-start;
+  max-inline-size: max-content;
+}
+
+.sidebar-projects__knowledge {
+  display: grid;
+  gap: 0.35em;
+}
+
+.sidebar-projects__knowledge-label {
+  pointer-events: auto;
+}
+
+.sidebar-projects__knowledge-rooms {
+  --row-gap: 0.35em;
+}
+
+.sidebar-projects__knowledge-room-row {
+  align-items: center;
+  display: flex;
+  gap: 0.35em;
+}
+
+.sidebar-projects__knowledge-room-row > .sidebar-projects__knowledge-room {
+  flex: 1;
+  margin-inline-end: 0;
+  max-inline-size: none;
+  min-inline-size: 0;
+}
+
+.sidebar-projects__knowledge-room {
+  --room-depth: 0;
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 82%);
+  --btn-padding: 0.32em 0.8em;
+
+  align-items: center;
+  color: #777777 !important;
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 500;
+  gap: 0.35em;
+  max-inline-size: max-content;
+}
+
+.sidebar-projects__knowledge-room--child {
+  margin-inline-start: calc(var(--room-depth) * 1.4rem);
+}
+
+.sidebar-projects__knowledge-add-link {
+  opacity: 0.9;
+}
+
+.sidebar-projects__knowledge-settings-link {
+  opacity: 0.9;
+}
+
+.sidebar-projects__knowledge-plus {
+  color: color-mix(in oklab, var(--color-text), transparent 40%);
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
+.sidebar-projects__knowledge-gear {
+  color: color-mix(in oklab, var(--color-text), transparent 40%) !important;
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
+.sidebar-projects__knowledge-empty {
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 86%);
+  --btn-padding: 0.28em 0.75em;
+
+  color: color-mix(in oklab, var(--color-text), transparent 58%) !important;
+  font-size: 0.78rem;
+  max-inline-size: max-content;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.sidebar-room-settings-modal {
+  --width: 440px;
+
+  border: 0;
+  inset: 0;
+  margin: auto;
+  overflow: hidden;
+  padding: 0;
+  position: fixed;
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
+}
+
+.sidebar-room-settings-modal__frame {
+  block-size: min(34rem, calc(100dvh - var(--block-space) * 4));
+  border: 0;
+  inline-size: 100%;
+}
+
 .rooms__new-btn {
+  --btn-background: transparent;
+  --btn-border-color: color-mix(in oklab, var(--color-text), transparent 70%);
+  --btn-border-size: 1.5px;
+  --btn-border-radius: 999px;
+  --btn-color: color-mix(in oklab, var(--color-text), transparent 45%);
+  --btn-padding: 0.45em 1em;
+
+  border-style: dashed;
   inset-block-end: calc((var(--sidebar-tools-height) * -1) + var(--block-space) * 1.5);
   position: sticky;
   z-index: 4;
+
+  @media (any-hover: hover) {
+    &:hover {
+      --btn-background: color-mix(in oklab, var(--color-text), transparent 92%);
+      --btn-color: var(--color-text);
+    }
+  }
+}
+
+.rooms__new-btn-label {
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .room {
@@ -339,9 +628,18 @@
 }
 
 /* Room item with actions dropdown */
+.room-item {
+  --room-depth: 0;
+}
+
+.room-item--child {
+  margin-inline-start: calc(var(--room-depth) * 1.4rem);
+}
+
 .room-item__link {
   display: flex;
   align-items: center;
+  color: #777777 !important;
   gap: 0.5em;
   justify-content: space-between;
 }

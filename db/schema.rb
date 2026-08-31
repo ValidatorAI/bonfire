@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_31_130000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -79,6 +79,62 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
     t.index ["status"], name: "index_agents_on_status"
   end
 
+  create_table "approval_request_actions", force: :cascade do |t|
+    t.string "action"
+    t.integer "actor_id"
+    t.string "actor_type"
+    t.integer "approval_request_id"
+    t.datetime "created_at", null: false
+    t.text "note"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "approval_requests", force: :cascade do |t|
+    t.integer "agent_id"
+    t.datetime "created_at", null: false
+    t.integer "message_id"
+    t.json "payload"
+    t.string "request_type"
+    t.datetime "requested_at"
+    t.datetime "resolved_at"
+    t.integer "resolved_by_id"
+    t.integer "room_id"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["requested_at"], name: "index_approval_requests_on_requested_at"
+    t.index ["room_id", "status", "requested_at"], name: "index_approval_requests_on_room_id_and_status_and_requested_at"
+    t.index ["room_id"], name: "index_approval_requests_on_room_id"
+    t.index ["status"], name: "index_approval_requests_on_status"
+  end
+
+  create_table "attention_items", force: :cascade do |t|
+    t.string "action_label"
+    t.boolean "ai_confirm", default: false, null: false
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "due_at"
+    t.text "meta_text"
+    t.boolean "overdue", default: false, null: false
+    t.integer "project_id"
+    t.datetime "resolved_at"
+    t.integer "resolved_by_id"
+    t.integer "room_id"
+    t.integer "source_id"
+    t.string "source_type"
+    t.integer "status", default: 0, null: false
+    t.integer "target_id"
+    t.string "target_type"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.index ["due_at"], name: "index_attention_items_on_due_at"
+    t.index ["project_id", "status", "due_at"], name: "index_attention_items_on_project_id_and_status_and_due_at"
+    t.index ["project_id"], name: "index_attention_items_on_project_id"
+    t.index ["status"], name: "index_attention_items_on_status"
+    t.index ["user_id", "status", "category"], name: "index_attention_items_on_user_id_and_status_and_category"
+    t.index ["user_id"], name: "index_attention_items_on_user_id"
+  end
+
   create_table "bans", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address", null: false
@@ -96,6 +152,50 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
     t.datetime "updated_at", null: false
     t.index ["booster_id"], name: "index_boosts_on_booster_id"
     t.index ["message_id"], name: "index_boosts_on_message_id"
+  end
+
+  create_table "company_status_items", force: :cascade do |t|
+    t.json "actions", default: []
+    t.string "category", null: false
+    t.string "color"
+    t.integer "company_status_period_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "detail_category"
+    t.text "evidence"
+    t.string "from_name"
+    t.string "icon"
+    t.text "impact"
+    t.string "owner"
+    t.integer "percent"
+    t.integer "position", default: 0, null: false
+    t.string "severity"
+    t.string "status"
+    t.text "subtitle"
+    t.string "target_date"
+    t.text "text"
+    t.string "title"
+    t.string "to_name"
+    t.datetime "updated_at", null: false
+    t.index ["company_status_period_id", "category"], name: "idx_on_company_status_period_id_category_c472881932"
+    t.index ["company_status_period_id"], name: "index_company_status_items_on_company_status_period_id"
+    t.index ["position"], name: "index_company_status_items_on_position"
+  end
+
+  create_table "company_status_periods", force: :cascade do |t|
+    t.integer "account_id"
+    t.datetime "created_at", null: false
+    t.boolean "current", default: false, null: false
+    t.date "ends_on"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "slug", null: false
+    t.date "starts_on"
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_company_status_periods_on_account_id"
+    t.index ["current"], name: "index_company_status_periods_on_current"
+    t.index ["position"], name: "index_company_status_periods_on_position"
+    t.index ["slug"], name: "index_company_status_periods_on_slug", unique: true
   end
 
   create_table "file_reservations", force: :cascade do |t|
@@ -145,9 +245,189 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
     t.index ["room_id"], name: "index_messages_on_room_id"
   end
 
+  create_table "project_adrs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "decision_date"
+    t.string "file_path"
+    t.string "identifier", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "status", default: "proposed", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["identifier"], name: "index_project_adrs_on_identifier"
+    t.index ["position"], name: "index_project_adrs_on_position"
+    t.index ["project_id"], name: "index_project_adrs_on_project_id"
+  end
+
+  create_table "project_all_hands_action_items", force: :cascade do |t|
+    t.string "assignee_name"
+    t.boolean "completed", default: false, null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "due_date"
+    t.integer "position", default: 0, null: false
+    t.integer "project_all_hands_meeting_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_all_hands_action_items_on_position"
+    t.index ["project_all_hands_meeting_id"], name: "idx_on_project_all_hands_meeting_id_247f053a08"
+  end
+
+  create_table "project_all_hands_decisions", force: :cascade do |t|
+    t.string "badge", default: "Logged in System"
+    t.string "basis"
+    t.datetime "created_at", null: false
+    t.string "impact"
+    t.integer "position", default: 0, null: false
+    t.integer "project_all_hands_meeting_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_all_hands_decisions_on_position"
+    t.index ["project_all_hands_meeting_id"], name: "idx_on_project_all_hands_meeting_id_f36e392f50"
+  end
+
+  create_table "project_all_hands_meetings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration_minutes", default: 45
+    t.datetime "held_at"
+    t.string "leader_name"
+    t.text "notes"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_all_hands_meetings_on_position"
+    t.index ["project_id"], name: "index_project_all_hands_meetings_on_project_id"
+  end
+
+  create_table "project_all_hands_takeaways", force: :cascade do |t|
+    t.string "category", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_all_hands_meeting_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_all_hands_takeaways_on_position"
+    t.index ["project_all_hands_meeting_id"], name: "idx_on_project_all_hands_meeting_id_9974bb3b08"
+  end
+
+  create_table "project_bottlenecks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.datetime "resolved_at"
+    t.string "severity", default: "active"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_bottlenecks_on_position"
+    t.index ["project_id"], name: "index_project_bottlenecks_on_project_id"
+  end
+
+  create_table "project_directory_items", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.string "file_path"
+    t.string "item_type", default: "file", null: false
+    t.string "name", null: false
+    t.integer "parent_id"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_project_directory_items_on_parent_id"
+    t.index ["position"], name: "index_project_directory_items_on_position"
+    t.index ["project_id"], name: "index_project_directory_items_on_project_id"
+  end
+
+  create_table "project_external_assets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "doc_type"
+    t.string "icon"
+    t.string "meta_text"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "source_type", default: "external_url", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.string "url", null: false
+    t.index ["position"], name: "index_project_external_assets_on_position"
+    t.index ["project_id"], name: "index_project_external_assets_on_project_id"
+  end
+
+  create_table "project_knowledge_activities", force: :cascade do |t|
+    t.string "action_text", null: false
+    t.string "actor_color"
+    t.string "actor_name", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "target_path"
+    t.string "target_url"
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_knowledge_activities_on_position"
+    t.index ["project_id"], name: "index_project_knowledge_activities_on_project_id"
+  end
+
+  create_table "project_knowledge_items", force: :cascade do |t|
+    t.string "badge"
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_knowledge_items_on_position"
+    t.index ["project_id"], name: "index_project_knowledge_items_on_project_id"
+  end
+
+  create_table "project_obsidian_notes", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.string "html_source_path"
+    t.string "html_source_type", default: "internal_file", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "tags"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_obsidian_notes_on_position"
+    t.index ["project_id"], name: "index_project_obsidian_notes_on_project_id"
+  end
+
+  create_table "project_todos", force: :cascade do |t|
+    t.boolean "completed", default: false, null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "meta_text"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_todos_on_position"
+    t.index ["project_id"], name: "index_project_todos_on_project_id"
+  end
+
+  create_table "project_users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["project_id", "user_id"], name: "index_project_users_on_project_id_and_user_id", unique: true
+    t.index ["project_id"], name: "index_project_users_on_project_id"
+    t.index ["user_id"], name: "index_project_users_on_user_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "current_phase", default: "Phase 1: Project Setup"
+    t.text "description"
+    t.string "name", null: false
     t.string "path", null: false
+    t.boolean "private", default: false, null: false
+    t.integer "progress_percent", default: 0
+    t.text "recently_completed"
+    t.string "short_code"
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index ["path"], name: "index_projects_on_path", unique: true
@@ -166,16 +446,31 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
     t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
   end
 
+  create_table "room_ai_activity_states", force: :cascade do |t|
+    t.integer "agent_id"
+    t.datetime "created_at", null: false
+    t.integer "room_id"
+    t.datetime "started_at"
+    t.integer "state", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["room_id", "agent_id"], name: "index_room_ai_activity_states_on_room_id_and_agent_id", unique: true
+    t.index ["room_id"], name: "index_room_ai_activity_states_on_room_id"
+    t.index ["updated_at"], name: "index_room_ai_activity_states_on_updated_at"
+  end
+
   create_table "rooms", force: :cascade do |t|
     t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.bigint "creator_id", null: false
     t.text "description"
     t.string "name"
+    t.integer "parent_id"
+    t.boolean "private", default: false, null: false
     t.integer "project_id"
     t.string "type", null: false
     t.datetime "updated_at", null: false
     t.index ["archived_at"], name: "index_rooms_on_archived_at"
+    t.index ["parent_id"], name: "index_rooms_on_parent_id"
     t.index ["project_id", "type"], name: "index_rooms_on_project_id_and_type"
     t.index ["project_id"], name: "index_rooms_on_project_id"
   end
@@ -204,11 +499,15 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
     t.text "bio"
     t.string "bot_token"
     t.datetime "created_at", null: false
+    t.string "display_name", null: false
     t.string "email_address"
+    t.string "job_title"
     t.string "name", null: false
     t.string "password_digest"
+    t.json "preferences"
     t.integer "role", default: 0, null: false
     t.integer "status", default: 0, null: false
+    t.string "timezone"
     t.datetime "updated_at", null: false
     t.index ["bot_token"], name: "index_users_on_bot_token", unique: true
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
@@ -225,13 +524,42 @@ ActiveRecord::Schema[8.2].define(version: 2026_01_06_021046) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "agents", "projects"
+  add_foreign_key "approval_request_actions", "approval_requests"
+  add_foreign_key "approval_requests", "agents"
+  add_foreign_key "approval_requests", "messages"
+  add_foreign_key "approval_requests", "rooms"
+  add_foreign_key "approval_requests", "users", column: "resolved_by_id"
+  add_foreign_key "attention_items", "projects"
+  add_foreign_key "attention_items", "rooms"
+  add_foreign_key "attention_items", "users"
+  add_foreign_key "attention_items", "users", column: "resolved_by_id"
   add_foreign_key "bans", "users"
   add_foreign_key "boosts", "messages"
+  add_foreign_key "company_status_items", "company_status_periods"
+  add_foreign_key "company_status_periods", "accounts"
   add_foreign_key "file_reservations", "agents"
   add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
+  add_foreign_key "project_adrs", "projects"
+  add_foreign_key "project_all_hands_action_items", "project_all_hands_meetings"
+  add_foreign_key "project_all_hands_decisions", "project_all_hands_meetings"
+  add_foreign_key "project_all_hands_meetings", "projects"
+  add_foreign_key "project_all_hands_takeaways", "project_all_hands_meetings"
+  add_foreign_key "project_bottlenecks", "projects"
+  add_foreign_key "project_directory_items", "project_directory_items", column: "parent_id"
+  add_foreign_key "project_directory_items", "projects"
+  add_foreign_key "project_external_assets", "projects"
+  add_foreign_key "project_knowledge_activities", "projects"
+  add_foreign_key "project_knowledge_items", "projects"
+  add_foreign_key "project_obsidian_notes", "projects"
+  add_foreign_key "project_todos", "projects"
+  add_foreign_key "project_users", "projects"
+  add_foreign_key "project_users", "users"
   add_foreign_key "push_subscriptions", "users"
+  add_foreign_key "room_ai_activity_states", "agents"
+  add_foreign_key "room_ai_activity_states", "rooms"
   add_foreign_key "rooms", "projects"
+  add_foreign_key "rooms", "rooms", column: "parent_id"
   add_foreign_key "searches", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "webhooks", "users"

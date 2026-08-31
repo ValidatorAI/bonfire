@@ -1,0 +1,21 @@
+<% child_messages = topic_room.messages.with_creator.with_attachment_details.with_boosts.last(10) %>
+<% message_count = topic_room.messages.count %>
+
+<div id="<%= dom_id(topic_room, :topic_stream) %>" class="topic-stream-block" data-topic-room-id="<%= topic_room.id %>">
+  <%= link_to room_path(topic_room), class: "topic-header-bar", data: { turbo_frame: "_top" } do %>
+    <span class="topic-header-title">💬 Topic: <%= topic_room.name %></span>
+    <span id="<%= dom_id(topic_room, :topic_header_count) %>" class="topic-header-count">
+      <%= pluralize(message_count, "message") %> • Click to open thread
+    </span>
+  <% end %>
+
+  <div id="<%= dom_id(topic_room, :topic_messages) %>" class="topic-messages">
+    <% if child_messages.any? %>
+      <%= render partial: "messages/message", collection: child_messages, cached: true %>
+    <% else %>
+      <div class="topic-messages__empty txt-subtle">
+        No messages in this topic yet.
+      </div>
+    <% end %>
+  </div>
+</div>

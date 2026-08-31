@@ -28,6 +28,19 @@ class RoomsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show renders child topic stream blocks when parent room has children" do
+    parent_room = rooms(:designers)
+    child_room = Rooms::Open.create_for({ name: "UI Refactor", creator: users(:david), parent: parent_room }, users: [ users(:david) ])
+    child_room.messages.create!(body: "Refactoring the Zulip style stream", creator: users(:david))
+
+    get room_url(parent_room)
+    assert_response :success
+    assert_select "##{ActionView::RecordIdentifier.dom_id(child_room, :topic_stream)}"
+    assert_select ".topic-header-title", text: "💬 Topic: UI Refactor"
+    assert_select ".topic-header-count", text: /1 message/
+    assert_includes response.body, "Refactoring the Zulip style stream"
+  end
+
   test "destroy only allowed for creators or those who can administer" do
     sign_in :jz
 

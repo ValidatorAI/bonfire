@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   include Avatar, Bannable, Bot, Mentionable, Role, Transferable
 
+  has_many :project_users, dependent: :delete_all
+  has_many :projects, through: :project_users
+
   has_many :memberships, as: :participant, dependent: :delete_all
   has_many :rooms, through: :memberships
 
@@ -14,6 +17,8 @@ class User < ApplicationRecord
 
   has_many :sessions, dependent: :destroy
   has_many :bans, dependent: :destroy
+  has_many :attention_items, dependent: :nullify
+  has_many :resolved_attention_items, class_name: "AttentionItem", foreign_key: :resolved_by_id, dependent: :nullify
 
   enum :status, %i[ active deactivated banned ], default: :active
 
@@ -24,12 +29,24 @@ class User < ApplicationRecord
   scope :ordered, -> { order("LOWER(name)") }
   scope :filtered_by, ->(query) { where("name like ?", "%#{query}%") }
 
+  validates :display_name, length: { maximum: 255 }, allow_blank: true
+  validates :job_title, length: { maximum: 255 }, allow_blank: true
+  validates :timezone,
+            length: { maximum: 100 },
+            inclusion: { in: ActiveSupport::TimeZone.all.map(&:name), message: "is not a valid timezone" },
+            allow_blank: true
+  validate :preferences_must_be_object
+
   def initials
     name.scan(/\b\w/).join
   end
 
   def title
-    [ name, bio ].compact_blank.join(" – ")
+    [ effective_display_name, bio ].compact_blank.join(" – ")
+  end
+
+  def effective_display_name
+    display_name.presence || name
   end
 
   def deactivate
@@ -50,12 +67,21 @@ class User < ApplicationRecord
   end
 
   private
+    def preferences_must_be_object
+      return if preferences.blank? || preferences.is_a?(Hash)
+
+      errors.add(:preferences, "must be a JSON object")
+    end
+
     def grant_membership_to_open_rooms
+      room_ids = Rooms::Open.where(project_id: nil).pluck(:id) +
+                 Rooms::Open.where(project_id: projects.select(:id)).pluck(:id)
+
       Membership.insert_all(
-        Rooms::Open.pluck(:id).collect do |room_id|
+        room_ids.uniq.collect do |room_id|
           { room_id: room_id, participant_type: "User", participant_id: id }
         end
-      )
+      ) if room_ids.any?
     end
 
     def deactived_email_address

@@ -1,0 +1,25 @@
+<% entries.each do |entry| %>
+  <% if entry[:type] == :directory %>
+    <div class="tree-item" style="<%= "margin-left: #{depth * 16}px;" if depth > 0 %>">
+      <span class="tree-icon">📂</span> <strong><%= entry[:name] %></strong>
+    </div>
+    <% if entry[:children].present? %>
+      <%= render "users/projects/knowledge/tree_entries", entries: entry[:children], depth: depth + 1 %>
+    <% end %>
+  <% else %>
+    <div class="tree-item <%= 'tree-item--clickable' if entry[:is_markdown] || entry[:is_html] %>"
+         style="<%= "margin-left: #{depth * 16}px;" if depth > 0 %>"
+         <% if entry[:is_markdown] %>
+           data-action="click->knowledge-file-viewer#openFile"
+           data-knowledge-file-viewer-item-id-param="<%= entry[:id] %>"
+           data-knowledge-file-viewer-path-param="<%= entry[:relative_path] %>"
+           data-knowledge-file-viewer-title-param="<%= entry[:name] %>"
+         <% end %>>
+      <span class="tree-icon"><%= entry[:is_markdown] ? "📄" : (entry[:is_html] ? "🌐" : "📎") %></span>
+      <span><%= entry[:name] %></span>
+      <% if entry[:is_markdown] %>
+        <span class="tree-item-badge">MD</span>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

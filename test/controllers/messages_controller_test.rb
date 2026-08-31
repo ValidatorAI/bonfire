@@ -78,6 +78,14 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "creating a message in child room broadcasts to parent room stream as well" do
+    child_room = Rooms::Open.create_for({ name: "Child Topic", creator: users(:david), parent: @room }, users: [ users(:david) ])
+
+    assert_turbo_stream_broadcasts [ @room, :messages ], count: 2 do
+      post room_messages_url(child_room, format: :turbo_stream), params: { message: { body: "Topic message", client_message_id: 1000 } }
+    end
+  end
+
   test "creating a message broadcasts unread room" do
     assert_broadcasts "unread_rooms", 1 do
       post room_messages_url(@room, format: :turbo_stream), params: { message: { body: "New one", client_message_id: 999 } }

@@ -12,7 +12,7 @@ class Accounts::BotsController < ApplicationController
 
   def create
     User.create_bot! bot_params
-    redirect_to account_bots_url
+    redirect_to account_bots_url(return_to: return_to_param)
   end
 
   def edit
@@ -20,15 +20,19 @@ class Accounts::BotsController < ApplicationController
 
   def update
     @bot.update_bot! bot_params
-    redirect_to account_bots_url
+    redirect_to account_bots_url(return_to: return_to_param)
   end
 
   def destroy
     @bot.deactivate
-    redirect_to account_bots_url
+    redirect_to account_bots_url(return_to: return_to_param)
   end
 
   private
+    def return_to_param
+      "company_settings" if params[:return_to] == "company_settings"
+    end
+
     def set_bot
       @bot = User.active_bots.find(params[:id])
     end

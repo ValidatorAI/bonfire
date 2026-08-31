@@ -9,6 +9,7 @@ class Agent < ApplicationRecord
   has_many :rooms, through: :memberships
   has_many :messages, as: :creator, dependent: :nullify
   has_many :file_reservations, dependent: :destroy
+  has_many :room_ai_activity_states, dependent: :delete_all
 
   enum :status, { offline: 0, online: 1, idle: 2 }, default: :offline
 

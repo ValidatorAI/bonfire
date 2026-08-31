@@ -11,6 +11,7 @@ module User::Bot
     def create_bot!(attributes)
       bot_token = generate_bot_token
       webhook_url = attributes.delete(:webhook_url)
+      attributes[:display_name] = attributes[:display_name].presence || attributes[:name]
 
       User.create!(**attributes, bot_token: bot_token, role: :bot).tap do |user|
         user.create_webhook!(url: webhook_url) if webhook_url

@@ -1,0 +1,17 @@
+<div class="all-hands-card" id="all_hands_action_items_card">
+  <h3 class="all-hands-card-title">
+    <span>Action Items</span>
+    <% pending_count = action_items.count(&:pending?) %>
+    <% if pending_count > 0 %>
+      <span class="all-hands-badge all-hands-badge--orange"><%= pending_count %> Pending</span>
+    <% else %>
+      <span class="all-hands-badge all-hands-badge--blue">All Complete</span>
+    <% end %>
+  </h3>
+
+  <% if action_items.any? %>
+    <%= render partial: "users/projects/all_hands/action_item", collection: action_items, as: :item, locals: { project: project } %>
+  <% else %>
+    <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">No action items recorded for this meeting.</p>
+  <% end %>
+</div>

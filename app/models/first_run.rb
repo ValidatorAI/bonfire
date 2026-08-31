@@ -22,14 +22,6 @@ class FirstRun
           password: HUMAN_OVERSEER_PASSWORD
         )
 
-        # Create main room
-        main_room = Rooms::Open.create!(name: FIRST_ROOM_NAME, creator: overseer)
-        main_room.memberships.grant_to(overseer)
-
-        # Create meta events room for system events
-        meta_room = Rooms::Meta.create!(name: META_ROOM_NAME, creator: overseer)
-        meta_room.memberships.grant_to(overseer)
-
         overseer
       end
     end

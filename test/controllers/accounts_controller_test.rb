@@ -52,6 +52,20 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_equal accounts(:signal).name, "Different"
   end
 
+  test "update from company settings redirects back and can upload logo" do
+    assert users(:david).administrator?
+
+    patch account_url, params: {
+      return_to: "company_settings",
+      account: {
+        logo: fixture_file_upload("moon.jpg", "image/jpeg")
+      }
+    }
+
+    assert_redirected_to user_company_settings_url(user_id: "me")
+    assert accounts(:signal).reload.logo.attached?
+  end
+
   test "non-admins cannot update" do
     sign_in :kevin
     assert users(:kevin).member?

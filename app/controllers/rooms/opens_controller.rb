@@ -4,6 +4,8 @@ class Rooms::OpensController < RoomsController
   before_action :remember_last_room_visited, only: :show
   before_action :force_room_type, only: %i[ edit update ]
   before_action :ensure_permission_to_create_rooms, only: %i[ new create ]
+  before_action :set_project_for_new_room, only: %i[ new create ]
+  before_action :set_parent_room_for_new_room, only: %i[ new create ]
 
   DEFAULT_ROOM_NAME = "New room"
 
@@ -12,21 +14,37 @@ class Rooms::OpensController < RoomsController
   end
 
   def new
-    @room = Rooms::Open.new(name: DEFAULT_ROOM_NAME)
-    @users = User.active.ordered
-    @agents = Agent.active
+    @room = Rooms::Open.new(name: DEFAULT_ROOM_NAME, project: @project, parent_id: @parent_room&.id)
+    @users = users_scope_for_room_picker(@project)
+    @agents = agents_scope_for_room_picker(@project)
   end
 
   def create
-    room = Rooms::Open.create_for(room_params, users: Current.user)
+    room_attributes = room_params
+
+    if @project
+      room_attributes[:project_id] = @project.id
+    end
+
+    room_attributes[:parent_id] = if @parent_room
+      @parent_room.id
+    elsif @project
+      @project.ensure_project_room!.id
+    end
+
+    if room_attributes[:project_id].blank? && @parent_room&.project_id.present?
+      room_attributes[:project_id] = @parent_room.project_id
+    end
+
+    room = Rooms::Open.create_for(room_attributes, users: Current.user)
 
     broadcast_create_room(room)
-    redirect_to room_url(room)
+    redirect_to post_create_redirect_url(room)
   end
 
   def edit
-    @users = User.active.ordered
-    @agents = Agent.active
+    @users = users_scope_for_room_picker(@room.project)
+    @agents = agents_scope_for_room_picker(@room.project)
   end
 
   def update
@@ -37,9 +55,44 @@ class Rooms::OpensController < RoomsController
   end
 
   private
+    def set_project_for_new_room
+      project_id = params[:project_id] || params.dig(:room, :project_id)
+      return if project_id.blank?
+
+      @project = Current.user.projects.find_by(id: project_id)
+      return if @project
+
+      redirect_to root_url, alert: "Project not found or inaccessible"
+    end
+
+    def set_parent_room_for_new_room
+      parent_room_id = params[:parent_room_id] || params.dig(:room, :parent_room_id)
+      return if parent_room_id.blank?
+
+      @parent_room = Current.user.rooms.find_by(id: parent_room_id)
+      unless @parent_room
+        redirect_to root_url, alert: "Parent room not found or inaccessible"
+        return
+      end
+
+      return if @project.blank? || @parent_room.project_id == @project.id
+
+      redirect_to root_url, alert: "Parent room does not belong to this project"
+    end
+
     # Allows us to edit a closed room and turn it into an open one on saving.
     def force_room_type
       @room = @room.becomes!(Rooms::Open)
+    end
+
+    def users_scope_for_room_picker(project)
+      scope = project ? project.users : User.all
+      scope.active.ordered
+    end
+
+    def agents_scope_for_room_picker(project)
+      scope = project ? project.agents : Agent.all
+      scope.active.ordered
     end
 
     def broadcast_create_room(room)
@@ -48,5 +101,16 @@ class Rooms::OpensController < RoomsController
 
     def broadcast_update_room
       broadcast_replace_to :rooms, target: [ @room, :list ], partial: "users/sidebars/rooms/shared", locals: { room: @room }
+    end
+
+    def post_create_redirect_url(room)
+      return room_url(room) unless created_from_project_settings?
+      return room_url(room) unless @project
+
+      edit_rooms_project_url(@project.id, by: "project")
+    end
+
+    def created_from_project_settings?
+      ActiveModel::Type::Boolean.new.cast(params[:from_project_settings])
     end
 end

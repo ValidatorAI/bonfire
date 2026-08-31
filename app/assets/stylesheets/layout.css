@@ -68,7 +68,6 @@ body {
 
     @media (min-width: 100ch) {
       border-inline: 1px solid var(--color-border-darker);
-      margin-inline: 5vw 0;
     }
   }
 }

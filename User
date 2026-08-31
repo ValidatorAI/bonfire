@@ -1,0 +1,4 @@
+app/views/users/sidebars/show.html.erb:118:      <span class="for-screen-reader">Open menu</span>
+app/views/users/sidebars/show.html.erb:125:      <span class="for-screen-reader">My Settings</span>
+app/views/users/sidebars/show.html.erb:128:    <%= link_to user_settings_path, class: "btn align-center txt-reversed sidebar__tool sidebar__tool--settings" do %>
+app/views/users/sidebars/show.html.erb:130:      <span class="for-screen-reader">User Settings</span>
