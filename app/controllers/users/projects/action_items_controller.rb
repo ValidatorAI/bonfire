@@ -6,6 +6,8 @@ class Users::Projects::ActionItemsController < ApplicationController
     @action_item.toggle_completed!
     @action_items = @meeting.action_items.ordered
 
+    broadcast_action_items_update
+
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace(
@@ -19,6 +21,15 @@ class Users::Projects::ActionItemsController < ApplicationController
   end
 
   private
+    def broadcast_action_items_update
+      Turbo::StreamsChannel.broadcast_replace_to(
+        @project, :all_hands,
+        target: "all_hands_action_items_card",
+        partial: "users/projects/all_hands/action_items_card",
+        locals: { action_items: @action_items, project: @project }
+      )
+    end
+
     def set_project
       @project = Current.user.projects.find_by(id: params[:project_id])
       raise ActiveRecord::RecordNotFound if @project.blank?

@@ -23,7 +23,14 @@ class Users::Projects::ActionItemsControllerTest < ActionDispatch::IntegrationTe
     )
   end
 
-  test "toggle updates action item to completed with turbo stream" do
+  test "toggle updates action item to completed with turbo stream and broadcasts update" do
+    Turbo::StreamsChannel.expects(:broadcast_replace_to).with(
+      @project, :all_hands,
+      target: "all_hands_action_items_card",
+      partial: "users/projects/all_hands/action_items_card",
+      locals: { action_items: [@action_item], project: @project }
+    ).once
+
     patch user_company_project_action_item_toggle_url(project_id: @project.id, id: @action_item.id), as: :turbo_stream
 
     assert_response :success

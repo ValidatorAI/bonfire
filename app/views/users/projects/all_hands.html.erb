@@ -10,6 +10,8 @@
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
+<%= turbo_stream_from @project, :all_hands %>
+
 <div id="message-area" class="message-area project-all-hands-area" data-controller="all-hands-notes">
   <div class="project-all-hands-content">
     <% if @latest_meeting.present? %>

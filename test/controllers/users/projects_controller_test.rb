@@ -261,6 +261,7 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     get user_company_project_all_hands_url(id: project.id)
 
     assert_response :success
+    assert_match "turbo-cable-stream-source", @response.body
     assert_match project.display_name, @response.body
     assert_match "All-Hands Hub", @response.body
     assert_match "No All-Hands Meetings Recorded", @response.body
