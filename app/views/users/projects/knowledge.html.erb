@@ -10,72 +10,132 @@
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<div id="message-area" class="message-area project-knowledge-area">
+<div id="message-area" class="message-area project-knowledge-area"
+     data-controller="knowledge-file-viewer"
+     data-knowledge-file-viewer-file-url-value="<%= user_company_project_knowledge_file_path(user_id: 'me', id: @project.id) %>">
   <div class="project-knowledge-content">
+
+    <!-- 1. Networked Notes (Obsidian Sync) -->
     <div>
       <h2 class="knowledge-section-header">🌌 Networked Notes (Obsidian Sync)</h2>
       <div class="obsidian-container">
         <div class="obsidian-graph">
           <div class="obs-header"><span>Graph View</span><span>⚙️</span></div>
-          <div class="graph-visual">
-            <div class="graph-line" style="width: 80px; top: 50%; left: 50%; transform: rotate(-35deg);"></div>
-            <div class="graph-line" style="width: 120px; top: 50%; left: 50%; transform: rotate(115deg);"></div>
-            <div class="graph-line" style="width: 60px; top: 30%; left: 20%; transform: rotate(15deg);"></div>
-            <div style="position: absolute; top: 53%; left: 52%; color: #d4d4d4; font-size: 11px;">Smart Contract Vault</div>
-            <div style="position: absolute; top: 25%; left: 22%; color: #666; font-size: 10px;">ERC-4337 Specs</div>
-          </div>
+          <% if @primary_note&.html_source_path.present? %>
+            <% if @primary_note.external_source? %>
+              <iframe src="<%= @primary_note.html_source_path %>" class="obsidian-graph-iframe" title="Obsidian Graph"></iframe>
+            <% else %>
+              <iframe src="<%= user_company_project_knowledge_file_path(user_id: 'me', id: @project.id, path: @primary_note.html_source_path) %>" class="obsidian-graph-iframe" title="Obsidian Graph"></iframe>
+            <% end %>
+          <% else %>
+            <div class="graph-visual">
+              <div class="graph-line" style="width: 80px; top: 50%; left: 50%; transform: rotate(-35deg);"></div>
+              <div class="graph-line" style="width: 120px; top: 50%; left: 50%; transform: rotate(115deg);"></div>
+              <div class="graph-line" style="width: 60px; top: 30%; left: 20%; transform: rotate(15deg);"></div>
+              <div style="position: absolute; top: 53%; left: 52%; color: #d4d4d4; font-size: 11px;">Smart Contract Vault</div>
+              <div style="position: absolute; top: 25%; left: 22%; color: #666; font-size: 10px;">ERC-4337 Specs</div>
+            </div>
+          <% end %>
         </div>
 
         <div class="obsidian-note">
-          <h1 class="obs-title">Smart Contract Vault (V1)</h1>
-          <div class="obs-tags">
-            <span class="obs-tag">#architecture</span>
-            <span class="obs-tag">#smart-contracts</span>
-          </div>
-          <div class="obs-content">
-            <p>This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.</p>
-            <p><strong>Dependencies:</strong> We are relying heavily on the updated <span class="obs-link">[[ERC-4337 Gas Optimization]]</span> patterns discussed in last week's sync.</p>
-            <h3 style="color: white; margin: 24px 0 12px 0; font-size: 16px;">Security Clearances</h3>
-            <p>As per the decision logged in the <span class="obs-link">[[August 17 All-Hands]]</span>, the mainnet deployment requires a <span class="obs-link">[[Multi-Sig Threshold]]</span> of 3-of-5.</p>
-          </div>
+          <% if @primary_note.present? %>
+            <h1 class="obs-title"><%= @primary_note.title %></h1>
+            <% if @primary_note.tag_list.any? %>
+              <div class="obs-tags">
+                <% @primary_note.tag_list.each do |tag| %>
+                  <span class="obs-tag"><%= tag %></span>
+                <% end %>
+              </div>
+            <% end %>
+            <div class="obs-content">
+              <% if @primary_note.content.present? %>
+                <%= ProjectKnowledge.render_markdown(@primary_note.content).html_safe %>
+              <% else %>
+                <p>This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.</p>
+                <p><strong>Dependencies:</strong> We are relying heavily on the updated <span class="obs-link">[[ERC-4337 Gas Optimization]]</span> patterns discussed in last week's sync.</p>
+                <h3 style="color: white; margin: 24px 0 12px 0; font-size: 16px;">Security Clearances</h3>
+                <p>As per the decision logged in the <span class="obs-link">[[August 17 All-Hands]]</span>, the mainnet deployment requires a <span class="obs-link">[[Multi-Sig Threshold]]</span> of 3-of-5.</p>
+              <% end %>
+            </div>
+          <% else %>
+            <h1 class="obs-title">Smart Contract Vault (V1)</h1>
+            <div class="obs-tags">
+              <span class="obs-tag">#architecture</span>
+              <span class="obs-tag">#smart-contracts</span>
+            </div>
+            <div class="obs-content">
+              <p>This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.</p>
+              <p><strong>Dependencies:</strong> We are relying heavily on the updated <span class="obs-link">[[ERC-4337 Gas Optimization]]</span> patterns discussed in last week's sync.</p>
+              <h3 style="color: white; margin: 24px 0 12px 0; font-size: 16px;">Security Clearances</h3>
+              <p>As per the decision logged in the <span class="obs-link">[[August 17 All-Hands]]</span>, the mainnet deployment requires a <span class="obs-link">[[Multi-Sig Threshold]]</span> of 3-of-5.</p>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
 
+    <!-- 2. External Assets & Playbooks -->
     <div>
       <h2 class="knowledge-section-header">🔗 External Assets &amp; Playbooks</h2>
       <div class="external-docs-grid">
-        <div class="doc-card">
-          <div class="doc-icon">📄</div>
-          <div class="doc-info">
-            <span class="doc-title">Trail of Bits Audit</span>
-            <span class="doc-meta">PDF • Updated Aug 15</span>
+        <% if @external_assets.any? %>
+          <% @external_assets.each do |asset| %>
+            <% if asset.external_source? %>
+              <a href="<%= asset.url %>" target="_blank" rel="noopener noreferrer" class="doc-card doc-card--link">
+                <div class="doc-icon"><%= asset.icon.presence || '📄' %></div>
+                <div class="doc-info">
+                  <span class="doc-title"><%= asset.title %></span>
+                  <span class="doc-meta"><%= asset.meta_text.presence || asset.doc_type&.upcase %></span>
+                </div>
+              </a>
+            <% else %>
+              <div class="doc-card"
+                   data-action="click->knowledge-file-viewer#openFile"
+                   data-knowledge-file-viewer-path-param="<%= asset.url %>"
+                   data-knowledge-file-viewer-title-param="<%= asset.title %>">
+                <div class="doc-icon"><%= asset.icon.presence || '📄' %></div>
+                <div class="doc-info">
+                  <span class="doc-title"><%= asset.title %></span>
+                  <span class="doc-meta"><%= asset.meta_text.presence || 'Internal Doc' %></span>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% else %>
+          <div class="doc-card">
+            <div class="doc-icon">📄</div>
+            <div class="doc-info">
+              <span class="doc-title">Trail of Bits Audit</span>
+              <span class="doc-meta">PDF • Updated Aug 15</span>
+            </div>
           </div>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">🎨</div>
-          <div class="doc-info">
-            <span class="doc-title">Platform UI / UX Design</span>
-            <span class="doc-meta">Figma • External Link</span>
+          <div class="doc-card">
+            <div class="doc-icon">🎨</div>
+            <div class="doc-info">
+              <span class="doc-title">Platform UI / UX Design</span>
+              <span class="doc-meta">Figma • External Link</span>
+            </div>
           </div>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">📘</div>
-          <div class="doc-info">
-            <span class="doc-title">Multi-Sig Deployment</span>
-            <span class="doc-meta">Runbook • Playbook</span>
+          <div class="doc-card">
+            <div class="doc-icon">📘</div>
+            <div class="doc-info">
+              <span class="doc-title">Multi-Sig Deployment</span>
+              <span class="doc-meta">Runbook • Playbook</span>
+            </div>
           </div>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">⚙️</div>
-          <div class="doc-info">
-            <span class="doc-title">API Documentation</span>
-            <span class="doc-meta">Swagger UI • Live</span>
+          <div class="doc-card">
+            <div class="doc-icon">⚙️</div>
+            <div class="doc-info">
+              <span class="doc-title">API Documentation</span>
+              <span class="doc-meta">Swagger UI • Live</span>
+            </div>
           </div>
-        </div>
+        <% end %>
       </div>
     </div>
 
+    <!-- 3. Bottom Grid: ADRs & Directory + Activity -->
     <div class="knowledge-bottom-grid">
       <div class="knowledge-column">
         <div>
@@ -90,24 +150,40 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>ADR-004</td>
-                <td><strong>Use ECDSA for State Channel Signatures</strong></td>
-                <td>2024-08-10</td>
-                <td><span class="status-badge accepted">Accepted</span></td>
-              </tr>
-              <tr>
-                <td>ADR-005</td>
-                <td><strong>Transition to Postgres for Off-chain Indexing</strong></td>
-                <td>2024-08-18</td>
-                <td><span class="status-badge proposed">Proposed</span></td>
-              </tr>
-              <tr>
-                <td>ADR-002</td>
-                <td><strong>Use MongoDB for Order Book</strong></td>
-                <td>2024-01-15</td>
-                <td><span class="status-badge deprecated">Deprecated</span></td>
-              </tr>
+              <% if @adrs.any? %>
+                <% @adrs.each do |adr| %>
+                  <tr class="<%= 'knowledge-row--clickable' if adr.file_path.present? %>"
+                      <% if adr.file_path.present? %>
+                        data-action="click->knowledge-file-viewer#openFile"
+                        data-knowledge-file-viewer-path-param="<%= adr.file_path %>"
+                        data-knowledge-file-viewer-title-param="<%= "#{adr.identifier}: #{adr.title}" %>"
+                      <% end %>>
+                    <td><%= adr.identifier %></td>
+                    <td><strong><%= adr.title %></strong></td>
+                    <td><%= adr.formatted_date %></td>
+                    <td><span class="status-badge <%= adr.status %>"><%= adr.status.titleize %></span></td>
+                  </tr>
+                <% end %>
+              <% else %>
+                <tr>
+                  <td>ADR-004</td>
+                  <td><strong>Use ECDSA for State Channel Signatures</strong></td>
+                  <td>2024-08-10</td>
+                  <td><span class="status-badge accepted">Accepted</span></td>
+                </tr>
+                <tr>
+                  <td>ADR-005</td>
+                  <td><strong>Transition to Postgres for Off-chain Indexing</strong></td>
+                  <td>2024-08-18</td>
+                  <td><span class="status-badge proposed">Proposed</span></td>
+                </tr>
+                <tr>
+                  <td>ADR-002</td>
+                  <td><strong>Use MongoDB for Order Book</strong></td>
+                  <td>2024-01-15</td>
+                  <td><span class="status-badge deprecated">Deprecated</span></td>
+                </tr>
+              <% end %>
             </tbody>
           </table>
         </div>
@@ -117,44 +193,93 @@
         <div>
           <h2 class="knowledge-section-header">📁 Directory Explorer</h2>
           <div class="knowledge-folder-tree">
-            <div class="tree-item"><span class="tree-icon">📂</span> 01_Architecture</div>
-            <div class="tree-item tree-indent"><span class="tree-icon">📄</span> System_Design.md</div>
-            <div class="tree-item tree-indent"><span class="tree-icon">📄</span> DB_Schemas.md</div>
-            <div class="tree-item"><span class="tree-icon">📂</span> 02_Smart_Contracts</div>
-            <div class="tree-item tree-indent"><span class="tree-icon">📂</span> Audits</div>
-            <div class="tree-item tree-indent"><span class="tree-icon">📄</span> Vault_V1.md</div>
-            <div class="tree-item"><span class="tree-icon">📂</span> 03_Meetings</div>
-            <div class="tree-item"><span class="tree-icon">📂</span> 99_Archives</div>
+            <% if @directory_tree.present? %>
+              <%= render "users/projects/knowledge/tree_entries", entries: @directory_tree, depth: 0 %>
+            <% else %>
+              <div class="tree-item"><span class="tree-icon">📂</span> 01_Architecture</div>
+              <div class="tree-item tree-indent"><span class="tree-icon">📄</span> System_Design.md</div>
+              <div class="tree-item tree-indent"><span class="tree-icon">📄</span> DB_Schemas.md</div>
+              <div class="tree-item"><span class="tree-icon">📂</span> 02_Smart_Contracts</div>
+              <div class="tree-item tree-indent"><span class="tree-icon">📂</span> Audits</div>
+              <div class="tree-item tree-indent"><span class="tree-icon">📄</span> Vault_V1.md</div>
+              <div class="tree-item"><span class="tree-icon">📂</span> 03_Meetings</div>
+              <div class="tree-item"><span class="tree-icon">📂</span> 99_Archives</div>
+            <% end %>
           </div>
         </div>
 
         <div>
           <h2 class="knowledge-section-header">⏱️ Recent Knowledge Activity</h2>
           <div class="knowledge-activity-feed">
-            <div class="knowledge-activity-item">
-              <div class="knowledge-avatar" style="background-color: var(--accent-blue);">S</div>
-              <div class="knowledge-activity-content">
-                <div class="knowledge-activity-text"><strong>Sarah</strong> created new note <a href="#" style="color: var(--accent-blue); text-decoration: none;">[[Postgres Migration Plan]]</a></div>
-                <div class="knowledge-activity-time">2 hours ago</div>
+            <% if @knowledge_activities.any? %>
+              <% @knowledge_activities.each do |activity| %>
+                <div class="knowledge-activity-item">
+                  <div class="knowledge-avatar" style="background-color: <%= activity.actor_color.presence || 'var(--accent-blue)' %>;">
+                    <%= activity.actor_initial %>
+                  </div>
+                  <div class="knowledge-activity-content">
+                    <div class="knowledge-activity-text">
+                      <strong><%= activity.actor_name %></strong> <%= activity.action_text.html_safe %>
+                    </div>
+                    <div class="knowledge-activity-time"><%= time_ago_in_words(activity.created_at) %> ago</div>
+                  </div>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="knowledge-activity-item">
+                <div class="knowledge-avatar" style="background-color: var(--accent-blue);">S</div>
+                <div class="knowledge-activity-content">
+                  <div class="knowledge-activity-text"><strong>Sarah</strong> created new note <a href="#" style="color: var(--accent-blue); text-decoration: none;">[[Postgres Migration Plan]]</a></div>
+                  <div class="knowledge-activity-time">2 hours ago</div>
+                </div>
               </div>
-            </div>
-            <div class="knowledge-activity-item">
-              <div class="knowledge-avatar" style="background-color: var(--accent-green);">M</div>
-              <div class="knowledge-activity-content">
-                <div class="knowledge-activity-text"><strong>Mike</strong> updated the <strong>Multi-Sig Deployment</strong> runbook</div>
-                <div class="knowledge-activity-time">Yesterday at 4:15 PM</div>
+              <div class="knowledge-activity-item">
+                <div class="knowledge-avatar" style="background-color: var(--accent-green);">M</div>
+                <div class="knowledge-activity-content">
+                  <div class="knowledge-activity-text"><strong>Mike</strong> updated the <strong>Multi-Sig Deployment</strong> runbook</div>
+                  <div class="knowledge-activity-time">Yesterday at 4:15 PM</div>
+                </div>
               </div>
-            </div>
-            <div class="knowledge-activity-item">
-              <div class="knowledge-avatar" style="background-color: var(--text-secondary);">A</div>
-              <div class="knowledge-activity-content">
-                <div class="knowledge-activity-text"><strong>Alex</strong> changed status of <strong>ADR-004</strong> to Accepted</div>
-                <div class="knowledge-activity-time">Aug 10, 2024</div>
+              <div class="knowledge-activity-item">
+                <div class="knowledge-avatar" style="background-color: var(--text-secondary);">A</div>
+                <div class="knowledge-activity-content">
+                  <div class="knowledge-activity-text"><strong>Alex</strong> changed status of <strong>ADR-004</strong> to Accepted</div>
+                  <div class="knowledge-activity-time">Aug 10, 2024</div>
+                </div>
               </div>
-            </div>
+            <% end %>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Markdown File Viewer Dialog -->
+  <dialog class="knowledge-file-dialog"
+          aria-label="Markdown File Viewer"
+          data-knowledge-file-viewer-target="dialog"
+          data-action="click->knowledge-file-viewer#closeOnBackdrop">
+    <div class="knowledge-file-panel">
+      <header class="knowledge-file-header">
+        <div class="knowledge-file-header-text">
+          <span class="status-badge proposed" style="align-self: flex-start;">Markdown Document</span>
+          <h3 class="knowledge-file-title" data-knowledge-file-viewer-target="title">Document Title</h3>
+          <span class="knowledge-file-path" data-knowledge-file-viewer-target="path">Path</span>
+        </div>
+        <button class="knowledge-file-close-btn" type="button" aria-label="Close document" data-action="click->knowledge-file-viewer#close">&times;</button>
+      </header>
+
+      <div class="knowledge-file-body">
+        <div class="knowledge-file-loading" data-knowledge-file-viewer-target="loading" hidden>
+          <span>Loading document...</span>
+        </div>
+        <div class="knowledge-file-error" data-knowledge-file-viewer-target="error" hidden></div>
+        <div class="knowledge-file-markdown markdown" data-knowledge-file-viewer-target="content"></div>
+      </div>
+
+      <footer class="knowledge-file-footer">
+        <button class="btn btn--secondary" type="button" data-action="click->knowledge-file-viewer#close">Close</button>
+      </footer>
+    </div>
+  </dialog>
 </div>

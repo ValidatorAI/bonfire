@@ -507,4 +507,154 @@ if b2b_project.all_hands_meetings.empty?
   ])
 end
 
+if b2b_project.obsidian_notes.empty?
+  b2b_project.obsidian_notes.create!([
+    {
+      title: "Smart Contract Vault (V1)",
+      tags: "#architecture #smart-contracts",
+      content: "This document outlines the core vault logic for the institutional liquidity settlement layer. The vault is designed to hold collateral securely while allowing sub-second state channels to finalize.\n\n**Dependencies:** We are relying heavily on the updated [[ERC-4337 Gas Optimization]] patterns discussed in last week's sync.\n\n### Security Clearances\nAs per the decision logged in the [[August 17 All-Hands]], the mainnet deployment requires a [[Multi-Sig Threshold]] of 3-of-5.",
+      html_source_type: "internal_file",
+      html_source_path: "obsidian/graph.html",
+      position: 1
+    }
+  ])
+end
+
+if b2b_project.external_assets.empty?
+  b2b_project.external_assets.create!([
+    {
+      title: "Trail of Bits Audit",
+      doc_type: "pdf",
+      icon: "📄",
+      source_type: "internal_file",
+      url: "02_Smart_Contracts/Audits/Trail_of_Bits_Audit.md",
+      meta_text: "PDF • Updated Aug 15",
+      position: 1
+    },
+    {
+      title: "Platform UI / UX Design",
+      doc_type: "figma",
+      icon: "🎨",
+      source_type: "external_url",
+      url: "https://figma.com",
+      meta_text: "Figma • External Link",
+      position: 2
+    },
+    {
+      title: "Multi-Sig Deployment",
+      doc_type: "runbook",
+      icon: "📘",
+      source_type: "internal_file",
+      url: "02_Smart_Contracts/Vault_V1.md",
+      meta_text: "Runbook • Playbook",
+      position: 3
+    },
+    {
+      title: "API Documentation",
+      doc_type: "swagger",
+      icon: "⚙️",
+      source_type: "external_url",
+      url: "https://swagger.io",
+      meta_text: "Swagger UI • Live",
+      position: 4
+    }
+  ])
+end
+
+if b2b_project.adrs.empty?
+  b2b_project.adrs.create!([
+    {
+      identifier: "ADR-004",
+      title: "Use ECDSA for State Channel Signatures",
+      decision_date: Date.new(2024, 8, 10),
+      status: "accepted",
+      file_path: "01_Architecture/ADR-004.md",
+      position: 1
+    },
+    {
+      identifier: "ADR-005",
+      title: "Transition to Postgres for Off-chain Indexing",
+      decision_date: Date.new(2024, 8, 18),
+      status: "proposed",
+      file_path: "01_Architecture/DB_Schemas.md",
+      position: 2
+    },
+    {
+      identifier: "ADR-002",
+      title: "Use MongoDB for Order Book",
+      decision_date: Date.new(2024, 1, 15),
+      status: "deprecated",
+      file_path: "01_Architecture/System_Design.md",
+      position: 3
+    }
+  ])
+end
+
+if b2b_project.knowledge_activities.empty?
+  b2b_project.knowledge_activities.create!([
+    {
+      actor_name: "Sarah",
+      actor_color: "var(--accent-blue)",
+      action_text: "created new note [[Postgres Migration Plan]]",
+      target_path: "01_Architecture/DB_Schemas.md",
+      created_at: 2.hours.ago,
+      position: 1
+    },
+    {
+      actor_name: "Mike",
+      actor_color: "var(--accent-green)",
+      action_text: "updated the <strong>Multi-Sig Deployment</strong> runbook",
+      target_path: "02_Smart_Contracts/Vault_V1.md",
+      created_at: 1.day.ago,
+      position: 2
+    },
+    {
+      actor_name: "Alex",
+      actor_color: "var(--text-secondary)",
+      action_text: "changed status of <strong>ADR-004</strong> to Accepted",
+      target_path: "01_Architecture/ADR-004.md",
+      created_at: 20.days.ago,
+      position: 3
+    }
+  ])
+end
+
+# Seed sample storage files for the demo project
+demo_storage_dir = Rails.root.join("storage", "projects", b2b_project.id.to_s)
+FileUtils.mkdir_p(demo_storage_dir.join("01_Architecture"))
+FileUtils.mkdir_p(demo_storage_dir.join("02_Smart_Contracts", "Audits"))
+FileUtils.mkdir_p(demo_storage_dir.join("03_Meetings"))
+FileUtils.mkdir_p(demo_storage_dir.join("99_Archives"))
+FileUtils.mkdir_p(demo_storage_dir.join("obsidian"))
+
+File.write(
+  demo_storage_dir.join("01_Architecture", "System_Design.md"),
+  "# System Design & Architecture\n\n## Overview\nThis document outlines the core architecture of the B2B Settlement Platform.\n\n- **Settlement Engine**: Asynchronous transaction processor.\n- **Off-chain State Channels**: Sub-second finality with zero gas overhead.\n- **Vault Storage**: Multi-sig protected smart contract pools.\n\n```mermaid\ngraph TD\n  Client --> Router\n  Router --> Vault\n```\n"
+)
+
+File.write(
+  demo_storage_dir.join("01_Architecture", "DB_Schemas.md"),
+  "# Database Schemas & Storage Migration\n\n## Postgres Off-chain Store\n\nTransitioning from MongoDB to PostgreSQL for relational transaction auditing.\n\n| Table | Purpose | Indexing Strategy |\n|---|---|---|\n| `settlements` | Finalized batches | B-Tree on `(batch_id, block_num)` |\n| `audit_logs` | State channel updates | Partitioned by month |\n"
+)
+
+File.write(
+  demo_storage_dir.join("01_Architecture", "ADR-004.md"),
+  "# ADR-004: Use ECDSA for State Channel Signatures\n\n**Status:** Accepted\n**Date:** 2024-08-10\n\n## Context\nState channels require lightweight and EVM-native cryptographic verification to ensure low transaction costs.\n\n## Decision\nWe standardize on `secp256k1` ECDSA signatures using OpenZeppelin ECDSA recovery helpers.\n\n## Consequences\n- Guarantees sub-10k gas verification.\n- Simplifies hardware wallet integrations.\n"
+)
+
+File.write(
+  demo_storage_dir.join("02_Smart_Contracts", "Vault_V1.md"),
+  "# Vault V1 Runbook & Deployment Guide\n\n## Deployment Sequence\n1. Deploy `VaultFactory.sol` to Base Sepolia testnet.\n2. Initialize signer set with 3-of-5 threshold.\n3. Verify bytecode on block explorer.\n\n```bash\nforge script script/DeployVault.s.sol --rpc-url $BASE_SEPOLIA_RPC --broadcast\n```\n"
+)
+
+File.write(
+  demo_storage_dir.join("02_Smart_Contracts", "Audits", "Trail_of_Bits_Audit.md"),
+  "# Trail of Bits Security Audit Summary\n\n**Date:** August 15, 2024\n**Scope:** Vault V1 and State Channel Router contracts.\n\n## Key Findings\n- **0 Critical Vulnerabilities**\n- **0 High Severity Vulnerabilities**\n- **2 Informational Notes**: Reentrancy guard ordering and event emission indexing.\n"
+)
+
+File.write(
+  demo_storage_dir.join("obsidian", "graph.html"),
+  "<!DOCTYPE html><html><head><style>body{margin:0;background:#252526;color:#d4d4d4;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;font-size:12px;}.node{position:absolute;background:#4ec9b0;border-radius:50%;width:10px;height:10px;box-shadow:0 0 8px rgba(78,201,176,0.6);}.label{position:absolute;color:#9cdcfe;font-size:10px;white-space:nowrap;}</style></head><body><div class='node' style='top:50%;left:50%;'></div><div class='label' style='top:55%;left:45%;'>Smart Contract Vault</div><div class='node' style='top:30%;left:25%;background:#c586c0;'></div><div class='label' style='top:22%;left:20%;'>ERC-4337</div><div class='node' style='top:75%;left:70%;background:#569cd6;'></div><div class='label' style='top:80%;left:65%;'>ADR-004</div></body></html>"
+)
+
 puts "Done!"

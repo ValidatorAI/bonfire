@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_31_110000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_31_120000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -245,6 +245,21 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_31_110000) do
     t.index ["room_id"], name: "index_messages_on_room_id"
   end
 
+  create_table "project_adrs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "decision_date"
+    t.string "file_path"
+    t.string "identifier", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "status", default: "proposed", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["identifier"], name: "index_project_adrs_on_identifier"
+    t.index ["position"], name: "index_project_adrs_on_position"
+    t.index ["project_id"], name: "index_project_adrs_on_project_id"
+  end
+
   create_table "project_all_hands_action_items", force: :cascade do |t|
     t.string "assignee_name"
     t.boolean "completed", default: false, null: false
@@ -310,6 +325,35 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_31_110000) do
     t.index ["project_id"], name: "index_project_bottlenecks_on_project_id"
   end
 
+  create_table "project_external_assets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "doc_type"
+    t.string "icon"
+    t.string "meta_text"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "source_type", default: "external_url", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.string "url", null: false
+    t.index ["position"], name: "index_project_external_assets_on_position"
+    t.index ["project_id"], name: "index_project_external_assets_on_project_id"
+  end
+
+  create_table "project_knowledge_activities", force: :cascade do |t|
+    t.string "action_text", null: false
+    t.string "actor_color"
+    t.string "actor_name", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "target_path"
+    t.string "target_url"
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_knowledge_activities_on_position"
+    t.index ["project_id"], name: "index_project_knowledge_activities_on_project_id"
+  end
+
   create_table "project_knowledge_items", force: :cascade do |t|
     t.string "badge"
     t.datetime "created_at", null: false
@@ -320,6 +364,20 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_31_110000) do
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_project_knowledge_items_on_position"
     t.index ["project_id"], name: "index_project_knowledge_items_on_project_id"
+  end
+
+  create_table "project_obsidian_notes", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.string "html_source_path"
+    t.string "html_source_type", default: "internal_file", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "tags"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_obsidian_notes_on_position"
+    t.index ["project_id"], name: "index_project_obsidian_notes_on_project_id"
   end
 
   create_table "project_todos", force: :cascade do |t|
@@ -467,12 +525,16 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_31_110000) do
   add_foreign_key "file_reservations", "agents"
   add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
+  add_foreign_key "project_adrs", "projects"
   add_foreign_key "project_all_hands_action_items", "project_all_hands_meetings"
   add_foreign_key "project_all_hands_decisions", "project_all_hands_meetings"
   add_foreign_key "project_all_hands_meetings", "projects"
   add_foreign_key "project_all_hands_takeaways", "project_all_hands_meetings"
   add_foreign_key "project_bottlenecks", "projects"
+  add_foreign_key "project_external_assets", "projects"
+  add_foreign_key "project_knowledge_activities", "projects"
   add_foreign_key "project_knowledge_items", "projects"
+  add_foreign_key "project_obsidian_notes", "projects"
   add_foreign_key "project_todos", "projects"
   add_foreign_key "project_users", "projects"
   add_foreign_key "project_users", "users"

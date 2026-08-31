@@ -69,6 +69,7 @@ Rails.application.routes.draw do
         patch "company/projects/:project_id/action_items/:id/toggle", to: "projects/action_items#toggle", as: :company_project_action_item_toggle
         get "company/projects/:id/all-hands", to: "projects#all_hands", as: :company_project_all_hands
         get "company/projects/:id/knowledge", to: "projects#knowledge", as: :company_project_knowledge
+        get "company/projects/:id/knowledge/file", to: "projects#knowledge_file", as: :company_project_knowledge_file
         resources :push_subscriptions do
           scope module: "push_subscriptions" do
             resources :test_notifications, only: :create

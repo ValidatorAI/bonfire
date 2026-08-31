@@ -6,7 +6,7 @@ class Users::ProjectsController < ApplicationController
 
   before_action :set_company_context
   before_action :ensure_permission_to_create_projects, only: %i[ new create ]
-  before_action :set_project, only: %i[ overview status all_hands knowledge ]
+  before_action :set_project, only: %i[ overview status all_hands knowledge knowledge_file ]
 
   def new
     @project = Project.new(private: false)
@@ -77,6 +77,51 @@ class Users::ProjectsController < ApplicationController
   end
 
   def knowledge
+    @obsidian_notes = @project.obsidian_notes.ordered
+    @primary_note = @obsidian_notes.first
+    @external_assets = @project.external_assets.ordered
+    @adrs = @project.adrs.ordered
+    @knowledge_activities = @project.knowledge_activities.ordered
+    @directory_tree = ProjectKnowledge.directory_tree(@project)
+  end
+
+  def knowledge_file
+    path_param = params[:path].to_s
+    file_path = ProjectKnowledge.safe_resolve_path(@project, path_param)
+
+    unless file_path && File.file?(file_path)
+      head :not_found
+      return
+    end
+
+    ext = File.extname(file_path).downcase
+    filename = File.basename(file_path)
+
+    case ext
+    when ".md", ".markdown"
+      raw_content = File.read(file_path, encoding: "UTF-8")
+      rendered_html = ProjectKnowledge.render_markdown(raw_content)
+
+      respond_to do |format|
+        format.json do
+          render json: {
+            title: filename,
+            path: path_param,
+            raw_content: raw_content,
+            rendered_html: rendered_html
+          }
+        end
+        format.html do
+          render partial: "users/projects/knowledge/file_modal_content",
+                 locals: { title: filename, path: path_param, rendered_html: rendered_html },
+                 layout: false
+        end
+      end
+    when ".html", ".htm"
+      render file: file_path, layout: false, content_type: "text/html"
+    else
+      send_file file_path, disposition: "inline"
+    end
   end
 
   private

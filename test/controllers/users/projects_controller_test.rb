@@ -315,6 +315,28 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
   test "knowledge" do
     project = create_project_for(users(:david))
+    project.obsidian_notes.create!(
+      title: "Smart Contract Vault (V1)",
+      tags: "#architecture #smart-contracts",
+      content: "Core vault logic.",
+      html_source_type: "internal_file",
+      html_source_path: "obsidian/graph.html"
+    )
+    project.adrs.create!(
+      identifier: "ADR-004",
+      title: "Use ECDSA for State Channel Signatures",
+      decision_date: Date.new(2024, 8, 10),
+      status: "accepted"
+    )
+    project.external_assets.create!(
+      title: "Trail of Bits Audit",
+      url: "https://example.com/audit.pdf",
+      source_type: "external_url"
+    )
+    project.knowledge_activities.create!(
+      actor_name: "Sarah",
+      action_text: "created new note [[Postgres Migration Plan]]"
+    )
 
     get user_company_project_knowledge_url(id: project.id)
 
@@ -328,6 +350,44 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Recent Knowledge Activity", @response.body
     assert_match "Smart Contract Vault (V1)", @response.body
     assert_match "ADR-004", @response.body
+  end
+
+  test "knowledge_file serves markdown as json" do
+    project = create_project_for(users(:david))
+    storage_dir = ProjectKnowledge.ensure_storage_dir(project)
+    file_path = storage_dir.join("System_Design.md")
+    File.write(file_path, "# System Architecture\n\nCore layout.")
+
+    get user_company_project_knowledge_file_url(id: project.id, path: "System_Design.md", format: :json)
+
+    assert_response :success
+    json = JSON.parse(@response.body)
+    assert_equal "System_Design.md", json["title"]
+    assert_includes json["rendered_html"], "<h1>System Architecture</h1>"
+  ensure
+    FileUtils.rm_rf(storage_dir) if storage_dir
+  end
+
+  test "knowledge_file serves html file directly" do
+    project = create_project_for(users(:david))
+    storage_dir = ProjectKnowledge.ensure_storage_dir(project)
+    file_path = storage_dir.join("graph.html")
+    File.write(file_path, "<html><body><div>Obsidian Graph</div></body></html>")
+
+    get user_company_project_knowledge_file_url(id: project.id, path: "graph.html")
+
+    assert_response :success
+    assert_match "Obsidian Graph", @response.body
+  ensure
+    FileUtils.rm_rf(storage_dir) if storage_dir
+  end
+
+  test "knowledge_file rejects path traversal" do
+    project = create_project_for(users(:david))
+
+    get user_company_project_knowledge_file_url(id: project.id, path: "../../../etc/passwd")
+
+    assert_response :not_found
   end
 
   test "knowledge returns not found for non-member project" do
