@@ -263,6 +263,12 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match project.display_name, @response.body
     assert_match "All-Hands Hub", @response.body
+    assert_match "Latest: Q3 Kickoff &amp; Security Review", @response.body
+    assert_match "AI Summary &amp; Key Takeaways", @response.body
+    assert_match "Action Items", @response.body
+    assert_match "Decisions Logged", @response.body
+    assert_match "Previous Meetings", @response.body
+    assert_no_match "Watch Recording", @response.body
   end
 
   test "all hands returns not found for non-member project" do

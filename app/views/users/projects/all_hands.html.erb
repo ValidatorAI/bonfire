@@ -2,10 +2,93 @@
 <% @body_class = "sidebar" %>
 
 <% content_for :nav do %>
-  <span class="btn btn--reversed btn--faux user-settings-nav__pill">⚡ <%= @project.display_name %></span>
-  <h1 class="user-settings-nav__title txt-large">All-Hands Hub</h1>
+  <div class="project-overview-header-left">
+    <span class="btn btn--reversed btn--faux user-settings-nav__pill">⚡ <%= @project.display_name %></span>
+    <h1 class="user-settings-nav__title txt-large">All-Hands Hub</h1>
+  </div>
 <% end %>
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<div id="message-area" class="message-area"></div>
+<div id="message-area" class="message-area project-all-hands-area">
+  <div class="project-all-hands-content">
+    <div class="all-hands-meeting-header">
+      <div>
+        <h2 class="all-hands-meeting-title">Latest: Q3 Kickoff &amp; Security Review</h2>
+        <span class="all-hands-meeting-meta">August 17, 2026 • 45 mins • Led by @Sarah</span>
+      </div>
+    </div>
+
+    <div class="all-hands-grid">
+      <div class="all-hands-card">
+        <h3 class="all-hands-card-title">✨ AI Summary &amp; Key Takeaways</h3>
+        <ul class="all-hands-bullet-list">
+          <li><strong>Security:</strong> The core vault logic passed the external audit with zero critical vulnerabilities.</li>
+          <li><strong>Timeline:</strong> Leadership confirmed the Q3 launch target is locked in for September 15th.</li>
+          <li><strong>Marketing:</strong> The go-to-market strategy is shifting slightly to focus on enterprise liquidity providers first.</li>
+        </ul>
+      </div>
+
+      <div class="all-hands-card">
+        <h3 class="all-hands-card-title">
+          <span>Action Items</span>
+          <span class="all-hands-badge all-hands-badge--orange">2 Pending</span>
+        </h3>
+
+        <div class="all-hands-list-item">
+          <label class="all-hands-checkbox-label">
+            <input type="checkbox" class="all-hands-checkbox-input">
+            <span>Finalize Multi-sig threshold logic</span>
+          </label>
+          <span class="all-hands-item-meta" style="margin-left: 24px;">Assignee: @Alex • Due: Aug 25</span>
+        </div>
+
+        <div class="all-hands-list-item">
+          <label class="all-hands-checkbox-label">
+            <input type="checkbox" class="all-hands-checkbox-input">
+            <span>Draft release notes for V1</span>
+          </label>
+          <span class="all-hands-item-meta" style="margin-left: 24px;">Assignee: @Sarah • Due: Aug 28</span>
+        </div>
+
+        <div class="all-hands-list-item">
+          <label class="all-hands-checkbox-label all-hands-checkbox-label--completed">
+            <input type="checkbox" checked disabled class="all-hands-checkbox-input">
+            <span>Send Vault contract to auditors</span>
+          </label>
+          <span class="all-hands-item-meta" style="margin-left: 24px;">Assignee: @Siavash • Completed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="all-hands-card">
+      <h3 class="all-hands-card-title">Decisions Logged</h3>
+      <div class="all-hands-list-item all-hands-list-item--row">
+        <div>
+          <div class="all-hands-item-title">We will use 3-of-5 multisig for mainnet deployment.</div>
+          <div class="all-hands-item-meta">Decided in consensus • Impact: #smart-contracts</div>
+        </div>
+        <span class="all-hands-badge all-hands-badge--blue">Logged in System</span>
+      </div>
+    </div>
+
+    <div class="all-hands-card">
+      <h3 class="all-hands-card-title">Previous Meetings</h3>
+      <div class="all-hands-list-item all-hands-list-item--row">
+        <div>
+          <div class="all-hands-item-title">Weekly Sync: Testing Phase 1</div>
+          <div class="all-hands-item-meta">August 10, 2026 • 30 mins</div>
+        </div>
+        <button class="all-hands-secondary-btn" type="button">View Notes</button>
+      </div>
+
+      <div class="all-hands-list-item all-hands-list-item--row">
+        <div>
+          <div class="all-hands-item-title">Monthly Review: July Growth Metrics</div>
+          <div class="all-hands-item-meta">August 3, 2026 • 60 mins</div>
+        </div>
+        <button class="all-hands-secondary-btn" type="button">View Notes</button>
+      </div>
+    </div>
+  </div>
+</div>
