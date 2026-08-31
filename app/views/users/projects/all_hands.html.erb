@@ -12,83 +12,108 @@
 
 <div id="message-area" class="message-area project-all-hands-area">
   <div class="project-all-hands-content">
-    <div class="all-hands-meeting-header">
-      <div>
-        <h2 class="all-hands-meeting-title">Latest: Q3 Kickoff &amp; Security Review</h2>
-        <span class="all-hands-meeting-meta">August 17, 2026 • 45 mins • Led by @Sarah</span>
-      </div>
-    </div>
-
-    <div class="all-hands-grid">
-      <div class="all-hands-card">
-        <h3 class="all-hands-card-title">✨ AI Summary &amp; Key Takeaways</h3>
-        <ul class="all-hands-bullet-list">
-          <li><strong>Security:</strong> The core vault logic passed the external audit with zero critical vulnerabilities.</li>
-          <li><strong>Timeline:</strong> Leadership confirmed the Q3 launch target is locked in for September 15th.</li>
-          <li><strong>Marketing:</strong> The go-to-market strategy is shifting slightly to focus on enterprise liquidity providers first.</li>
-        </ul>
-      </div>
-
-      <div class="all-hands-card">
-        <h3 class="all-hands-card-title">
-          <span>Action Items</span>
-          <span class="all-hands-badge all-hands-badge--orange">2 Pending</span>
-        </h3>
-
-        <div class="all-hands-list-item">
-          <label class="all-hands-checkbox-label">
-            <input type="checkbox" class="all-hands-checkbox-input">
-            <span>Finalize Multi-sig threshold logic</span>
-          </label>
-          <span class="all-hands-item-meta" style="margin-left: 24px;">Assignee: @Alex • Due: Aug 25</span>
-        </div>
-
-        <div class="all-hands-list-item">
-          <label class="all-hands-checkbox-label">
-            <input type="checkbox" class="all-hands-checkbox-input">
-            <span>Draft release notes for V1</span>
-          </label>
-          <span class="all-hands-item-meta" style="margin-left: 24px;">Assignee: @Sarah • Due: Aug 28</span>
-        </div>
-
-        <div class="all-hands-list-item">
-          <label class="all-hands-checkbox-label all-hands-checkbox-label--completed">
-            <input type="checkbox" checked disabled class="all-hands-checkbox-input">
-            <span>Send Vault contract to auditors</span>
-          </label>
-          <span class="all-hands-item-meta" style="margin-left: 24px;">Assignee: @Siavash • Completed</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="all-hands-card">
-      <h3 class="all-hands-card-title">Decisions Logged</h3>
-      <div class="all-hands-list-item all-hands-list-item--row">
+    <% if @latest_meeting.present? %>
+      <div class="all-hands-meeting-header">
         <div>
-          <div class="all-hands-item-title">We will use 3-of-5 multisig for mainnet deployment.</div>
-          <div class="all-hands-item-meta">Decided in consensus • Impact: #smart-contracts</div>
+          <h2 class="all-hands-meeting-title"><%= @latest_meeting.title %></h2>
+          <% if @latest_meeting.metadata_line.present? %>
+            <span class="all-hands-meeting-meta"><%= @latest_meeting.metadata_line %></span>
+          <% end %>
         </div>
-        <span class="all-hands-badge all-hands-badge--blue">Logged in System</span>
-      </div>
-    </div>
-
-    <div class="all-hands-card">
-      <h3 class="all-hands-card-title">Previous Meetings</h3>
-      <div class="all-hands-list-item all-hands-list-item--row">
-        <div>
-          <div class="all-hands-item-title">Weekly Sync: Testing Phase 1</div>
-          <div class="all-hands-item-meta">August 10, 2026 • 30 mins</div>
-        </div>
-        <button class="all-hands-secondary-btn" type="button">View Notes</button>
       </div>
 
-      <div class="all-hands-list-item all-hands-list-item--row">
-        <div>
-          <div class="all-hands-item-title">Monthly Review: July Growth Metrics</div>
-          <div class="all-hands-item-meta">August 3, 2026 • 60 mins</div>
+      <div class="all-hands-grid">
+        <div class="all-hands-card">
+          <h3 class="all-hands-card-title">✨ AI Summary &amp; Key Takeaways</h3>
+          <% if @takeaways.any? %>
+            <ul class="all-hands-bullet-list">
+              <% @takeaways.each do |takeaway| %>
+                <li><strong><%= takeaway.category %>:</strong> <%= takeaway.content %></li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">No takeaways recorded for this meeting.</p>
+          <% end %>
         </div>
-        <button class="all-hands-secondary-btn" type="button">View Notes</button>
+
+        <div class="all-hands-card">
+          <h3 class="all-hands-card-title">
+            <span>Action Items</span>
+            <% pending_count = @action_items.count(&:pending?) %>
+            <% if pending_count > 0 %>
+              <span class="all-hands-badge all-hands-badge--orange"><%= pending_count %> Pending</span>
+            <% else %>
+              <span class="all-hands-badge all-hands-badge--blue">All Complete</span>
+            <% end %>
+          </h3>
+
+          <% if @action_items.any? %>
+            <% @action_items.each do |item| %>
+              <div class="all-hands-list-item">
+                <label class="all-hands-checkbox-label <%= 'all-hands-checkbox-label--completed' if item.completed? %>">
+                  <input type="checkbox" <%= 'checked disabled' if item.completed? %> class="all-hands-checkbox-input">
+                  <span><%= item.title %></span>
+                </label>
+                <% meta_parts = [] %>
+                <% meta_parts << "Assignee: @#{item.assignee_name}" if item.assignee_name.present? %>
+                <% meta_parts << (item.completed? ? "Completed" : "Due: #{item.due_date}") if item.due_date.present? || item.completed? %>
+                <% if meta_parts.any? %>
+                  <span class="all-hands-item-meta" style="margin-left: 24px;"><%= meta_parts.join(" • ") %></span>
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">No action items recorded for this meeting.</p>
+          <% end %>
+        </div>
       </div>
-    </div>
+
+      <% if @decisions.any? %>
+        <div class="all-hands-card">
+          <h3 class="all-hands-card-title">Decisions Logged</h3>
+          <% @decisions.each do |decision| %>
+            <div class="all-hands-list-item all-hands-list-item--row">
+              <div>
+                <div class="all-hands-item-title"><%= decision.title %></div>
+                <% dec_parts = [] %>
+                <% dec_parts << decision.basis if decision.basis.present? %>
+                <% dec_parts << "Impact: #{decision.impact}" if decision.impact.present? %>
+                <% if dec_parts.any? %>
+                  <div class="all-hands-item-meta"><%= dec_parts.join(" • ") %></div>
+                <% end %>
+              </div>
+              <% if decision.badge.present? %>
+                <span class="all-hands-badge all-hands-badge--blue"><%= decision.badge %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @previous_meetings.any? %>
+        <div class="all-hands-card">
+          <h3 class="all-hands-card-title">Previous Meetings</h3>
+          <% @previous_meetings.each do |meeting| %>
+            <div class="all-hands-list-item all-hands-list-item--row">
+              <div>
+                <div class="all-hands-item-title"><%= meeting.title %></div>
+                <% prev_meta = [] %>
+                <% prev_meta << meeting.formatted_held_date if meeting.formatted_held_date.present? %>
+                <% prev_meta << "#{meeting.duration_minutes} mins" if meeting.duration_minutes.present? %>
+                <% if prev_meta.any? %>
+                  <div class="all-hands-item-meta"><%= prev_meta.join(" • ") %></div>
+                <% end %>
+              </div>
+              <button class="all-hands-secondary-btn" type="button">View Notes</button>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="all-hands-card" style="text-align: center; padding: 48px 24px;">
+        <h3 class="all-hands-card-title" style="justify-content: center; margin-bottom: 8px;">No All-Hands Meetings Recorded</h3>
+        <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">This project does not have any recorded All-Hands meetings or sync summaries yet.</p>
+      </div>
+    <% end %>
   </div>
 </div>

@@ -425,4 +425,81 @@ if b2b_project.knowledge_items.empty?
   ])
 end
 
+if b2b_project.all_hands_meetings.empty?
+  latest_meeting = b2b_project.all_hands_meetings.create!(
+    title: "Latest: Q3 Kickoff & Security Review",
+    held_at: Time.zone.parse("2026-08-17 10:00:00"),
+    duration_minutes: 45,
+    leader_name: "Sarah",
+    position: 1
+  )
+
+  latest_meeting.takeaways.create!([
+    {
+      category: "Security",
+      content: "The core vault logic passed the external audit with zero critical vulnerabilities.",
+      position: 1
+    },
+    {
+      category: "Timeline",
+      content: "Leadership confirmed the Q3 launch target is locked in for September 15th.",
+      position: 2
+    },
+    {
+      category: "Marketing",
+      content: "The go-to-market strategy is shifting slightly to focus on enterprise liquidity providers first.",
+      position: 3
+    }
+  ])
+
+  latest_meeting.action_items.create!([
+    {
+      title: "Finalize Multi-sig threshold logic",
+      assignee_name: "Alex",
+      due_date: "Aug 25",
+      completed: false,
+      position: 1
+    },
+    {
+      title: "Draft release notes for V1",
+      assignee_name: "Sarah",
+      due_date: "Aug 28",
+      completed: false,
+      position: 2
+    },
+    {
+      title: "Send Vault contract to auditors",
+      assignee_name: "Siavash",
+      completed: true,
+      completed_at: Time.zone.parse("2026-08-18 14:00:00"),
+      position: 3
+    }
+  ])
+
+  latest_meeting.decisions.create!([
+    {
+      title: "We will use 3-of-5 multisig for mainnet deployment.",
+      basis: "Decided in consensus",
+      impact: "#smart-contracts",
+      badge: "Logged in System",
+      position: 1
+    }
+  ])
+
+  b2b_project.all_hands_meetings.create!([
+    {
+      title: "Weekly Sync: Testing Phase 1",
+      held_at: Time.zone.parse("2026-08-10 10:00:00"),
+      duration_minutes: 30,
+      position: 2
+    },
+    {
+      title: "Monthly Review: July Growth Metrics",
+      held_at: Time.zone.parse("2026-08-03 10:00:00"),
+      duration_minutes: 60,
+      position: 3
+    }
+  ])
+end
+
 puts "Done!"

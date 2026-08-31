@@ -69,6 +69,11 @@ class Users::ProjectsController < ApplicationController
   end
 
   def all_hands
+    @latest_meeting = @project.all_hands_meetings.ordered.first
+    @takeaways = @latest_meeting&.takeaways&.ordered || []
+    @action_items = @latest_meeting&.action_items&.ordered || []
+    @decisions = @latest_meeting&.decisions&.ordered || []
+    @previous_meetings = @project.all_hands_meetings.ordered.offset(1) || []
   end
 
   def knowledge

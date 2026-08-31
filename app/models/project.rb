@@ -8,6 +8,7 @@ class Project < ApplicationRecord
   has_many :bottlenecks, class_name: "ProjectBottleneck", dependent: :destroy
   has_many :todos, class_name: "ProjectTodo", dependent: :destroy
   has_many :knowledge_items, class_name: "ProjectKnowledgeItem", dependent: :destroy
+  has_many :all_hands_meetings, class_name: "ProjectAllHandsMeeting", dependent: :destroy
 
   validates :slug, presence: true, uniqueness: true,
             format: { with: /\A[a-z0-9\-]+\z/, message: "must be lowercase alphanumeric with dashes" }
