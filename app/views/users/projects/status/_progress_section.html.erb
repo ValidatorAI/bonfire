@@ -1,0 +1,14 @@
+<div class="status-progress-section">
+  <div class="status-progress-header">
+    <span class="status-progress-title"><%= project.current_phase_name %></span>
+    <span class="status-progress-percent"><%= project.progress_percent_value %>% Complete</span>
+  </div>
+  <div class="status-progress-track">
+    <div class="status-progress-fill" style="width: <%= [0, [100, project.progress_percent_value].min].max %>%;"></div>
+  </div>
+  <% if project.recently_completed_text.present? %>
+    <div class="status-inline-meta">
+      <strong>Recently Completed:</strong> <%= project.recently_completed_text %>
+    </div>
+  <% end %>
+</div>

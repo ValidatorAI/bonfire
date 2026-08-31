@@ -1,0 +1,15 @@
+<div class="status-card">
+  <div class="status-card-header">📚 Project Knowledge &amp; Context</div>
+  <% if knowledge_items.any? %>
+    <div class="status-knowledge-list">
+      <% knowledge_items.each_with_index do |item, idx| %>
+        <%= render "users/projects/status/knowledge_item", knowledge_item: item %>
+        <% if idx < knowledge_items.size - 1 %>
+          <hr class="status-divider">
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="status-empty-text">No knowledge items recorded yet.</p>
+  <% end %>
+</div>

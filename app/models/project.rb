@@ -5,6 +5,9 @@ class Project < ApplicationRecord
   has_many :project_users, dependent: :delete_all
   has_many :users, through: :project_users
   has_many :attention_items, dependent: :nullify
+  has_many :bottlenecks, class_name: "ProjectBottleneck", dependent: :destroy
+  has_many :todos, class_name: "ProjectTodo", dependent: :destroy
+  has_many :knowledge_items, class_name: "ProjectKnowledgeItem", dependent: :destroy
 
   validates :slug, presence: true, uniqueness: true,
             format: { with: /\A[a-z0-9\-]+\z/, message: "must be lowercase alphanumeric with dashes" }
@@ -39,6 +42,18 @@ class Project < ApplicationRecord
 
   def display_name
     name.presence || slug
+  end
+
+  def current_phase_name
+    current_phase.presence || "Phase 1: Project Setup"
+  end
+
+  def progress_percent_value
+    progress_percent || 0
+  end
+
+  def recently_completed_text
+    recently_completed.presence
   end
 
   private

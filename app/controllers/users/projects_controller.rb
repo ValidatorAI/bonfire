@@ -63,6 +63,9 @@ class Users::ProjectsController < ApplicationController
   end
 
   def status
+    @bottlenecks = @project.bottlenecks.active.ordered
+    @todos = @project.todos.ordered
+    @knowledge_items = @project.knowledge_items.ordered
   end
 
   def all_hands

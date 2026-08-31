@@ -223,12 +223,30 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
   test "status" do
     project = create_project_for(users(:david))
+    project.update!(
+      current_phase: "Phase 2: Core Platform Development",
+      progress_percent: 65,
+      recently_completed: "Tailwind CSS styling applied to profile settings."
+    )
+    project.bottlenecks.create!(title: "Obsidian Vault Indexing Timeout", description: "Hermes agent timeout on large directories.")
+    project.todos.create!(title: "Finalize Express.js API Routes", meta_text: "Connect Node.js backend.")
+    project.knowledge_items.create!(title: "Infrastructure Routing", badge: "Architecture", description: "VPS hosted on Infomaniak.")
 
     get user_company_project_status_url(id: project.id)
 
     assert_response :success
     assert_match project.display_name, @response.body
     assert_match "Project Status &amp; Alignment", @response.body
+    assert_match "Phase 2: Core Platform Development", @response.body
+    assert_match "65% Complete", @response.body
+    assert_match "Tailwind CSS styling applied", @response.body
+    assert_match "Active Bottlenecks", @response.body
+    assert_match "Obsidian Vault Indexing Timeout", @response.body
+    assert_match "What Should Be Done", @response.body
+    assert_match "Finalize Express.js API Routes", @response.body
+    assert_match "Project Knowledge &amp; Context", @response.body
+    assert_match "Infrastructure Routing", @response.body
+    assert_match "Architecture", @response.body
   end
 
   test "status returns not found for non-member project" do

@@ -1,0 +1,20 @@
+<div id="<%= dom_id(todo) %>" class="status-todo-item <%= 'completed' if todo.completed? %>">
+  <%= button_to user_company_project_todo_toggle_path(user_id: "me", project_id: project.id, id: todo.id),
+                method: :patch,
+                class: "status-todo-toggle-btn",
+                data: { turbo: true },
+                form: { class: "status-todo-form" } do %>
+    <input type="checkbox"
+           class="status-todo-checkbox"
+           <%= "checked" if todo.completed? %>
+           tabindex="-1"
+           aria-hidden="true"
+           onclick="this.form.requestSubmit()">
+  <% end %>
+  <div class="status-todo-content">
+    <div class="status-todo-title"><%= todo.title %></div>
+    <% if todo.meta_text.present? %>
+      <div class="status-todo-meta"><%= todo.meta_text %></div>
+    <% end %>
+  </div>
+</div>

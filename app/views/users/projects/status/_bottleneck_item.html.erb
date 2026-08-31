@@ -1,0 +1,6 @@
+<div id="<%= dom_id(bottleneck) %>" class="status-bottleneck-item">
+  <div class="status-bottleneck-title"><%= bottleneck.title %></div>
+  <% if bottleneck.description.present? %>
+    <div class="status-bottleneck-desc"><%= bottleneck.description %></div>
+  <% end %>
+</div>

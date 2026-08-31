@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_29_140000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_31_100000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -245,6 +245,44 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_29_140000) do
     t.index ["room_id"], name: "index_messages_on_room_id"
   end
 
+  create_table "project_bottlenecks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.datetime "resolved_at"
+    t.string "severity", default: "active"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_bottlenecks_on_position"
+    t.index ["project_id"], name: "index_project_bottlenecks_on_project_id"
+  end
+
+  create_table "project_knowledge_items", force: :cascade do |t|
+    t.string "badge"
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_knowledge_items_on_position"
+    t.index ["project_id"], name: "index_project_knowledge_items_on_project_id"
+  end
+
+  create_table "project_todos", force: :cascade do |t|
+    t.boolean "completed", default: false, null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "meta_text"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_todos_on_position"
+    t.index ["project_id"], name: "index_project_todos_on_project_id"
+  end
+
   create_table "project_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "project_id", null: false
@@ -257,10 +295,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_29_140000) do
 
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "current_phase", default: "Phase 1: Project Setup"
     t.text "description"
     t.string "name", null: false
     t.string "path", null: false
     t.boolean "private", default: false, null: false
+    t.integer "progress_percent", default: 0
+    t.text "recently_completed"
     t.string "short_code"
     t.string "slug", null: false
     t.datetime "updated_at", null: false
@@ -374,6 +415,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_29_140000) do
   add_foreign_key "file_reservations", "agents"
   add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
+  add_foreign_key "project_bottlenecks", "projects"
+  add_foreign_key "project_knowledge_items", "projects"
+  add_foreign_key "project_todos", "projects"
   add_foreign_key "project_users", "projects"
   add_foreign_key "project_users", "users"
   add_foreign_key "push_subscriptions", "users"

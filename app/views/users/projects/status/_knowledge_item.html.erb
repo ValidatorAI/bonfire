@@ -1,0 +1,9 @@
+<div id="<%= dom_id(knowledge_item) %>" class="status-knowledge-item">
+  <div class="status-knowledge-title">
+    <%= knowledge_item.title %>
+    <% if knowledge_item.badge.present? %>
+      <span class="status-knowledge-badge"><%= knowledge_item.badge %></span>
+    <% end %>
+  </div>
+  <div class="status-knowledge-desc"><%= simple_format(knowledge_item.description, {}, wrapper_tag: "span") %></div>
+</div>

@@ -1,0 +1,10 @@
+<div class="status-card">
+  <div class="status-card-header">🎯 What Should Be Done (Next Steps)</div>
+  <% if todos.any? %>
+    <div class="status-todos-list">
+      <%= render partial: "users/projects/status/todo_item", collection: todos, as: :todo, locals: { project: project } %>
+    </div>
+  <% else %>
+    <p class="status-empty-text">No pending next steps.</p>
+  <% end %>
+</div>
