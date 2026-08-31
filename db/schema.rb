@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_31_120000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_31_130000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -325,6 +325,21 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_31_120000) do
     t.index ["project_id"], name: "index_project_bottlenecks_on_project_id"
   end
 
+  create_table "project_directory_items", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.string "file_path"
+    t.string "item_type", default: "file", null: false
+    t.string "name", null: false
+    t.integer "parent_id"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_project_directory_items_on_parent_id"
+    t.index ["position"], name: "index_project_directory_items_on_position"
+    t.index ["project_id"], name: "index_project_directory_items_on_project_id"
+  end
+
   create_table "project_external_assets", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "doc_type"
@@ -531,6 +546,8 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_31_120000) do
   add_foreign_key "project_all_hands_meetings", "projects"
   add_foreign_key "project_all_hands_takeaways", "project_all_hands_meetings"
   add_foreign_key "project_bottlenecks", "projects"
+  add_foreign_key "project_directory_items", "project_directory_items", column: "parent_id"
+  add_foreign_key "project_directory_items", "projects"
   add_foreign_key "project_external_assets", "projects"
   add_foreign_key "project_knowledge_activities", "projects"
   add_foreign_key "project_knowledge_items", "projects"

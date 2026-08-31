@@ -11,6 +11,7 @@
          style="<%= "margin-left: #{depth * 16}px;" if depth > 0 %>"
          <% if entry[:is_markdown] %>
            data-action="click->knowledge-file-viewer#openFile"
+           data-knowledge-file-viewer-item-id-param="<%= entry[:id] %>"
            data-knowledge-file-viewer-path-param="<%= entry[:relative_path] %>"
            data-knowledge-file-viewer-title-param="<%= entry[:name] %>"
          <% end %>>

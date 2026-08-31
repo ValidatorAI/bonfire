@@ -63,6 +63,35 @@ class ProjectKnowledgeTest < ActiveSupport::TestCase
     assert_equal "S", activity.actor_initial
   end
 
+  test "creates hierarchical directory items and builds database tree" do
+    arch_dir = @project.directory_items.create!(
+      name: "01_Architecture",
+      item_type: "directory",
+      position: 1
+    )
+    doc = arch_dir.children.create!(
+      project: @project,
+      name: "System_Design.md",
+      item_type: "file",
+      content: "# Architecture Overview",
+      position: 1
+    )
+
+    assert_equal 2, @project.directory_items.count
+    assert arch_dir.directory?
+    assert doc.file?
+    assert doc.markdown?
+    assert_equal "01_Architecture/System_Design.md", doc.relative_path
+
+    tree = ProjectKnowledge.directory_tree(@project)
+    assert_equal 1, tree.length
+    assert_equal "01_Architecture", tree.first[:name]
+    assert_equal :directory, tree.first[:type]
+    assert_equal 1, tree.first[:children].length
+    assert_equal "System_Design.md", tree.first[:children].first[:name]
+    assert_equal :file, tree.first[:children].first[:type]
+  end
+
   test "safe resolve path prevents path traversal" do
     storage_dir = ProjectKnowledge.ensure_storage_dir(@project)
     test_file = storage_dir.join("test.md")

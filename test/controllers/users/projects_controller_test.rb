@@ -337,6 +337,18 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
       actor_name: "Sarah",
       action_text: "created new note [[Postgres Migration Plan]]"
     )
+    arch = project.directory_items.create!(
+      name: "01_Architecture",
+      item_type: "directory",
+      position: 1
+    )
+    arch.children.create!(
+      project: project,
+      name: "System_Design.md",
+      item_type: "file",
+      content: "# System Architecture",
+      position: 1
+    )
 
     get user_company_project_knowledge_url(id: project.id)
 
@@ -350,8 +362,27 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "External Assets &amp; Playbooks", @response.body
     assert_match "Architectural Decision Records (ADRs)", @response.body
     assert_match "Directory Explorer", @response.body
+    assert_match "01_Architecture", @response.body
+    assert_match "System_Design.md", @response.body
     assert_match "Recent Knowledge Activity", @response.body
     assert_match "ADR-004", @response.body
+  end
+
+  test "knowledge_file serves markdown from database directory item" do
+    project = create_project_for(users(:david))
+    item = project.directory_items.create!(
+      name: "Roadmap.md",
+      item_type: "file",
+      content: "# Q3 Roadmap\n\n- Mainnet launch\n- Audit completion"
+    )
+
+    get user_company_project_knowledge_file_url(id: project.id, item_id: item.id, format: :json)
+
+    assert_response :success
+    json = JSON.parse(@response.body)
+    assert_equal "Roadmap.md", json["title"]
+    assert_includes json["rendered_html"], "<h1>Q3 Roadmap</h1>"
+    assert_includes json["rendered_html"], "<li>Mainnet launch</li>"
   end
 
   test "knowledge does not show obsidian section when project has no obsidian file" do
@@ -362,6 +393,7 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_no_match "Networked Notes (Obsidian Sync)", @response.body
     assert_no_match "obsidian-container", @response.body
+    assert_match "No files or directories found in this project.", @response.body
   end
 
   test "knowledge_file serves markdown as json" do

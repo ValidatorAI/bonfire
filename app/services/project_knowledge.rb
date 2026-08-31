@@ -5,19 +5,11 @@ class ProjectKnowledge
 
   class << self
     def root_path_for(project)
-      # Check both storage/projects/:id and project.path if directory exists
-      storage_dir = ROOT_STORAGE_DIR.join(project.id.to_s)
-      return storage_dir if Dir.exist?(storage_dir)
-
-      if project.path.present? && Dir.exist?(project.path)
-        return Pathname.new(project.path)
-      end
-
-      storage_dir
+      ROOT_STORAGE_DIR.join(project.id.to_s)
     end
 
     def ensure_storage_dir(project)
-      dir = ROOT_STORAGE_DIR.join(project.id.to_s)
+      dir = root_path_for(project)
       FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
       dir
     end
@@ -41,10 +33,11 @@ class ProjectKnowledge
     end
 
     def directory_tree(project)
-      base_dir = root_path_for(project)
-      return [] unless Dir.exist?(base_dir)
+      items = project.directory_items.ordered.to_a
+      return [] if items.empty?
 
-      build_tree(base_dir, base_dir)
+      items_by_parent_id = items.group_by(&:parent_id)
+      build_db_tree(nil, items_by_parent_id)
     end
 
     def render_markdown(text)
@@ -78,43 +71,18 @@ class ProjectKnowledge
 
     private
 
-    def build_tree(current_dir, base_dir)
-      entries = []
-
-      # Sort directories first, then files
-      items = Dir.children(current_dir).sort_by do |name|
-        child_path = current_dir.join(name)
-        [File.directory?(child_path) ? 0 : 1, name.downcase]
+    def build_db_tree(parent_id, items_by_parent_id)
+      (items_by_parent_id[parent_id] || []).map do |item|
+        {
+          id: item.id,
+          name: item.name,
+          type: item.item_type.to_sym,
+          relative_path: item.relative_path,
+          is_markdown: item.markdown?,
+          is_html: item.html?,
+          children: item.directory? ? build_db_tree(item.id, items_by_parent_id) : []
+        }
       end
-
-      items.each do |name|
-        next if name.start_with?(".")
-
-        child_path = current_dir.join(name)
-        rel_path = child_path.relative_path_from(base_dir).to_s
-
-        if File.directory?(child_path)
-          children = build_tree(child_path, base_dir)
-          entries << {
-            type: :directory,
-            name: name,
-            relative_path: rel_path,
-            children: children
-          }
-        elsif File.file?(child_path)
-          ext = File.extname(name).downcase
-          entries << {
-            type: :file,
-            name: name,
-            relative_path: rel_path,
-            extension: ext,
-            is_markdown: %w[.md .markdown].include?(ext),
-            is_html: %w[.html .htm].include?(ext)
-          }
-        end
-      end
-
-      entries
     end
   end
 end

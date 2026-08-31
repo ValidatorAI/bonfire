@@ -619,6 +619,77 @@ if b2b_project.knowledge_activities.empty?
   ])
 end
 
+if b2b_project.directory_items.empty?
+  arch_dir = b2b_project.directory_items.create!(
+    name: "01_Architecture",
+    item_type: "directory",
+    position: 1
+  )
+  arch_dir.children.create!([
+    {
+      project: b2b_project,
+      name: "System_Design.md",
+      item_type: "file",
+      file_path: "01_Architecture/System_Design.md",
+      position: 1
+    },
+    {
+      project: b2b_project,
+      name: "DB_Schemas.md",
+      item_type: "file",
+      file_path: "01_Architecture/DB_Schemas.md",
+      position: 2
+    },
+    {
+      project: b2b_project,
+      name: "ADR-004.md",
+      item_type: "file",
+      file_path: "01_Architecture/ADR-004.md",
+      position: 3
+    }
+  ])
+
+  contracts_dir = b2b_project.directory_items.create!(
+    name: "02_Smart_Contracts",
+    item_type: "directory",
+    position: 2
+  )
+
+  audits_dir = contracts_dir.children.create!(
+    project: b2b_project,
+    name: "Audits",
+    item_type: "directory",
+    position: 1
+  )
+  audits_dir.children.create!(
+    project: b2b_project,
+    name: "Trail_of_Bits_Audit.md",
+    item_type: "file",
+    file_path: "02_Smart_Contracts/Audits/Trail_of_Bits_Audit.md",
+    position: 1
+  )
+
+  contracts_dir.children.create!(
+    project: b2b_project,
+    name: "Vault_V1.md",
+    item_type: "file",
+    file_path: "02_Smart_Contracts/Vault_V1.md",
+    position: 2
+  )
+
+  b2b_project.directory_items.create!(
+    name: "03_Meetings",
+    item_type: "directory",
+    position: 3
+  )
+
+  b2b_project.directory_items.create!(
+    name: "99_Archives",
+    item_type: "directory",
+    position: 4
+  )
+end
+
 # Seed sample storage files for the demo project
 demo_storage_dir = Rails.root.join("storage", "projects", b2b_project.id.to_s)
 FileUtils.mkdir_p(demo_storage_dir.join("01_Architecture"))

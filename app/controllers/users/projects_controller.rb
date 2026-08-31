@@ -87,7 +87,40 @@ class Users::ProjectsController < ApplicationController
 
   def knowledge_file
     path_param = params[:path].to_s
-    file_path = ProjectKnowledge.safe_resolve_path(@project, path_param)
+    item_id = params[:item_id]
+
+    directory_item = if item_id.present?
+      @project.directory_items.find_by(id: item_id)
+    elsif path_param.present?
+      @project.directory_items.find_by(file_path: path_param) ||
+        @project.directory_items.find_by(name: path_param)
+    end
+
+    if directory_item&.content.present?
+      filename = directory_item.name
+      raw_content = directory_item.content
+      rendered_html = ProjectKnowledge.render_markdown(raw_content)
+
+      respond_to do |format|
+        format.json do
+          render json: {
+            title: filename,
+            path: directory_item.relative_path,
+            raw_content: raw_content,
+            rendered_html: rendered_html
+          }
+        end
+        format.html do
+          render partial: "users/projects/knowledge/file_modal_content",
+                 locals: { title: filename, path: directory_item.relative_path, rendered_html: rendered_html },
+                 layout: false
+        end
+      end
+      return
+    end
+
+    target_rel = directory_item&.file_path.presence || directory_item&.relative_path || path_param
+    file_path = ProjectKnowledge.safe_resolve_path(@project, target_rel)
 
     unless file_path && File.file?(file_path)
       head :not_found
@@ -95,7 +128,7 @@ class Users::ProjectsController < ApplicationController
     end
 
     ext = File.extname(file_path).downcase
-    filename = File.basename(file_path)
+    filename = directory_item&.name.presence || File.basename(file_path)
 
     case ext
     when ".md", ".markdown"
@@ -106,14 +139,14 @@ class Users::ProjectsController < ApplicationController
         format.json do
           render json: {
             title: filename,
-            path: path_param,
+            path: target_rel,
             raw_content: raw_content,
             rendered_html: rendered_html
           }
         end
         format.html do
           render partial: "users/projects/knowledge/file_modal_content",
-                 locals: { title: filename, path: path_param, rendered_html: rendered_html },
+                 locals: { title: filename, path: target_rel, rendered_html: rendered_html },
                  layout: false
         end
       end

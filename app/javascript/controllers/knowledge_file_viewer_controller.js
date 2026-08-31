@@ -7,14 +7,14 @@ export default class extends Controller {
   }
 
   async openFile(event) {
-    const { path, title } = event.params
-    if (!path) return
+    const { path, title, itemId } = event.params
+    if (!path && !itemId) return
 
     if (this.hasTitleTarget) {
-      this.titleTarget.textContent = title || path.split("/").pop()
+      this.titleTarget.textContent = title || (path ? path.split("/").pop() : "Document")
     }
     if (this.hasPathTarget) {
-      this.pathTarget.textContent = path
+      this.pathTarget.textContent = path || ""
     }
 
     if (this.hasLoadingTarget) this.loadingTarget.hidden = false
@@ -27,7 +27,8 @@ export default class extends Controller {
 
     try {
       const url = new URL(this.fileUrlValue, window.location.origin)
-      url.searchParams.set("path", path)
+      if (itemId) url.searchParams.set("item_id", itemId)
+      if (path) url.searchParams.set("path", path)
 
       const response = await fetch(url.toString(), {
         headers: {

@@ -150,14 +150,10 @@
             <% if @directory_tree.present? %>
               <%= render "users/projects/knowledge/tree_entries", entries: @directory_tree, depth: 0 %>
             <% else %>
-              <div class="tree-item"><span class="tree-icon">📂</span> 01_Architecture</div>
-              <div class="tree-item tree-indent"><span class="tree-icon">📄</span> System_Design.md</div>
-              <div class="tree-item tree-indent"><span class="tree-icon">📄</span> DB_Schemas.md</div>
-              <div class="tree-item"><span class="tree-icon">📂</span> 02_Smart_Contracts</div>
-              <div class="tree-item tree-indent"><span class="tree-icon">📂</span> Audits</div>
-              <div class="tree-item tree-indent"><span class="tree-icon">📄</span> Vault_V1.md</div>
-              <div class="tree-item"><span class="tree-icon">📂</span> 03_Meetings</div>
-              <div class="tree-item"><span class="tree-icon">📂</span> 99_Archives</div>
+              <div class="knowledge-folder-tree-empty">
+                <span class="tree-icon" aria-hidden="true">📁</span>
+                <span>No files or directories found in this project.</span>
+              </div>
             <% end %>
           </div>
         </div>

@@ -13,6 +13,7 @@ class Project < ApplicationRecord
   has_many :external_assets, class_name: "ProjectExternalAsset", dependent: :destroy
   has_many :adrs, class_name: "ProjectAdr", dependent: :destroy
   has_many :knowledge_activities, class_name: "ProjectKnowledgeActivity", dependent: :destroy
+  has_many :directory_items, class_name: "ProjectDirectoryItem", dependent: :destroy
 
   validates :slug, presence: true, uniqueness: true,
             format: { with: /\A[a-z0-9\-]+\z/, message: "must be lowercase alphanumeric with dashes" }
