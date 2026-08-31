@@ -11,6 +11,20 @@ class Users::CompaniesController < ApplicationController
   end
 
   def status
+    @periods = CompanyStatusPeriod.includes(:company_status_items).ordered
+    @selected_period = if params[:period].present?
+      @periods.find { |p| p.slug == params[:period] }
+    end
+    @selected_period ||= @periods.find(&:current?) || @periods.first
+
+    @periods_payload = @periods.each_with_object({}) do |period, hash|
+      hash[period.slug] = period.as_status_payload
+    end
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @periods_payload }
+    end
   end
 
   def settings

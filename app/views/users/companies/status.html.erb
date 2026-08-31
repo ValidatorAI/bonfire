@@ -9,9 +9,15 @@
     </div>
     <div class="company-status-nav-right">
       <select class="period-selector" id="company-month-selector" aria-label="Select month" data-action="change->company-status#changeMonth@window">
-        <option value="august-2026">August 2026 (Current)</option>
-        <option value="july-2026">July 2026</option>
-        <option value="june-2026">June 2026</option>
+        <% if @periods.present? %>
+          <% @periods.each do |period| %>
+            <option value="<%= period.slug %>" <%= "selected" if period == @selected_period %>><%= period.name %></option>
+          <% end %>
+        <% else %>
+          <option value="august-2026" selected>August 2026 (Current)</option>
+          <option value="july-2026">July 2026</option>
+          <option value="june-2026">June 2026</option>
+        <% end %>
       </select>
     </div>
   </div>
@@ -19,7 +25,12 @@
 
 <% content_for :sidebar, sidebar_turbo_frame_tag(src: user_sidebar_path) %>
 
-<div id="message-area" class="message-area company-status-area" data-controller="company-status" data-action="keydown.esc@window->company-status#closeDrawer">
+<div id="message-area"
+     class="message-area company-status-area"
+     data-controller="company-status"
+     data-company-status-periods-value="<%= json_escape((@periods_payload || {}).to_json) %>"
+     data-company-status-selected-period-value="<%= @selected_period&.slug.presence || 'august-2026' %>"
+     data-action="keydown.esc@window->company-status#closeDrawer">
   <div class="company-status-content" id="company-status-content" data-company-status-target="content">
     <div class="company-card company-card-full">
       <div class="company-card-header">

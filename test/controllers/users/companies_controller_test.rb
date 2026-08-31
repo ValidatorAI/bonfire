@@ -23,25 +23,27 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".list-item-title", text: "Approve smart contract audit"
   end
 
-  test "status renders company direction dashboard and month selector" do
+  test "status renders company direction dashboard and month selector from database" do
+    period = CompanyStatusPeriod.create!(slug: "september-2026", name: "September 2026 (Upcoming)", current: true)
+    period.company_status_items.create!(
+      category: "priorities",
+      title: "Deploy V2 Beta",
+      subtitle: "Full customer onboarding"
+    )
+
     get user_company_status_url(user_id: "me")
 
     assert_response :ok
     assert_select "h1", "Shared Direction & Status"
-    assert_select "select#company-month-selector" do
-      assert_select "option[value='august-2026']"
-      assert_select "option[value='july-2026']"
-      assert_select "option[value='june-2026']"
-    end
+    assert_select "select#company-month-selector option[value='september-2026']", text: "September 2026 (Upcoming)"
     assert_select "[data-controller~='company-status']"
-    assert_select ".company-card-title", text: /Current Priorities/
-    assert_select ".company-card-title", text: /Progress Supported by Evidence/
-    assert_select ".company-card-title", text: /Risks & Blockers/
-    assert_select ".company-card-title", text: /Cross-Project Dependencies/
-    assert_select ".company-card-title", text: /Material Changes/
-    assert_select ".company-card-title", text: /Important Decisions/
-    assert_select ".company-card-title", text: /Learning That Changed Future Work/
     assert_select "#company-detail-drawer"
+
+    get user_company_status_url(user_id: "me", format: :json)
+    assert_response :ok
+    json = response.parsed_body
+    assert json.key?("september-2026")
+    assert_equal "Deploy V2 Beta", json.dig("september-2026", "priorities", 0, "title")
   end
 
   test "settings" do

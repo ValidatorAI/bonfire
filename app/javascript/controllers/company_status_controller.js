@@ -261,6 +261,11 @@ const COMPANY_STATUS_DATA = {
 }
 
 export default class extends Controller {
+  static values = {
+    periods: Object,
+    selectedPeriod: String
+  }
+
   static targets = [
     "content",
     "priorities",
@@ -281,11 +286,14 @@ export default class extends Controller {
   ]
 
   connect() {
-    this.currentMonth = "august-2026"
+    const serverData = this.hasPeriodsValue ? this.periodsValue : null
+    this.statusData = (serverData && Object.keys(serverData).length > 0) ? serverData : COMPANY_STATUS_DATA
+
+    this.currentMonth = this.hasSelectedPeriodValue ? (this.selectedPeriodValue || "august-2026") : "august-2026"
 
     const selector = document.getElementById("company-month-selector")
     if (selector) {
-      this.currentMonth = selector.value || "august-2026"
+      this.currentMonth = selector.value || this.currentMonth
     }
 
     this.renderCompanyStatus(this.currentMonth)
@@ -309,7 +317,7 @@ export default class extends Controller {
   }
 
   renderCompanyStatus(monthId) {
-    const data = COMPANY_STATUS_DATA[monthId]
+    const data = this.statusData ? this.statusData[monthId] : COMPANY_STATUS_DATA[monthId]
     if (!data) return
 
     if (this.hasContentTarget) {
@@ -413,7 +421,7 @@ export default class extends Controller {
   }
 
   openDrawer(monthId, collectionKey, itemId) {
-    const monthData = COMPANY_STATUS_DATA[monthId]
+    const monthData = this.statusData ? this.statusData[monthId] : COMPANY_STATUS_DATA[monthId]
     if (!monthData || !monthData[collectionKey]) return
 
     const item = monthData[collectionKey].find((entry) => entry.id === itemId)
