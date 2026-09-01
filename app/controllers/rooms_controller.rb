@@ -38,7 +38,9 @@ class RoomsController < ApplicationController
     end
 
     def find_messages
-      messages = @room.messages.with_creator.with_attachment_details.with_boosts
+      messages = Message.where(room: @room)
+        .or(Message.where(room_id: @room.child_topics.select(:id)))
+        .with_creator.with_attachment_details.with_boosts
 
       if show_first_message = messages.find_by(id: params[:message_id])
         @messages = messages.page_around(show_first_message)
