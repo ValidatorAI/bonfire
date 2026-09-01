@@ -54,6 +54,23 @@
               <%= form.label :description, "Description", for: "proj-desc" %>
               <%= form.text_area :description, id: "proj-desc", class: "input", rows: 3 %>
             </div>
+
+            <div class="form-row form-row--two">
+              <div class="form-group">
+                <%= form.label :budget_total, "Total Budget", for: "proj-budget-total" %>
+                <%= form.number_field :budget_total, id: "proj-budget-total", class: "input", step: 0.01, min: 0 %>
+              </div>
+
+              <div class="form-group">
+                <%= form.label :budget_spent, "Spent Budget", for: "proj-budget-spent" %>
+                <%= form.number_field :budget_spent, id: "proj-budget-spent", class: "input", step: 0.01, min: 0 %>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :roadmap, "Road Map", for: "proj-roadmap" %>
+              <%= form.text_area :roadmap, id: "proj-roadmap", class: "input", rows: 3 %>
+            </div>
           </section>
 
           <section class="form-section" aria-label="Assign AI teammates">

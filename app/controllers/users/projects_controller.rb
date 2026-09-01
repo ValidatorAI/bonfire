@@ -165,7 +165,7 @@ class Users::ProjectsController < ApplicationController
     end
 
     def project_params
-      params.fetch(:project, {}).permit(:name, :short_code, :description, :private)
+      params.fetch(:project, {}).permit(:name, :short_code, :description, :private, :budget_total, :budget_spent, :roadmap)
     end
 
     def next_unique_slug(base_value)

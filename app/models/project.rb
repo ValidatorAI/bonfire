@@ -24,6 +24,7 @@ class Project < ApplicationRecord
             format: { with: /\A[A-Za-z0-9_-]+\z/, message: "must use only letters, numbers, underscores, or dashes" },
             uniqueness: true,
             allow_blank: true
+  validates :budget_total, :budget_spent, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   before_validation :generate_slug_from_path, on: :create, if: -> { slug.blank? }
   before_validation :normalize_short_code
