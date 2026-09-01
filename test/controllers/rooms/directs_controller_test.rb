@@ -21,6 +21,16 @@ class Rooms::DirectsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "create a direct room with a workspace bot only once" do
+    assert_difference -> { Rooms::Direct.count }, +1 do
+      2.times { post rooms_directs_url, params: { user_ids: [ users(:bender).id ] } }
+    end
+
+    room = Rooms::Direct.order(:created_at).last
+    assert_equal [ users(:david).id, users(:bender).id ].sort, room.user_ids.sort
+    assert_redirected_to room_url(room)
+  end
+
   test "destroy only allowed for all room users" do
     sign_in :kevin
 
