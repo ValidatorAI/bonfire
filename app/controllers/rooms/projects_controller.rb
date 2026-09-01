@@ -116,7 +116,7 @@ class Rooms::ProjectsController < RoomsController
     end
 
     def project_params
-      params.fetch(:project, {}).permit(:name, :description, :private)
+      params.fetch(:project, {}).permit(:name, :description, :private, :budget_total, :budget_spent, :roadmap)
     end
 
     def broadcast_update_room
