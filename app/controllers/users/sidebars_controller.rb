@@ -81,6 +81,7 @@ class Users::SidebarsController < ApplicationController
     end
 
     def room_without_parent_or_project?(room)
-      room.parent_id.blank? && room.project_id.blank?
+      # a direct-message parent can never be displayed, so it doesn't count as a usable parent
+      (room.parent_id.blank? || room.parent&.direct?) && room.project_id.blank?
     end
 end
