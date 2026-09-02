@@ -21,5 +21,15 @@ module Api
 
       render json: room.as_json(only: ROOM_FIELDS)
     end
+
+    def threads
+      project = find_project(params[:project_id])
+      return render json: { error: "Project not found" }, status: :not_found unless project
+
+      room = find_room(project, params[:id])
+      return render json: { error: "Room not found" }, status: :not_found unless room
+
+      render json: project.rooms.where(parent_id: room.id).ordered.as_json(only: ROOM_FIELDS)
+    end
   end
 end

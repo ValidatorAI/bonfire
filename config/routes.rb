@@ -141,6 +141,7 @@ Rails.application.routes.draw do
     resources :projects, only: %i[ index show ] do
       resources :rooms, only: %i[ index show ] do
         resources :messages, only: %i[ index show ]
+        get :threads, on: :member
       end
     end
   end

@@ -65,4 +65,28 @@ class Api::RoomsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "returns threads (child rooms) of a room with a valid token" do
+    thread = @project.rooms.create!(type: "Rooms::Open", name: "Thread 1", creator: users(:david), parent_id: @room.id)
+    other_room = @project.rooms.create!(type: "Rooms::Open", name: "Unrelated", creator: users(:david))
+
+    get threads_api_project_room_url(@project.id, @room.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    ids = JSON.parse(response.body).map { |room| room["id"] }
+    assert_equal [ thread.id ], ids
+    assert_not_includes ids, other_room.id
+  end
+
+  test "rejects threads requests without a token" do
+    get threads_api_project_room_url(@project.id, @room.id)
+
+    assert_response :unauthorized
+  end
+
+  test "returns not found for threads of an unknown room" do
+    get threads_api_project_room_url(@project.id, -1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end
