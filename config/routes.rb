@@ -140,7 +140,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :projects, only: %i[ index show ] do
       resources :rooms, only: %i[ index show ] do
-        resources :messages, only: %i[ index show create ] do
+        resources :messages, only: %i[ index show create update ] do
           get :attachment, on: :member
         end
         get :threads, on: :member

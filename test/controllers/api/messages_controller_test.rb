@@ -185,4 +185,47 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "updates a message body with a valid token" do
+    patch api_project_room_message_url(@project.id, @room.id, @message.id),
+      params: { body: "Edited body" },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal "Edited body", body["body"]
+    assert_equal "Edited body", @message.reload.plain_text_body
+  end
+
+  test "updates a message to add an attachment with a valid token" do
+    patch api_project_room_message_url(@project.id, @room.id, @message.id),
+      params: { attachment: fixture_file_upload("moon.jpg", "image/jpeg") },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert body["has_attachment"]
+    assert_equal "moon.jpg", body["attachment_filename"]
+  end
+
+  test "rejects update requests without a token" do
+    patch api_project_room_message_url(@project.id, @room.id, @message.id), params: { body: "Nope" }
+
+    assert_response :unauthorized
+  end
+
+  test "returns bad request when update has neither body nor attachment" do
+    patch api_project_room_message_url(@project.id, @room.id, @message.id),
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :bad_request
+  end
+
+  test "returns not found when updating an unknown message" do
+    patch api_project_room_message_url(@project.id, @room.id, -1),
+      params: { body: "Edited body" },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end
