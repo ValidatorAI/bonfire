@@ -44,4 +44,18 @@ class Api::ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "returns all projects with a valid token" do
+    get api_projects_url, headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_includes body.map { |project| project["id"] }, @project.id
+  end
+
+  test "rejects index requests without a token" do
+    get api_projects_url
+
+    assert_response :unauthorized
+  end
 end
