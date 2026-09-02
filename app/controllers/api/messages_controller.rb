@@ -58,6 +58,27 @@ module Api
                 disposition: params[:disposition] == "attachment" ? :attachment : :inline
     end
 
+    def create
+      project = find_project(params[:project_id])
+      return render json: { error: "Project not found" }, status: :not_found unless project
+
+      room = find_room(project, params[:room_id])
+      return render json: { error: "Room not found" }, status: :not_found unless room
+
+      user = User.find_by(id: params[:user_id])
+      return render json: { error: "User not found" }, status: :not_found unless user
+
+      body = params[:body].presence
+      return render json: { error: "Missing param: body" }, status: :bad_request unless body
+
+      message = room.messages.create!(body: body, creator: user, client_message_id: SecureRandom.uuid)
+      message.broadcast_create
+
+      render json: serialize(message), status: :created
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.message }, status: :unprocessable_entity
+    end
+
     private
 
     def serialize(message)

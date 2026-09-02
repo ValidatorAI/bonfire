@@ -115,4 +115,48 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "posts a message to a room on behalf of a user with a valid token" do
+    assert_difference -> { @room.messages.count }, 1 do
+      post api_project_room_messages_url(@project.id, @room.id),
+        params: { user_id: users(:jason).id, body: "Posted via API" },
+        headers: { "Authorization" => "Bearer test-token" }
+    end
+
+    assert_response :created
+    body = JSON.parse(response.body)
+    assert_equal "Posted via API", body["body"]
+    assert_equal users(:jason).id, body["creator_id"]
+    assert_equal "User", body["creator_type"]
+  end
+
+  test "rejects create requests without a token" do
+    post api_project_room_messages_url(@project.id, @room.id), params: { user_id: users(:jason).id, body: "Nope" }
+
+    assert_response :unauthorized
+  end
+
+  test "returns bad request when body is missing" do
+    post api_project_room_messages_url(@project.id, @room.id),
+      params: { user_id: users(:jason).id },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :bad_request
+  end
+
+  test "returns not found when user does not exist" do
+    post api_project_room_messages_url(@project.id, @room.id),
+      params: { user_id: -1, body: "Posted via API" },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
+
+  test "returns not found when posting to an unknown room" do
+    post api_project_room_messages_url(@project.id, -1),
+      params: { user_id: users(:jason).id, body: "Posted via API" },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end
