@@ -138,7 +138,9 @@ Rails.application.routes.draw do
   get "service-worker" => "pwa#service_worker"
 
   namespace :api do
-    resources :projects, only: %i[ index show ]
+    resources :projects, only: %i[ index show ] do
+      resources :rooms, only: :index
+    end
   end
 
   # MCP Agent Chat API (Streamable HTTP transport)

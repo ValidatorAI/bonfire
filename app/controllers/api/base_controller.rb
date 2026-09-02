@@ -12,5 +12,9 @@ module Api
       return render json: { error: "Unauthorized" }, status: :unauthorized unless provided_token
       return render json: { error: "Unauthorized" }, status: :unauthorized unless ActiveSupport::SecurityUtils.secure_compare(provided_token, expected_token)
     end
+
+    def find_project(id)
+      Project.find_by(id: id) || Project.find_by(slug: id)
+    end
   end
 end

@@ -11,7 +11,7 @@ module Api
     end
 
     def show
-      project = Project.find_by(id: params[:id]) || Project.find_by(slug: params[:id])
+      project = find_project(params[:id])
       return render json: { error: "Project not found" }, status: :not_found unless project
 
       render json: project.as_json(only: PROJECT_FIELDS)
