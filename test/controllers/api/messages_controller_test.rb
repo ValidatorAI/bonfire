@@ -136,12 +136,38 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  test "returns bad request when body is missing" do
+  test "returns bad request when both body and attachment are missing" do
     post api_project_room_messages_url(@project.id, @room.id),
       params: { user_id: users(:jason).id },
       headers: { "Authorization" => "Bearer test-token" }
 
     assert_response :bad_request
+  end
+
+  test "posts a file to a room on behalf of a user" do
+    assert_difference -> { @room.messages.count }, 1 do
+      post api_project_room_messages_url(@project.id, @room.id),
+        params: { user_id: users(:jason).id, attachment: fixture_file_upload("moon.jpg", "image/jpeg") },
+        headers: { "Authorization" => "Bearer test-token" }
+    end
+
+    assert_response :created
+    body = JSON.parse(response.body)
+    assert body["has_attachment"]
+    assert_equal "moon.jpg", body["attachment_filename"]
+    assert_equal "image/jpeg", body["attachment_content_type"]
+    assert_not_nil body["attachment_url"]
+  end
+
+  test "posts a file with a message body on behalf of a user" do
+    post api_project_room_messages_url(@project.id, @room.id),
+      params: { user_id: users(:jason).id, body: "Check this out", attachment: fixture_file_upload("moon.jpg", "image/jpeg") },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :created
+    body = JSON.parse(response.body)
+    assert_equal "Check this out", body["body"]
+    assert body["has_attachment"]
   end
 
   test "returns not found when user does not exist" do

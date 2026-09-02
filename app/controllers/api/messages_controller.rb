@@ -69,9 +69,12 @@ module Api
       return render json: { error: "User not found" }, status: :not_found unless user
 
       body = params[:body].presence
-      return render json: { error: "Missing param: body" }, status: :bad_request unless body
+      attachment = params[:attachment].presence
+      return render json: { error: "Provide at least one of: body, attachment" }, status: :bad_request unless body || attachment
 
-      message = room.messages.create!(body: body, creator: user, client_message_id: SecureRandom.uuid)
+      message = room.messages.create_with_attachment!(
+        body: body, attachment: attachment, creator: user, client_message_id: SecureRandom.uuid
+      )
       message.broadcast_create
 
       render json: serialize(message), status: :created
@@ -82,7 +85,13 @@ module Api
     private
 
     def serialize(message)
-      message.as_json(only: MESSAGE_FIELDS).merge(body: message.plain_text_body)
+      message.as_json(only: MESSAGE_FIELDS).merge(
+        body: message.plain_text_body,
+        has_attachment: message.attachment?,
+        attachment_filename: message.attachment? ? message.attachment.filename.to_s : nil,
+        attachment_content_type: message.attachment? ? message.attachment.content_type : nil,
+        attachment_url: message.attachment? ? attachment_api_project_room_message_path(message.room.project_id, message.room_id, message.id) : nil
+      )
     end
   end
 end
