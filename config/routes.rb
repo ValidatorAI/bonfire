@@ -137,6 +137,10 @@ Rails.application.routes.draw do
   get "webmanifest"    => "pwa#manifest"
   get "service-worker" => "pwa#service_worker"
 
+  namespace :api do
+    resources :projects, only: :show
+  end
+
   # MCP Agent Chat API (Streamable HTTP transport)
   namespace :mcp do
     post "/", to: "endpoint#handle"
