@@ -106,6 +106,22 @@ module Api
       render json: { error: e.message }, status: :unprocessable_entity
     end
 
+    def destroy
+      project = find_project(params[:project_id])
+      return render json: { error: "Project not found" }, status: :not_found unless project
+
+      room = find_room(project, params[:room_id])
+      return render json: { error: "Room not found" }, status: :not_found unless room
+
+      message = room.messages.find_by(id: params[:id])
+      return render json: { error: "Message not found" }, status: :not_found unless message
+
+      message.destroy
+      message.broadcast_remove
+
+      head :no_content
+    end
+
     private
 
     def serialize(message)

@@ -228,4 +228,25 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "deletes a message with a valid token" do
+    assert_difference -> { @room.messages.count }, -1 do
+      delete api_project_room_message_url(@project.id, @room.id, @message.id), headers: { "Authorization" => "Bearer test-token" }
+    end
+
+    assert_response :no_content
+    assert_not Message.exists?(@message.id)
+  end
+
+  test "rejects delete requests without a token" do
+    delete api_project_room_message_url(@project.id, @room.id, @message.id)
+
+    assert_response :unauthorized
+  end
+
+  test "returns not found when deleting an unknown message" do
+    delete api_project_room_message_url(@project.id, @room.id, -1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end
