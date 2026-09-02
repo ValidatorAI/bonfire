@@ -48,8 +48,27 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
     get api_project_room_messages_url(@project.id, @room.id), headers: { "Authorization" => "Bearer test-token" }
 
     assert_response :success
-    ids = JSON.parse(response.body).map { |message| message["id"] }
-    assert_equal [ @message.id, second_message.id ], ids
+    body = JSON.parse(response.body)
+    assert_equal 2, body["count"]
+    assert_equal [ @message.id, second_message.id ], body["messages"].map { |message| message["id"] }
+  end
+
+  test "paginates messages when a page param is given" do
+    second_message = @room.messages.create!(body: "Second message", client_message_id: "api-msg-2", creator: users(:david))
+
+    get api_project_room_messages_url(@project.id, @room.id, page: 1, per_page: 1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 2, body["count"]
+    assert_equal 1, body["page"]
+    assert_equal 1, body["per_page"]
+    assert_equal [ @message.id ], body["messages"].map { |message| message["id"] }
+
+    get api_project_room_messages_url(@project.id, @room.id, page: 2, per_page: 1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    assert_equal [ second_message.id ], JSON.parse(response.body)["messages"].map { |message| message["id"] }
   end
 
   test "rejects index requests without a token" do
