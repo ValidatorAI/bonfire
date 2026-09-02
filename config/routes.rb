@@ -144,6 +144,7 @@ Rails.application.routes.draw do
           get :attachment, on: :member
         end
         resources :actions, only: :create
+        resources :decisions, only: :create
         get :threads, on: :member
         get :search, on: :collection
       end
