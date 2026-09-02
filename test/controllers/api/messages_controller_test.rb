@@ -41,4 +41,26 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "returns all messages of a room with a valid token" do
+    second_message = @room.messages.create!(body: "Second message", client_message_id: "api-msg-2", creator: users(:david))
+
+    get api_project_room_messages_url(@project.id, @room.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    ids = JSON.parse(response.body).map { |message| message["id"] }
+    assert_equal [ @message.id, second_message.id ], ids
+  end
+
+  test "rejects index requests without a token" do
+    get api_project_room_messages_url(@project.id, @room.id)
+
+    assert_response :unauthorized
+  end
+
+  test "returns not found for index of an unknown room" do
+    get api_project_room_messages_url(@project.id, -1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end
