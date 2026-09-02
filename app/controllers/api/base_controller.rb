@@ -16,5 +16,9 @@ module Api
     def find_project(id)
       Project.find_by(id: id) || Project.find_by(slug: id)
     end
+
+    def find_room(project, id)
+      project.rooms.find_by(id: id)
+    end
   end
 end

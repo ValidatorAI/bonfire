@@ -139,7 +139,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :projects, only: %i[ index show ] do
-      resources :rooms, only: %i[ index show ]
+      resources :rooms, only: %i[ index show ] do
+        resources :messages, only: :show
+      end
     end
   end
 

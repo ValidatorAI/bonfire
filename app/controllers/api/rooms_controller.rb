@@ -16,7 +16,7 @@ module Api
       project = find_project(params[:project_id])
       return render json: { error: "Project not found" }, status: :not_found unless project
 
-      room = project.rooms.find_by(id: params[:id])
+      room = find_room(project, params[:id])
       return render json: { error: "Room not found" }, status: :not_found unless room
 
       render json: room.as_json(only: ROOM_FIELDS)
