@@ -143,6 +143,7 @@ Rails.application.routes.draw do
         resources :messages, only: %i[ index show create update destroy ] do
           get :attachment, on: :member
         end
+        resources :actions, only: :create
         get :threads, on: :member
         get :search, on: :collection
       end
