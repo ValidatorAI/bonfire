@@ -68,7 +68,10 @@ module Rooms
       end
 
       def toggle_private
-        @room.update!(private: params[:room].present? && params[:room][:private] == "1")
+        private_value = params.dig(:room, :private)
+        private_value = params.dig(@room.class.model_name.param_key.to_sym, :private) if private_value.nil?
+
+        @room.update!(private: private_value == "1")
       end
 
       def available_agents_scope
