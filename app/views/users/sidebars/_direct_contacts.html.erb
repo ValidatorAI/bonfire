@@ -7,6 +7,7 @@
         <%= button_to rooms_directs_path(user_ids: [ contact.id ]),
               class: "btn direct-contacts__contact",
               form_class: "direct-contacts__form",
+              form: { data: { action: "turbo:submit-end->direct-contacts-modal#close" } },
               aria: { label: "Start a Ping with #{contact.effective_display_name}" },
               data: {
                 direct_contacts_modal_target: "contact",
@@ -29,6 +30,7 @@
         <%= button_to rooms_directs_path(user_ids: [ contact.id ]),
               class: "btn direct-contacts__contact",
               form_class: "direct-contacts__form",
+              form: { data: { action: "turbo:submit-end->direct-contacts-modal#close" } },
               aria: { label: "Start a Ping with workspace bot #{contact.effective_display_name}" },
               data: {
                 direct_contacts_modal_target: "contact",
