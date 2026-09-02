@@ -28,27 +28,15 @@ module Api
     end
 
     def show
-      project = find_project(params[:project_id])
-      return render json: { error: "Project not found" }, status: :not_found unless project
-
-      room = find_room(project, params[:room_id])
-      return render json: { error: "Room not found" }, status: :not_found unless room
-
-      message = room.messages.find_by(id: params[:id])
-      return render json: { error: "Message not found" }, status: :not_found unless message
+      message = locate_message
+      return unless message
 
       render json: serialize(message)
     end
 
     def attachment
-      project = find_project(params[:project_id])
-      return render json: { error: "Project not found" }, status: :not_found unless project
-
-      room = find_room(project, params[:room_id])
-      return render json: { error: "Room not found" }, status: :not_found unless room
-
-      message = room.messages.find_by(id: params[:id])
-      return render json: { error: "Message not found" }, status: :not_found unless message
+      message = locate_message
+      return unless message
 
       return render json: { error: "Message has no attachment" }, status: :not_found unless message.attachment?
 
@@ -83,14 +71,8 @@ module Api
     end
 
     def update
-      project = find_project(params[:project_id])
-      return render json: { error: "Project not found" }, status: :not_found unless project
-
-      room = find_room(project, params[:room_id])
-      return render json: { error: "Room not found" }, status: :not_found unless room
-
-      message = room.messages.find_by(id: params[:id])
-      return render json: { error: "Message not found" }, status: :not_found unless message
+      message = locate_message
+      return unless message
 
       body = params[:body].presence
       attachment = params[:attachment].presence
@@ -99,7 +81,7 @@ module Api
       message.update!(body: body) if body
       message.attachment.attach(attachment) && message.process_attachment if attachment
 
-      message.broadcast_replace_to room, :messages, target: [ message, :presentation ], partial: "messages/presentation", attributes: { maintain_scroll: true }
+      message.broadcast_replace_to message.room, :messages, target: [ message, :presentation ], partial: "messages/presentation", attributes: { maintain_scroll: true }
 
       render json: serialize(message)
     rescue ActiveRecord::RecordInvalid => e
@@ -107,14 +89,8 @@ module Api
     end
 
     def destroy
-      project = find_project(params[:project_id])
-      return render json: { error: "Project not found" }, status: :not_found unless project
-
-      room = find_room(project, params[:room_id])
-      return render json: { error: "Room not found" }, status: :not_found unless room
-
-      message = room.messages.find_by(id: params[:id])
-      return render json: { error: "Message not found" }, status: :not_found unless message
+      message = locate_message
+      return unless message
 
       message.destroy
       message.broadcast_remove
@@ -123,6 +99,25 @@ module Api
     end
 
     private
+
+    # Resolves a message either via the nested project/room path or the flat /api/messages/:id path (message ids are globally unique).
+    def locate_message
+      if params[:room_id].present?
+        project = find_project(params[:project_id])
+        return render(json: { error: "Project not found" }, status: :not_found) && nil unless project
+
+        room = find_room(project, params[:room_id])
+        return render(json: { error: "Room not found" }, status: :not_found) && nil unless room
+
+        message = room.messages.find_by(id: params[:id])
+      else
+        message = Message.find_by(id: params[:id])
+      end
+
+      return render(json: { error: "Message not found" }, status: :not_found) && nil unless message
+
+      message
+    end
 
     def serialize(message)
       message.as_json(only: MESSAGE_FIELDS).merge(

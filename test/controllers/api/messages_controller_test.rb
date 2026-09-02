@@ -249,4 +249,49 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "flat route returns a message by id alone with a valid token" do
+    get api_message_url(@message.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    assert_equal @message.id, JSON.parse(response.body)["id"]
+  end
+
+  test "flat route rejects requests without a token" do
+    get api_message_url(@message.id)
+
+    assert_response :unauthorized
+  end
+
+  test "flat route returns not found for an unknown message" do
+    get api_message_url(-1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
+
+  test "flat route updates a message by id alone" do
+    patch api_message_url(@message.id), params: { body: "Edited via flat route" }, headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    assert_equal "Edited via flat route", JSON.parse(response.body)["body"]
+  end
+
+  test "flat route returns the attachment by id alone" do
+    message = @room.messages.create_with_attachment! \
+      creator: users(:david), client_message_id: "api-msg-flat-attachment",
+      attachment: fixture_file_upload("moon.jpg", "image/jpeg")
+
+    get attachment_api_message_url(message.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    assert_equal "image/jpeg", response.media_type
+  end
+
+  test "flat route deletes a message by id alone" do
+    assert_difference -> { Message.count }, -1 do
+      delete api_message_url(@message.id), headers: { "Authorization" => "Bearer test-token" }
+    end
+
+    assert_response :no_content
+  end
 end

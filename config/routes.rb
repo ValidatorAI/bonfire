@@ -147,6 +147,11 @@ Rails.application.routes.draw do
         get :search, on: :collection
       end
     end
+
+    # Flat routes since message ids are globally unique; no project/room scoping required.
+    resources :messages, only: %i[ show update destroy ] do
+      get :attachment, on: :member
+    end
   end
 
   # MCP Agent Chat API (Streamable HTTP transport)
