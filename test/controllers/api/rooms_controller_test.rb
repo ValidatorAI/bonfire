@@ -38,4 +38,31 @@ class Api::RoomsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "returns a single room with a valid token" do
+    get api_project_room_url(@project.id, @room.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    assert_equal @room.id, JSON.parse(response.body)["id"]
+  end
+
+  test "rejects show requests without a token" do
+    get api_project_room_url(@project.id, @room.id)
+
+    assert_response :unauthorized
+  end
+
+  test "returns not found for an unknown room" do
+    get api_project_room_url(@project.id, -1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
+
+  test "returns not found when room belongs to a different project" do
+    other_project = Project.create!(path: "/tmp/api-rooms-test-other", name: "Other Project")
+
+    get api_project_room_url(other_project.id, @room.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end
