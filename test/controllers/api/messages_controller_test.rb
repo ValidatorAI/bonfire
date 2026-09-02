@@ -82,4 +82,37 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "returns the uploaded file for a message with an attachment" do
+    message = @room.messages.create_with_attachment! \
+      creator: users(:david), client_message_id: "api-msg-attachment",
+      attachment: fixture_file_upload("moon.jpg", "image/jpeg")
+
+    get attachment_api_project_room_message_url(@project.id, @room.id, message.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    assert_equal "image/jpeg", response.media_type
+  end
+
+  test "rejects attachment requests without a token" do
+    message = @room.messages.create_with_attachment! \
+      creator: users(:david), client_message_id: "api-msg-attachment-2",
+      attachment: fixture_file_upload("moon.jpg", "image/jpeg")
+
+    get attachment_api_project_room_message_url(@project.id, @room.id, message.id)
+
+    assert_response :unauthorized
+  end
+
+  test "returns not found when message has no attachment" do
+    get attachment_api_project_room_message_url(@project.id, @room.id, @message.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
+
+  test "returns not found for attachment of an unknown message" do
+    get attachment_api_project_room_message_url(@project.id, @room.id, -1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end

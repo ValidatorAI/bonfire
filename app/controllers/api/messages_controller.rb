@@ -40,6 +40,24 @@ module Api
       render json: serialize(message)
     end
 
+    def attachment
+      project = find_project(params[:project_id])
+      return render json: { error: "Project not found" }, status: :not_found unless project
+
+      room = find_room(project, params[:room_id])
+      return render json: { error: "Room not found" }, status: :not_found unless room
+
+      message = room.messages.find_by(id: params[:id])
+      return render json: { error: "Message not found" }, status: :not_found unless message
+
+      return render json: { error: "Message has no attachment" }, status: :not_found unless message.attachment?
+
+      send_data message.attachment.download,
+                filename: message.attachment.filename.to_s,
+                type: message.attachment.content_type,
+                disposition: params[:disposition] == "attachment" ? :attachment : :inline
+    end
+
     private
 
     def serialize(message)
