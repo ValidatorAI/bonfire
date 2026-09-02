@@ -31,5 +31,35 @@ module Api
 
       render json: project.rooms.where(parent_id: room.id).ordered.as_json(only: ROOM_FIELDS)
     end
+
+    def search
+      project = find_project(params[:project_id])
+      return render json: { error: "Project not found" }, status: :not_found unless project
+
+      query = params[:q].to_s.strip
+      return render json: { error: "Missing query param: q" }, status: :bad_request if query.blank?
+
+      matches = project.rooms.where("name LIKE ? ESCAPE '\\'", "%#{sanitize_like(query)}%")
+      ranked = matches.sort_by { |room| relevance_rank(room.name.to_s, query) }
+
+      render json: ranked.as_json(only: ROOM_FIELDS)
+    end
+
+    private
+
+    def sanitize_like(term)
+      term.gsub(/[\\%_]/) { |char| "\\#{char}" }
+    end
+
+    def relevance_rank(name, query)
+      normalized_name = name.downcase
+      normalized_query = query.downcase
+
+      return 0 if normalized_name == normalized_query
+      return 1 if normalized_name.start_with?(normalized_query)
+      return 2 if normalized_name.include?(normalized_query)
+
+      3
+    end
   end
 end

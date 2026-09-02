@@ -89,4 +89,44 @@ class Api::RoomsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "finds a room id via fuzzy name search with a valid token" do
+    marketing_room = @project.rooms.create!(type: "Rooms::Open", name: "Marketing Launch", creator: users(:david))
+    @project.rooms.create!(type: "Rooms::Open", name: "Unrelated Room", creator: users(:david))
+
+    get search_api_project_rooms_url(@project.id, q: "market"), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal [ marketing_room.id ], body.map { |room| room["id"] }
+  end
+
+  test "ranks closer matches first in fuzzy name search" do
+    exact = @project.rooms.create!(type: "Rooms::Open", name: "Design", creator: users(:david))
+    partial = @project.rooms.create!(type: "Rooms::Open", name: "Redesign Notes", creator: users(:david))
+
+    get search_api_project_rooms_url(@project.id, q: "design"), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    ids = JSON.parse(response.body).map { |room| room["id"] }
+    assert_equal [ exact.id, partial.id ], ids
+  end
+
+  test "rejects search requests without a token" do
+    get search_api_project_rooms_url(@project.id, q: "general")
+
+    assert_response :unauthorized
+  end
+
+  test "returns bad request for search without a query param" do
+    get search_api_project_rooms_url(@project.id), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :bad_request
+  end
+
+  test "returns not found for search of an unknown project" do
+    get search_api_project_rooms_url("does-not-exist", q: "general"), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :not_found
+  end
 end
