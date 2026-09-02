@@ -57,6 +57,7 @@ module Rooms
           return false if user.blank?
           return false if @project.users.exists?(id: user.id)
           first_project_join = !user.project_users.exists?
+          group_id = first_project_join ? SecureRandom.uuid : nil
 
           ActiveRecord::Base.transaction do
             @project.project_users.create!(user: user)
@@ -66,8 +67,8 @@ module Rooms
           end
 
           broadcast_project_room_added_for(user)
-          record_project_membership_event("project_member_added", user)
-          record_project_membership_event("project_first_joined", user) if first_project_join
+          record_project_membership_event("project_member_added", user, group_id: group_id)
+          record_project_membership_event("project_first_joined", user, group_id: group_id) if first_project_join
           true
         end
 
@@ -165,10 +166,11 @@ module Rooms
           broadcast_remove_to user, :rooms, target: [ @project_room, :list ]
         end
 
-        def record_project_membership_event(event_type, user)
+        def record_project_membership_event(event_type, user, group_id: nil)
           OutputEvents::Recorder.record(
             event_type: event_type,
             event_id: @project.id,
+            group_id: group_id,
             actor: Current.user,
             target_type: "Project",
             data: { "member" => { "type" => "User", "id" => user.id } }

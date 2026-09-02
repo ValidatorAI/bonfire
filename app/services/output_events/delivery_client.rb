@@ -49,6 +49,7 @@ module OutputEvents
           id: event.id,
           event_type: event.event_type,
           event_id: event.event_id,
+          group_id: event.group_id,
           event_data: event.event_data,
           created_at: event.created_at.iso8601
         }

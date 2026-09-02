@@ -37,10 +37,11 @@ class Rooms::ClosedsController < RoomsController
     end
 
     room = Rooms::Closed.create_for(room_attributes, users: grantees)
+    group_id = SecureRandom.uuid
 
     broadcast_create_room(room)
-    record_room_event("room_created", room)
-    room.users.find_each { |user| record_room_member_added(room, user) }
+    record_room_event("room_created", room, group_id: group_id)
+    room.users.find_each { |user| record_room_member_added(room, user, group_id: group_id) }
     redirect_to post_create_redirect_url(room)
   end
 
@@ -53,15 +54,16 @@ class Rooms::ClosedsController < RoomsController
   end
 
   def update
+    group_id = SecureRandom.uuid
     previously_private = @room.private?
     previous_user_ids = @room.user_ids
     @room.update! room_params
     @room.memberships.revise(granted: grantees, revoked: revokees)
 
     broadcast_update_room
-    record_room_event("room_updated", @room)
-    record_room_privacy_change if previously_private != @room.private?
-    record_membership_changes(previous_user_ids)
+    record_room_event("room_updated", @room, group_id: group_id)
+    record_room_privacy_change(group_id: group_id) if previously_private != @room.private?
+    record_membership_changes(previous_user_ids, group_id: group_id)
     redirect_to room_url(@room)
   end
 
@@ -141,28 +143,29 @@ class Rooms::ClosedsController < RoomsController
       end
     end
 
-    def record_room_member_added(room, user)
-      record_room_membership_event("room_member_added", room, user)
+    def record_room_member_added(room, user, group_id: nil)
+      record_room_membership_event("room_member_added", room, user, group_id: group_id)
     end
 
-    def record_membership_changes(previous_user_ids)
+    def record_membership_changes(previous_user_ids, group_id:)
       current_user_ids = @room.user_ids
-      (current_user_ids - previous_user_ids).each { |user_id| record_room_membership_event("room_member_added", @room, User.find(user_id)) }
-      (previous_user_ids - current_user_ids).each { |user_id| record_room_membership_event("room_member_removed", @room, User.find(user_id)) }
+      (current_user_ids - previous_user_ids).each { |user_id| record_room_membership_event("room_member_added", @room, User.find(user_id), group_id: group_id) }
+      (previous_user_ids - current_user_ids).each { |user_id| record_room_membership_event("room_member_removed", @room, User.find(user_id), group_id: group_id) }
     end
 
-    def record_room_membership_event(event_type, room, user)
+    def record_room_membership_event(event_type, room, user, group_id: nil)
       OutputEvents::Recorder.record(
         event_type: event_type,
         event_id: room.id,
+        group_id: group_id,
         actor: Current.user,
         target_type: "Room",
         data: { "member" => { "type" => "User", "id" => user.id } }
       )
     end
 
-    def record_room_privacy_change
-      record_room_event("room_privacy_changed", @room)
+    def record_room_privacy_change(group_id: nil)
+      record_room_event("room_privacy_changed", @room, group_id: group_id)
     end
 
     def each_user_and_html_for(room)

@@ -1,9 +1,10 @@
 module OutputEvents
   class Recorder
-    def self.record(event_type:, event_id: nil, actor: nil, target_type: nil, data: {})
+    def self.record(event_type:, event_id: nil, group_id: nil, actor: nil, target_type: nil, data: {})
       event = OutputEvent.create!(
         event_type: event_type,
         event_id: event_id,
+        group_id: group_id,
         event_data: data.merge(
           "actor" => actor_data(actor),
           "target_type" => target_type,

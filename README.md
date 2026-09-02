@@ -149,6 +149,7 @@ Each request is a JSON `POST` with this shape:
   "id": 123,
   "event_type": "message_created",
   "event_id": 456,
+  "group_id": "ed5f2fa4-fbcb-46cf-9411-14f7a72e9f65",
   "event_data": {
     "actor": { "type": "User", "id": 1 },
     "target_type": "Message",
@@ -158,7 +159,7 @@ Each request is a JSON `POST` with this shape:
 }
 ```
 
-`id` is the idempotency key for the receiving service. Events begin with `synced: false` and become synced only after a successful HTTP `2xx` response. Timeouts, connection failures, and `5xx` responses retry up to five times; terminal failures remain unsynced for operational follow-up.
+`id` is the idempotency key for the receiving service. `group_id` is a UUID shared by every event created by one compound action, such as a room creation and its member additions; single-event actions have `group_id: null`. Events begin with `synced: false` and become synced only after a successful HTTP `2xx` response. Timeouts, connection failures, and `5xx` responses retry up to five times; terminal failures remain unsynced for operational follow-up.
 
 ```
 app/

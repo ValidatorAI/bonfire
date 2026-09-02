@@ -11,7 +11,8 @@ class OutputEvents::DeliverJobTest < ActiveJob::TestCase
   end
 
   test "posts an unsynced event and marks it synced after a successful response" do
-    event = OutputEvent.create!(event_type: "message_created", event_id: 42, event_data: { "target_type" => "Message" })
+    group_id = SecureRandom.uuid
+    event = OutputEvent.create!(event_type: "message_created", event_id: 42, group_id: group_id, event_data: { "target_type" => "Message" })
     stub_request(:post, ENV.fetch("OUTPUT_EVENTS_URL")).to_return(status: 201)
 
     OutputEvents::DeliverJob.perform_now(event.id)
@@ -20,7 +21,8 @@ class OutputEvents::DeliverJobTest < ActiveJob::TestCase
     assert_requested :post, ENV.fetch("OUTPUT_EVENTS_URL"), body: hash_including(
       "id" => event.id,
       "event_type" => "message_created",
-      "event_id" => 42
+      "event_id" => 42,
+      "group_id" => group_id
     )
   end
 

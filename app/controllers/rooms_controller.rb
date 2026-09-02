@@ -66,10 +66,11 @@ class RoomsController < ApplicationController
       broadcast_remove_to :rooms, target: [ @room, :list ]
     end
 
-    def record_room_event(event_type, room)
+    def record_room_event(event_type, room, group_id: nil)
       OutputEvents::Recorder.record(
         event_type: event_type,
         event_id: room.id,
+        group_id: group_id,
         actor: Current.user,
         target_type: "Room",
         data: { "room_type" => room.type, "project_id" => room.project_id, "parent_id" => room.parent_id }.compact

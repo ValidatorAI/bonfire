@@ -37,6 +37,7 @@ class Users::CompaniesController < ApplicationController
   end
 
   def update
+    group_id = SecureRandom.uuid
     previous_allowed_ids = @account.allowed_bot_user_ids
     next_allowed_ids = sanitized_allowed_bot_user_ids
     removed_ids = previous_allowed_ids - next_allowed_ids
@@ -49,6 +50,7 @@ class Users::CompaniesController < ApplicationController
     OutputEvents::Recorder.record(
       event_type: "account_settings_updated",
       event_id: @account.id,
+      group_id: group_id,
       actor: Current.user,
       target_type: "Account",
       data: {}
@@ -57,6 +59,7 @@ class Users::CompaniesController < ApplicationController
       OutputEvents::Recorder.record(
         event_type: "account_bot_access_updated",
         event_id: @account.id,
+        group_id: group_id,
         actor: Current.user,
         target_type: "Account",
         data: { "allowed_bot_user_ids" => next_allowed_ids, "removed_bot_user_ids" => removed_ids }

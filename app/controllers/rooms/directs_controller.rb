@@ -9,9 +9,10 @@ class Rooms::DirectsController < RoomsController
 
     broadcast_create_room(room)
     if room.previously_new_record?
-      record_room_event("room_created", room)
-      record_room_event("direct_conversation_created", room)
-      room.users.find_each { |user| record_room_member_added(room, user) }
+      group_id = SecureRandom.uuid
+      record_room_event("room_created", room, group_id: group_id)
+      record_room_event("direct_conversation_created", room, group_id: group_id)
+      room.users.find_each { |user| record_room_member_added(room, user, group_id: group_id) }
     end
     redirect_to room_url(room)
   end
@@ -34,10 +35,11 @@ class Rooms::DirectsController < RoomsController
       end
     end
 
-    def record_room_member_added(room, user)
+    def record_room_member_added(room, user, group_id: nil)
       OutputEvents::Recorder.record(
         event_type: "room_member_added",
         event_id: room.id,
+        group_id: group_id,
         actor: Current.user,
         target_type: "Room",
         data: { "member" => { "type" => "User", "id" => user.id } }

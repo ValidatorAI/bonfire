@@ -47,9 +47,11 @@ class Users::ProjectsController < ApplicationController
     end
 
     broadcast_sidebar_refresh_for(selected_member_users)
+    group_id = SecureRandom.uuid
     OutputEvents::Recorder.record(
       event_type: "project_created",
       event_id: @project.id,
+      group_id: group_id,
       actor: Current.user,
       target_type: "Project",
       data: { "slug" => @project.slug, "member_user_ids" => selected_member_users.map(&:id) }
@@ -58,6 +60,7 @@ class Users::ProjectsController < ApplicationController
       OutputEvents::Recorder.record(
         event_type: "project_member_added",
         event_id: @project.id,
+        group_id: group_id,
         actor: Current.user,
         target_type: "Project",
         data: { "member" => { "type" => "User", "id" => user.id } }
@@ -65,6 +68,7 @@ class Users::ProjectsController < ApplicationController
       OutputEvents::Recorder.record(
         event_type: "project_first_joined",
         event_id: @project.id,
+        group_id: group_id,
         actor: Current.user,
         target_type: "Project",
         data: { "member" => { "type" => "User", "id" => user.id } }
@@ -74,6 +78,7 @@ class Users::ProjectsController < ApplicationController
       OutputEvents::Recorder.record(
         event_type: "room_created",
         event_id: room.id,
+        group_id: group_id,
         actor: Current.user,
         target_type: "Room",
         data: { "room_type" => room.type, "project_id" => @project.id, "parent_id" => room.parent_id }.compact
