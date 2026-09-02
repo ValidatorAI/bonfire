@@ -39,6 +39,8 @@ class Rooms::OpensController < RoomsController
     room = Rooms::Open.create_for(room_attributes, users: Current.user)
 
     broadcast_create_room(room)
+    record_room_event("room_created", room)
+    record_room_member_added(room, Current.user)
     redirect_to post_create_redirect_url(room)
   end
 
@@ -51,6 +53,7 @@ class Rooms::OpensController < RoomsController
     @room.update! room_params
 
     broadcast_update_room
+    record_room_event("room_updated", @room)
     redirect_to room_url(@room)
   end
 
@@ -101,6 +104,16 @@ class Rooms::OpensController < RoomsController
 
     def broadcast_update_room
       broadcast_replace_to :rooms, target: [ @room, :list ], partial: "users/sidebars/rooms/shared", locals: { room: @room }
+    end
+
+    def record_room_member_added(room, user)
+      OutputEvents::Recorder.record(
+        event_type: "room_member_added",
+        event_id: room.id,
+        actor: Current.user,
+        target_type: "Room",
+        data: { "member" => { "type" => "User", "id" => user.id } }
+      )
     end
 
     def post_create_redirect_url(room)

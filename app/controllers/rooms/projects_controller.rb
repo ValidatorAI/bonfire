@@ -61,6 +61,14 @@ class Rooms::ProjectsController < RoomsController
       end
 
       broadcast_update_room
+      OutputEvents::Recorder.record(
+        event_type: "project_updated",
+        event_id: @project.id,
+        actor: Current.user,
+        target_type: "Project",
+        data: { "changed_fields" => @project.previous_changes.except("updated_at").keys }
+      )
+      record_room_privacy_change if @room.previous_changes.key?("private")
       redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Project settings updated"
     end
 
@@ -68,6 +76,8 @@ class Rooms::ProjectsController < RoomsController
       rooms = @project.rooms.active.to_a
       rooms.each(&:archive!)
       rooms.each { |room| broadcast_remove_to :rooms, target: [ room, :list ] }
+      record_project_event("project_archived")
+      rooms.each { |room| record_room_lifecycle_event("room_archived", room) }
 
       redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Project archived"
     end
@@ -77,13 +87,23 @@ class Rooms::ProjectsController < RoomsController
       rooms.each(&:unarchive!)
 
       broadcast_update_room
+      record_project_event("project_unarchived")
+      rooms.each { |room| record_room_lifecycle_event("room_unarchived", room) }
       redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Project unarchived"
     end
 
     def delete_project
       rooms = @project.rooms.to_a
+      project_id = @project.id
       @project.destroy!
       rooms.each { |room| broadcast_remove_to :rooms, target: [ room, :list ] }
+      OutputEvents::Recorder.record(
+        event_type: "project_deleted",
+        event_id: project_id,
+        actor: Current.user,
+        target_type: "Project",
+        data: {}
+      )
 
       redirect_to root_url, notice: "Project deleted"
     end
@@ -97,6 +117,7 @@ class Rooms::ProjectsController < RoomsController
 
       channel.archive!
       broadcast_remove_to :rooms, target: [ channel, :list ]
+      record_room_lifecycle_event("room_archived", channel)
       redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Channel archived"
     end
 
@@ -108,6 +129,7 @@ class Rooms::ProjectsController < RoomsController
       end
 
       channel.unarchive!
+      record_room_lifecycle_event("room_unarchived", channel)
       redirect_to edit_rooms_project_url(@project.id, by: "project"), notice: "Channel unarchived"
     end
 
@@ -121,5 +143,35 @@ class Rooms::ProjectsController < RoomsController
 
     def broadcast_update_room
       broadcast_replace_to :rooms, target: [ @room, :list ], partial: "users/sidebars/rooms/shared", locals: { room: @room }
+    end
+
+    def record_project_event(event_type)
+      OutputEvents::Recorder.record(
+        event_type: event_type,
+        event_id: @project.id,
+        actor: Current.user,
+        target_type: "Project",
+        data: {}
+      )
+    end
+
+    def record_room_lifecycle_event(event_type, room)
+      OutputEvents::Recorder.record(
+        event_type: event_type,
+        event_id: room.id,
+        actor: Current.user,
+        target_type: "Room",
+        data: { "room_type" => room.type, "project_id" => room.project_id }
+      )
+    end
+
+    def record_room_privacy_change
+      OutputEvents::Recorder.record(
+        event_type: "room_privacy_changed",
+        event_id: @room.id,
+        actor: Current.user,
+        target_type: "Room",
+        data: { "private" => @room.private? }
+      )
     end
 end

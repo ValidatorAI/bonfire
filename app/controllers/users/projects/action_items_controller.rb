@@ -5,6 +5,13 @@ class Users::Projects::ActionItemsController < ApplicationController
   def toggle
     @action_item.toggle_completed!
     @action_items = @meeting.action_items.ordered
+    OutputEvents::Recorder.record(
+      event_type: @action_item.completed? ? "all_hands_action_item_completed" : "all_hands_action_item_reopened",
+      event_id: @action_item.id,
+      actor: Current.user,
+      target_type: "ProjectAllHandsActionItem",
+      data: { "project_id" => @project.id, "meeting_id" => @meeting.id }
+    )
 
     broadcast_action_items_update
 

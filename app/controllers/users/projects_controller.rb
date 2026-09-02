@@ -47,6 +47,38 @@ class Users::ProjectsController < ApplicationController
     end
 
     broadcast_sidebar_refresh_for(selected_member_users)
+    OutputEvents::Recorder.record(
+      event_type: "project_created",
+      event_id: @project.id,
+      actor: Current.user,
+      target_type: "Project",
+      data: { "slug" => @project.slug, "member_user_ids" => selected_member_users.map(&:id) }
+    )
+    selected_member_users.each do |user|
+      OutputEvents::Recorder.record(
+        event_type: "project_member_added",
+        event_id: @project.id,
+        actor: Current.user,
+        target_type: "Project",
+        data: { "member" => { "type" => "User", "id" => user.id } }
+      )
+      OutputEvents::Recorder.record(
+        event_type: "project_first_joined",
+        event_id: @project.id,
+        actor: Current.user,
+        target_type: "Project",
+        data: { "member" => { "type" => "User", "id" => user.id } }
+      )
+    end
+    @project.rooms.find_each do |room|
+      OutputEvents::Recorder.record(
+        event_type: "room_created",
+        event_id: room.id,
+        actor: Current.user,
+        target_type: "Room",
+        data: { "room_type" => room.type, "project_id" => @project.id, "parent_id" => room.parent_id }.compact
+      )
+    end
 
     redirect_to user_company_project_overview_path(user_id: "me", id: @project.id), notice: "Project created"
   rescue ActiveRecord::RecordInvalid

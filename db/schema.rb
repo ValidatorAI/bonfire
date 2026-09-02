@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_09_01_000000) do
+ActiveRecord::Schema[8.2].define(version: 2026_09_02_000000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -243,6 +243,18 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_01_000000) do
     t.datetime "updated_at", precision: nil, null: false
     t.index ["creator_type", "creator_id"], name: "index_messages_on_creator_type_and_creator_id"
     t.index ["room_id"], name: "index_messages_on_room_id"
+  end
+
+  create_table "output_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.json "event_data", default: {}, null: false
+    t.integer "event_id"
+    t.string "event_type", null: false
+    t.boolean "synced", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_output_events_on_event_id"
+    t.index ["event_type"], name: "index_output_events_on_event_type"
+    t.index ["synced", "created_at"], name: "index_output_events_on_synced_and_created_at"
   end
 
   create_table "project_adrs", force: :cascade do |t|

@@ -12,9 +12,18 @@ class RoomsController < ApplicationController
   end
 
   def destroy
+    room_id = @room.id
+    room_data = { "room_type" => @room.type, "project_id" => @room.project_id, "parent_id" => @room.parent_id }.compact
     @room.destroy
 
     broadcast_remove_room
+    OutputEvents::Recorder.record(
+      event_type: "room_deleted",
+      event_id: room_id,
+      actor: Current.user,
+      target_type: "Room",
+      data: room_data
+    )
     redirect_to root_url
   end
 
@@ -55,5 +64,15 @@ class RoomsController < ApplicationController
 
     def broadcast_remove_room
       broadcast_remove_to :rooms, target: [ @room, :list ]
+    end
+
+    def record_room_event(event_type, room)
+      OutputEvents::Recorder.record(
+        event_type: event_type,
+        event_id: room.id,
+        actor: Current.user,
+        target_type: "Room",
+        data: { "room_type" => room.type, "project_id" => room.project_id, "parent_id" => room.parent_id }.compact
+      )
     end
 end

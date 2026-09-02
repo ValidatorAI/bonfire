@@ -39,6 +39,8 @@ class Rooms::ClosedsController < RoomsController
     room = Rooms::Closed.create_for(room_attributes, users: grantees)
 
     broadcast_create_room(room)
+    record_room_event("room_created", room)
+    room.users.find_each { |user| record_room_member_added(room, user) }
     redirect_to post_create_redirect_url(room)
   end
 
@@ -51,10 +53,15 @@ class Rooms::ClosedsController < RoomsController
   end
 
   def update
+    previously_private = @room.private?
+    previous_user_ids = @room.user_ids
     @room.update! room_params
     @room.memberships.revise(granted: grantees, revoked: revokees)
 
     broadcast_update_room
+    record_room_event("room_updated", @room)
+    record_room_privacy_change if previously_private != @room.private?
+    record_membership_changes(previous_user_ids)
     redirect_to room_url(@room)
   end
 
@@ -132,6 +139,30 @@ class Rooms::ClosedsController < RoomsController
       each_user_and_html_for(@room) do |user, html|
         broadcast_replace_to user, :rooms, target: [ @room, :list ], html: html
       end
+    end
+
+    def record_room_member_added(room, user)
+      record_room_membership_event("room_member_added", room, user)
+    end
+
+    def record_membership_changes(previous_user_ids)
+      current_user_ids = @room.user_ids
+      (current_user_ids - previous_user_ids).each { |user_id| record_room_membership_event("room_member_added", @room, User.find(user_id)) }
+      (previous_user_ids - current_user_ids).each { |user_id| record_room_membership_event("room_member_removed", @room, User.find(user_id)) }
+    end
+
+    def record_room_membership_event(event_type, room, user)
+      OutputEvents::Recorder.record(
+        event_type: event_type,
+        event_id: room.id,
+        actor: Current.user,
+        target_type: "Room",
+        data: { "member" => { "type" => "User", "id" => user.id } }
+      )
+    end
+
+    def record_room_privacy_change
+      record_room_event("room_privacy_changed", @room)
     end
 
     def each_user_and_html_for(room)

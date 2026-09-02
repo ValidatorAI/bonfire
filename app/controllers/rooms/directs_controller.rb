@@ -8,6 +8,11 @@ class Rooms::DirectsController < RoomsController
     room = Rooms::Direct.find_or_create_for(selected_users)
 
     broadcast_create_room(room)
+    if room.previously_new_record?
+      record_room_event("room_created", room)
+      record_room_event("direct_conversation_created", room)
+      room.users.find_each { |user| record_room_member_added(room, user) }
+    end
     redirect_to room_url(room)
   end
 
@@ -27,6 +32,16 @@ class Rooms::DirectsController < RoomsController
       room.memberships.each do |membership|
         membership.broadcast_prepend_to membership.user, :rooms, target: :direct_rooms, partial: "users/sidebars/rooms/direct"
       end
+    end
+
+    def record_room_member_added(room, user)
+      OutputEvents::Recorder.record(
+        event_type: "room_member_added",
+        event_id: room.id,
+        actor: Current.user,
+        target_type: "Room",
+        data: { "member" => { "type" => "User", "id" => user.id } }
+      )
     end
 
     # All users in a direct room can administer it

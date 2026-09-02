@@ -46,6 +46,23 @@ class Users::CompaniesController < ApplicationController
       remove_bot_memberships!(removed_ids) if removed_ids.any?
     end
 
+    OutputEvents::Recorder.record(
+      event_type: "account_settings_updated",
+      event_id: @account.id,
+      actor: Current.user,
+      target_type: "Account",
+      data: {}
+    )
+    if previous_allowed_ids != next_allowed_ids
+      OutputEvents::Recorder.record(
+        event_type: "account_bot_access_updated",
+        event_id: @account.id,
+        actor: Current.user,
+        target_type: "Account",
+        data: { "allowed_bot_user_ids" => next_allowed_ids, "removed_bot_user_ids" => removed_ids }
+      )
+    end
+
     redirect_to user_company_settings_path(user_id: "me"), notice: update_notice(removed_ids.count)
   end
 

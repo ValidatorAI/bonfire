@@ -23,6 +23,7 @@ class MessagesController < ApplicationController
     @message = @room.messages.create_with_attachment!(message_params)
 
     @message.broadcast_create
+    record_created_message_events
     deliver_webhooks_to_bots
   rescue ActiveRecord::RecordNotFound
     render action: :room_not_found
@@ -40,12 +41,27 @@ class MessagesController < ApplicationController
     @message.update!(message_params)
 
     @message.broadcast_replace_to @room, :messages, target: [ @message, :presentation ], partial: "messages/presentation", attributes: { maintain_scroll: true }
+    OutputEvents::Recorder.record(
+      event_type: "message_updated",
+      event_id: @message.id,
+      actor: Current.user,
+      target_type: "Message",
+      data: { "room_id" => @room.id }
+    )
     redirect_to room_message_url(@room, @message)
   end
 
   def destroy
+    message_id = @message.id
     @message.destroy
     @message.broadcast_remove
+    OutputEvents::Recorder.record(
+      event_type: "message_deleted",
+      event_id: message_id,
+      actor: Current.user,
+      target_type: "Message",
+      data: { "room_id" => @room.id }
+    )
   end
 
   def last_messages
@@ -83,6 +99,43 @@ class MessagesController < ApplicationController
 
     def message_params
       params.require(:message).permit(:body, :attachment, :client_message_id)
+    end
+
+    def record_created_message_events
+      OutputEvents::Recorder.record(
+        event_type: "message_created",
+        event_id: @message.id,
+        actor: @message.creator,
+        target_type: "Message",
+        data: { "room_id" => @room.id, "content_type" => @message.content_type }
+      )
+
+      if @message.attachment?
+        OutputEvents::Recorder.record(
+          event_type: "message_attachment_uploaded",
+          event_id: @message.id,
+          actor: @message.creator,
+          target_type: "Message",
+          data: { "room_id" => @room.id, "filename" => @message.attachment.filename.to_s }
+        )
+      end
+
+      bot_ids = bot_recipients_for(@message)
+      return if !@message.from_user? || bot_ids.empty?
+
+      OutputEvents::Recorder.record(
+        event_type: "ai_question_asked",
+        event_id: @message.id,
+        actor: @message.creator,
+        target_type: "Message",
+        data: { "room_id" => @room.id, "bot_user_ids" => bot_ids }
+      )
+    end
+
+    def bot_recipients_for(message)
+      recipients = message.mentionees.active_bots
+      recipients = @room.users.active_bots if @room.direct?
+      recipients.pluck(:id)
     end
 
 
