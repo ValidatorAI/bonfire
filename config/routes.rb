@@ -174,6 +174,8 @@ Rails.application.routes.draw do
       resources :project_all_hands_takeaways, only: %i[ index show create update destroy ]
       resources :project_all_hands_decisions, only: %i[ index show create update destroy ]
       resources :project_all_hands_action_items, only: %i[ index show create update destroy ]
+      resources :project_knowledge_items, only: %i[ index show create update destroy ]
+      resources :knowledge_items, only: %i[ index show create update destroy ], controller: "project_knowledge_items"
     end
   end
 
