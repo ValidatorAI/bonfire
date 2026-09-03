@@ -102,7 +102,7 @@ class Users::ProjectsController < ApplicationController
   def status
     @bottlenecks = @project.bottlenecks.active.ordered
     @todos = @project.todos.ordered
-    @knowledge_items = @project.knowledge_items.ordered
+    @knowledge_items = @project.knowledge_items.active.ordered
   end
 
   def all_hands
@@ -112,11 +112,11 @@ class Users::ProjectsController < ApplicationController
   end
 
   def knowledge
-    @obsidian_notes = @project.obsidian_notes.ordered
+    @obsidian_notes = @project.obsidian_notes.active.ordered
     @primary_note = @obsidian_notes.first
-    @external_assets = @project.external_assets.ordered
-    @adrs = @project.adrs.ordered
-    @knowledge_activities = @project.knowledge_activities.ordered
+    @external_assets = @project.external_assets.active.ordered
+    @adrs = @project.adrs.active.ordered
+    @knowledge_activities = @project.knowledge_activities.active.ordered
     @directory_tree = ProjectKnowledge.directory_tree(@project)
   end
 

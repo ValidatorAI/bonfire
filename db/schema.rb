@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
+ActiveRecord::Schema[8.2].define(version: 2026_09_03_000001) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -260,6 +260,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
   end
 
   create_table "project_adrs", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.date "decision_date"
     t.string "file_path"
@@ -329,6 +330,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
   end
 
   create_table "project_directory_items", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.text "content"
     t.datetime "created_at", null: false
     t.string "file_path"
@@ -344,6 +346,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
   end
 
   create_table "project_external_assets", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.string "doc_type"
     t.string "icon"
@@ -360,6 +363,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
 
   create_table "project_knowledge_activities", force: :cascade do |t|
     t.string "action_text", null: false
+    t.boolean "active", default: true, null: false
     t.string "actor_color"
     t.string "actor_name", null: false
     t.datetime "created_at", null: false
@@ -373,6 +377,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
   end
 
   create_table "project_knowledge_items", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.string "badge"
     t.datetime "created_at", null: false
     t.text "description", null: false
@@ -385,6 +390,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
   end
 
   create_table "project_obsidian_notes", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.text "content"
     t.datetime "created_at", null: false
     t.string "html_source_path"

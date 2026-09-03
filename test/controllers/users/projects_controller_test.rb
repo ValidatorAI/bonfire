@@ -318,11 +318,26 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
       html_source_type: "internal_file",
       html_source_path: "obsidian/graph.html"
     )
+    project.obsidian_notes.create!(
+      title: "Archived Vault",
+      tags: "#archived",
+      content: "Old note.",
+      html_source_type: "internal_file",
+      html_source_path: "obsidian/archived.html",
+      active: false
+    )
     project.adrs.create!(
       identifier: "ADR-004",
       title: "Use ECDSA for State Channel Signatures",
       decision_date: Date.new(2024, 8, 10),
       status: "accepted"
+    )
+    project.adrs.create!(
+      identifier: "ADR-999",
+      title: "Deprecated idea",
+      decision_date: Date.new(2023, 1, 1),
+      status: "deprecated",
+      active: false
     )
     project.external_assets.create!(
       title: "Trail of Bits Audit",
@@ -338,9 +353,22 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
       icon: "📘",
       meta_text: "Runbook • Playbook"
     )
+    project.external_assets.create!(
+      title: "Old Template",
+      url: "https://example.com/old.pdf",
+      source_type: "external_url",
+      icon: "📄",
+      meta_text: "Legacy",
+      active: false
+    )
     project.knowledge_activities.create!(
       actor_name: "Sarah",
       action_text: "created new note [[Postgres Migration Plan]]"
+    )
+    project.knowledge_activities.create!(
+      actor_name: "Legacy",
+      action_text: "created old note [[Old Plan]]",
+      active: false
     )
     arch = project.directory_items.create!(
       name: "01_Architecture",
@@ -354,6 +382,20 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
       content: "# System Architecture",
       position: 1
     )
+    inactive_dir = project.directory_items.create!(
+      name: "02_Archived",
+      item_type: "directory",
+      position: 2,
+      active: false
+    )
+    inactive_dir.children.create!(
+      project: project,
+      name: "Old_Design.md",
+      item_type: "file",
+      content: "# Old Architecture",
+      position: 1,
+      active: false
+    )
 
     get user_company_project_knowledge_url(id: project.id)
 
@@ -364,17 +406,22 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "id=\"obsidian-container\"", @response.body
     assert_match "class=\"obsidian-iframe\"", @response.body
     assert_match "path=obsidian%2Fgraph.html", @response.body
+    assert_no_match "obsidian/archived.html", @response.body
     assert_match "External Assets &amp; Playbooks", @response.body
     assert_match "Trail of Bits Audit", @response.body
     assert_match "https://example.com/audit.pdf", @response.body
     assert_match "Multi-Sig Runbook", @response.body
-    assert_match "02_Smart_Contracts/Vault_V1.md", @response.body
+    assert_no_match "Old Template", @response.body
     assert_match "Decision Records", @response.body
     assert_match "Directory Explorer", @response.body
     assert_match "01_Architecture", @response.body
     assert_match "System_Design.md", @response.body
+    assert_no_match "02_Archived", @response.body
+    assert_no_match "Old_Design.md", @response.body
     assert_match "Recent Knowledge Activity", @response.body
     assert_match "ADR-004", @response.body
+    assert_no_match "ADR-999", @response.body
+    assert_no_match "Legacy", @response.body
   end
 
   test "knowledge_file serves markdown from database directory item" do
