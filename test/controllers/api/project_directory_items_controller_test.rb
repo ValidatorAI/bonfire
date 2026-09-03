@@ -4,7 +4,11 @@ class Api::ProjectDirectoryItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @previous_token = ENV["OUTPUT_EVENTS_TOKEN"]
     ENV["OUTPUT_EVENTS_TOKEN"] = "test-token"
-    @project = Project.create!(path: "/tmp/api-project-directory-items-test-#{SecureRandom.hex(4)}", name: "Api Directory Items Test Project")
+    @project = Project.create!(
+      id: rand(100_000..499_999),
+      path: "/tmp/api-project-directory-items-test-#{SecureRandom.hex(4)}",
+      name: "Api Directory Items Test Project"
+    )
     @storage_dir = Rails.root.join("storage", "projects", @project.id.to_s)
     @item = @project.directory_items.create!(
       name: "docs",
