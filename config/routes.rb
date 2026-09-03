@@ -138,6 +138,9 @@ Rails.application.routes.draw do
   get "service-worker" => "pwa#service_worker"
 
   namespace :api do
+    get "company_status_periods/by_slug/:slug", to: "company_status_periods#by_slug", as: :by_slug_api_company_status_periods
+    get "company_status_periods/by_name", to: "company_status_periods#by_name", as: :name_api_company_status_periods
+
     resources :projects, only: %i[ index show ] do
       resources :rooms, only: %i[ index show ] do
         resources :messages, only: %i[ index show create update destroy ] do
@@ -155,6 +158,10 @@ Rails.application.routes.draw do
     # Flat routes since message ids are globally unique; no project/room scoping required.
     resources :messages, only: %i[ show update destroy ] do
       get :attachment, on: :member
+    end
+
+    resources :company_status_periods, only: %i[ index show create update destroy ] do
+      get :current, on: :collection
     end
   end
 
