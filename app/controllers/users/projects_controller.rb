@@ -91,8 +91,8 @@ class Users::ProjectsController < ApplicationController
   end
 
   def overview
-    @project_users = @project.users.order(:name)
-    @agents = @project.agents.order(:name)
+    @project_users = @project.users.active.without_bots.ordered
+    @ai_teammates = @project.users.active_bots.ordered
     @project_rooms = @project.rooms.without_directs.order(:name)
     @attention_items = @project.attention_items.open_items.ordered
     @total_rooms_count = @project_rooms.count

@@ -215,6 +215,18 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Core platform description", @response.body
   end
 
+  test "overview renders AI teammates from workspace bot users" do
+    project = create_project_for(users(:david))
+    project.project_users.create!(user: users(:bender))
+
+    get user_company_project_overview_url(id: project.id)
+
+    assert_response :success
+    assert_match "Attached AI Teammates (1)", @response.body
+    assert_match users(:bender).effective_display_name, @response.body
+    assert_match "(AI)", @response.body
+  end
+
   test "overview returns not found for non-member project" do
     assert_raises(ActiveRecord::RecordNotFound) do
       get user_company_project_overview_url(id: -1)
