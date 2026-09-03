@@ -150,6 +150,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :attention_items, only: %i[ show ]
+
     # Flat routes since message ids are globally unique; no project/room scoping required.
     resources :messages, only: %i[ show update destroy ] do
       get :attachment, on: :member
