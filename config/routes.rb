@@ -182,6 +182,8 @@ Rails.application.routes.draw do
       resources :adrs, only: %i[ index show create update destroy ], controller: "project_adrs"
       resources :project_knowledge_activities, only: %i[ index show create update destroy ]
       resources :knowledge_activities, only: %i[ index show create update destroy ], controller: "project_knowledge_activities"
+      resources :project_directory_items, only: %i[ index show create update destroy ]
+      resources :directory_items, only: %i[ index show create update destroy ], controller: "project_directory_items"
     end
   end
 
