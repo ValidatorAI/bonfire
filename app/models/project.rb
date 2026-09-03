@@ -8,7 +8,9 @@ class Project < ApplicationRecord
   has_many :bottlenecks, class_name: "ProjectBottleneck", dependent: :destroy
   has_many :todos, class_name: "ProjectTodo", dependent: :destroy
   has_many :knowledge_items, class_name: "ProjectKnowledgeItem", dependent: :destroy
-  has_many :all_hands_meetings, class_name: "ProjectAllHandsMeeting", dependent: :destroy
+  has_many :project_all_hands_takeaways, class_name: "ProjectAllHandsTakeaway", dependent: :destroy
+  has_many :project_all_hands_action_items, class_name: "ProjectAllHandsActionItem", dependent: :destroy
+  has_many :project_all_hands_decisions, class_name: "ProjectAllHandsDecision", dependent: :destroy
   has_many :obsidian_notes, class_name: "ProjectObsidianNote", dependent: :destroy
   has_many :external_assets, class_name: "ProjectExternalAsset", dependent: :destroy
   has_many :adrs, class_name: "ProjectAdr", dependent: :destroy

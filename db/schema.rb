@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_09_02_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_09_03_000000) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -275,55 +275,44 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_02_000001) do
   end
 
   create_table "project_all_hands_action_items", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.string "assignee_name"
     t.boolean "completed", default: false, null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.string "due_date"
     t.integer "position", default: 0, null: false
-    t.integer "project_all_hands_meeting_id", null: false
+    t.integer "project_id", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_project_all_hands_action_items_on_position"
-    t.index ["project_all_hands_meeting_id"], name: "idx_on_project_all_hands_meeting_id_247f053a08"
+    t.index ["project_id"], name: "index_project_all_hands_action_items_on_project_id"
   end
 
   create_table "project_all_hands_decisions", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.string "badge", default: "Logged in System"
     t.string "basis"
     t.datetime "created_at", null: false
     t.string "impact"
     t.integer "position", default: 0, null: false
-    t.integer "project_all_hands_meeting_id", null: false
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.index ["position"], name: "index_project_all_hands_decisions_on_position"
-    t.index ["project_all_hands_meeting_id"], name: "idx_on_project_all_hands_meeting_id_f36e392f50"
-  end
-
-  create_table "project_all_hands_meetings", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration_minutes", default: 45
-    t.datetime "held_at"
-    t.string "leader_name"
-    t.text "notes"
-    t.integer "position", default: 0, null: false
     t.integer "project_id", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.index ["position"], name: "index_project_all_hands_meetings_on_position"
-    t.index ["project_id"], name: "index_project_all_hands_meetings_on_project_id"
+    t.index ["position"], name: "index_project_all_hands_decisions_on_position"
+    t.index ["project_id"], name: "index_project_all_hands_decisions_on_project_id"
   end
 
   create_table "project_all_hands_takeaways", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.string "category", null: false
     t.text "content", null: false
     t.datetime "created_at", null: false
     t.integer "position", default: 0, null: false
-    t.integer "project_all_hands_meeting_id", null: false
+    t.integer "project_id", null: false
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_project_all_hands_takeaways_on_position"
-    t.index ["project_all_hands_meeting_id"], name: "idx_on_project_all_hands_meeting_id_9974bb3b08"
+    t.index ["project_id"], name: "index_project_all_hands_takeaways_on_project_id"
   end
 
   create_table "project_bottlenecks", force: :cascade do |t|
@@ -558,10 +547,9 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_02_000001) do
   add_foreign_key "file_reservations", "projects"
   add_foreign_key "messages", "rooms"
   add_foreign_key "project_adrs", "projects"
-  add_foreign_key "project_all_hands_action_items", "project_all_hands_meetings"
-  add_foreign_key "project_all_hands_decisions", "project_all_hands_meetings"
-  add_foreign_key "project_all_hands_meetings", "projects"
-  add_foreign_key "project_all_hands_takeaways", "project_all_hands_meetings"
+  add_foreign_key "project_all_hands_action_items", "projects"
+  add_foreign_key "project_all_hands_decisions", "projects"
+  add_foreign_key "project_all_hands_takeaways", "projects"
   add_foreign_key "project_bottlenecks", "projects"
   add_foreign_key "project_directory_items", "project_directory_items", column: "parent_id"
   add_foreign_key "project_directory_items", "projects"

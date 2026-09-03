@@ -276,36 +276,22 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "turbo-cable-stream-source", @response.body
     assert_match project.display_name, @response.body
     assert_match "All-Hands Hub", @response.body
-    assert_match "No All-Hands Meetings Recorded", @response.body
+    assert_match "No Active All-Hands Items", @response.body
+    assert_match "This project does not currently have any active takeaways, action items, or decisions.", @response.body
     assert_no_match "Watch Recording", @response.body
   end
 
   test "all hands with dynamic project data" do
     project = create_project_for(users(:david))
-    meeting = project.all_hands_meetings.create!(
-      title: "Alpha Sprint Review & Architecture Sync",
-      held_at: Time.zone.parse("2026-08-20 11:00:00"),
-      duration_minutes: 50,
-      leader_name: "David",
-      position: 1
-    )
-    meeting.takeaways.create!(category: "Performance", content: "Query latency reduced by 40% across all channels.", position: 1)
-    meeting.action_items.create!(title: "Deploy Redis cluster update", assignee_name: "David", due_date: "Sep 1", completed: false, position: 1)
-    meeting.decisions.create!(title: "Adopt WebSocket compression by default.", basis: "Approved by infra team", impact: "#infra", badge: "Logged in System", position: 1)
-    prev_meeting = project.all_hands_meetings.create!(
-      title: "Sprint Planning: Kickoff",
-      held_at: Time.zone.parse("2026-08-13 11:00:00"),
-      duration_minutes: 30,
-      leader_name: "Sarah",
-      notes: "Sprint backlog grooming and team capacity planning.",
-      position: 2
-    )
+    project.project_all_hands_takeaways.create!(category: "Performance", content: "Query latency reduced by 40% across all channels.", position: 1)
+    project.project_all_hands_action_items.create!(title: "Deploy Redis cluster update", assignee_name: "David", due_date: "Sep 1", completed: false, position: 1)
+    project.project_all_hands_decisions.create!(title: "Adopt WebSocket compression by default.", basis: "Approved by infra team", impact: "#infra", badge: "Logged in System", position: 1)
+    inactive_takeaway = project.project_all_hands_takeaways.create!(category: "Operations", content: "Old stale note.", active: false, position: 2)
 
     get user_company_project_all_hands_url(id: project.id)
 
     assert_response :success
     assert_match project.display_name, @response.body
-    assert_match "Alpha Sprint Review &amp; Architecture Sync", @response.body
     assert_match "Performance", @response.body
     assert_match "Query latency reduced by 40%", @response.body
     assert_match "Deploy Redis cluster update", @response.body
@@ -313,10 +299,7 @@ class Users::ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_match "1 Pending", @response.body
     assert_match "Adopt WebSocket compression by default.", @response.body
     assert_match "Impact: #infra", @response.body
-    assert_match "Sprint Planning: Kickoff", @response.body
-    assert_match "View Notes", @response.body
-    assert_match "Sprint backlog grooming and team capacity planning.", @response.body
-    assert_match "all-hands-notes-dialog", @response.body
+    assert_no_match inactive_takeaway.content, @response.body
     assert_no_match "Watch Recording", @response.body
   end
 
