@@ -87,6 +87,82 @@ module Api
       render json: serialize(attention_item)
     end
 
+    def update
+      attention_item = AttentionItem.find_by(id: params[:id])
+      return render json: { error: "Attention item not found" }, status: :not_found unless attention_item
+
+      if params[:title].present?
+        attention_item.title = params[:title]
+      end
+
+      if params[:category].present?
+        attention_item.category = params[:category]
+      end
+
+      if params[:meta_text].present? || params.key?(:meta_text)
+        attention_item.meta_text = params[:meta_text]
+      end
+
+      if params[:due_at].present? || params.key?(:due_at)
+        attention_item.due_at = params[:due_at].present? ? Time.zone.parse(params[:due_at].to_s) : nil
+      end
+
+      if params[:status].present?
+        attention_item.status = params[:status]
+      end
+
+      if params[:overdue].present? || params.key?(:overdue)
+        attention_item.overdue = ActiveModel::Type::Boolean.new.cast(params[:overdue])
+      end
+
+      if params[:user_id].present? || params.key?(:user_id)
+        attention_item.user = params[:user_id].present? ? User.find_by(id: params[:user_id]) : nil
+        return render json: { error: "User not found" }, status: :not_found if params[:user_id].present? && attention_item.user.nil?
+      end
+
+      if params[:project_id].present? || params.key?(:project_id)
+        attention_item.project = params[:project_id].present? ? Project.find_by(id: params[:project_id]) : nil
+        return render json: { error: "Project not found" }, status: :not_found if params[:project_id].present? && attention_item.project.nil?
+      end
+
+      if params[:room_id].present? || params.key?(:room_id)
+        attention_item.room = params[:room_id].present? ? Room.find_by(id: params[:room_id]) : nil
+        return render json: { error: "Room not found" }, status: :not_found if params[:room_id].present? && attention_item.room.nil?
+      end
+
+      if params[:source_id].present? || params.key?(:source_id)
+        attention_item.source_id = params[:source_id]
+      end
+
+      if params[:source_type].present? || params.key?(:source_type)
+        attention_item.source_type = params[:source_type]
+      end
+
+      if params[:target_id].present? || params.key?(:target_id)
+        attention_item.target_id = params[:target_id]
+      end
+
+      if params[:target_type].present? || params.key?(:target_type)
+        attention_item.target_type = params[:target_type]
+      end
+
+      if params[:action_label].present? || params.key?(:action_label)
+        attention_item.action_label = params[:action_label]
+      end
+
+      if params[:ai_confirm].present? || params.key?(:ai_confirm)
+        attention_item.ai_confirm = ActiveModel::Type::Boolean.new.cast(params[:ai_confirm])
+      end
+
+      unless attention_item.save
+        return render json: { error: attention_item.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      end
+
+      render json: serialize(attention_item)
+    rescue ArgumentError
+      render json: { error: "Invalid date format for due_at" }, status: :unprocessable_entity
+    end
+
     private
 
     def serialize(attention_item)

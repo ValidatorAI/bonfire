@@ -97,6 +97,33 @@ class Api::AttentionItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
+  test "updates an attention item with a valid token" do
+    patch api_attention_item_url(@attention_item.id),
+      params: {
+        title: "Updated decision title",
+        category: "blockers",
+        meta_text: "Escalated for follow-up",
+        status: "resolved",
+        overdue: true,
+        due_at: 1.day.from_now.iso8601
+      },
+      headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal "Updated decision title", body["title"]
+    assert_equal "blockers", body["category"]
+    assert_equal "Escalated for follow-up", body["meta_text"]
+    assert_equal "resolved", body["status"]
+    assert_equal true, body["overdue"]
+  end
+
+  test "rejects update requests without a token" do
+    patch api_attention_item_url(@attention_item.id), params: { title: "No token update" }
+
+    assert_response :unauthorized
+  end
+
   test "returns an attention item with a valid token" do
     get api_attention_item_url(@attention_item.id), headers: { "Authorization" => "Bearer test-token" }
 
