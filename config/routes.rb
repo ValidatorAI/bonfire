@@ -168,6 +168,10 @@ Rails.application.routes.draw do
       get :by_period, on: :collection
       get :advanced_filter, on: :collection
     end
+
+    resources :projects, only: [] do
+      resources :project_users, only: %i[ index show ], path: "users"
+    end
   end
 
   # MCP Agent Chat API (Streamable HTTP transport)
