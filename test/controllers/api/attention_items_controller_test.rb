@@ -21,6 +21,51 @@ class Api::AttentionItemsControllerTest < ActionDispatch::IntegrationTest
     ENV["OUTPUT_EVENTS_TOKEN"] = @previous_token
   end
 
+  test "returns all attention items with a valid token" do
+    second_item = AttentionItem.create!(
+      title: "Follow up on launch review",
+      category: "mentions",
+      status: :pending,
+      user: users(:jason),
+      project: @project,
+      room: @room,
+      due_at: 2.days.from_now
+    )
+
+    get api_attention_items_url, headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 2, body["count"]
+    assert_equal [ @attention_item.id, second_item.id ].sort, body["attention_items"].map { |item| item["id"] }.sort
+  end
+
+  test "paginates attention items when a page param is given" do
+    second_item = AttentionItem.create!(
+      title: "Follow up on launch review",
+      category: "mentions",
+      status: :pending,
+      user: users(:jason),
+      project: @project,
+      room: @room,
+      due_at: 2.days.from_now
+    )
+
+    get api_attention_items_url(page: 1, per_page: 1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 2, body["count"]
+    assert_equal 1, body["page"]
+    assert_equal 1, body["per_page"]
+    assert_equal [ @attention_item.id ], body["attention_items"].map { |item| item["id"] }
+
+    get api_attention_items_url(page: 2, per_page: 1), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    assert_equal [ second_item.id ], JSON.parse(response.body)["attention_items"].map { |item| item["id"] }
+  end
+
   test "returns an attention item with a valid token" do
     get api_attention_item_url(@attention_item.id), headers: { "Authorization" => "Bearer test-token" }
 
