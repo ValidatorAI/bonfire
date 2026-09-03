@@ -9,7 +9,7 @@ module Api
     MAX_PER_PAGE = 200
 
     def index
-      attention_items = AttentionItem.ordered
+      attention_items = build_scope
       count = attention_items.count
 
       if params[:page].present?
@@ -172,6 +172,48 @@ module Api
     end
 
     private
+
+    def build_scope
+      scope = AttentionItem.ordered
+
+      if params[:category].present?
+        scope = scope.where(category: params[:category])
+      end
+
+      if params[:status].present?
+        scope = scope.where(status: params[:status])
+      end
+
+      if params[:user_id].present?
+        scope = scope.where(user_id: params[:user_id])
+      end
+
+      if params[:project_id].present?
+        scope = scope.where(project_id: params[:project_id])
+      end
+
+      if params[:room_id].present?
+        scope = scope.where(room_id: params[:room_id])
+      end
+
+      if params[:created_at_gt].present?
+        begin
+          scope = scope.where("created_at > ?", Time.zone.parse(params[:created_at_gt].to_s))
+        rescue ArgumentError
+          return scope.none
+        end
+      end
+
+      if params[:created_at_lt].present?
+        begin
+          scope = scope.where("created_at < ?", Time.zone.parse(params[:created_at_lt].to_s))
+        rescue ArgumentError
+          return scope.none
+        end
+      end
+
+      scope
+    end
 
     def serialize(attention_item)
       attention_item.as_json(only: ATTENTION_ITEM_FIELDS)

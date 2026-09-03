@@ -66,6 +66,50 @@ class Api::AttentionItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ second_item.id ], JSON.parse(response.body)["attention_items"].map { |item| item["id"] }
   end
 
+  test "filters attention items by optional fields and created_at range" do
+    second_item = AttentionItem.create!(
+      title: "Launch review",
+      category: "mentions",
+      status: :resolved,
+      user: users(:jason),
+      project: @project,
+      room: @room,
+      due_at: 2.days.from_now,
+      created_at: 2.days.ago
+    )
+
+    older_item = AttentionItem.create!(
+      title: "Old review",
+      category: "mentions",
+      status: :pending,
+      user: users(:david),
+      project: @project,
+      room: @room,
+      due_at: 5.days.from_now,
+      created_at: 10.days.ago
+    )
+
+    get api_attention_items_url(
+      category: "mentions",
+      status: "resolved",
+      created_at_gt: 3.days.ago.iso8601,
+      created_at_lt: 1.day.ago.iso8601,
+      page: 1,
+      per_page: 10
+    ), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal 1, body["count"]
+    assert_equal [ second_item.id ], body["attention_items"].map { |item| item["id"] }
+
+    get api_attention_items_url(category: "mentions"), headers: { "Authorization" => "Bearer test-token" }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal [ second_item.id, older_item.id ].sort, body["attention_items"].map { |item| item["id"] }.sort
+  end
+
   test "creates an attention item with a valid token" do
     assert_difference -> { AttentionItem.count }, 1 do
       post api_attention_items_url,
