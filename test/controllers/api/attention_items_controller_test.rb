@@ -66,6 +66,37 @@ class Api::AttentionItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ second_item.id ], JSON.parse(response.body)["attention_items"].map { |item| item["id"] }
   end
 
+  test "creates an attention item with a valid token" do
+    assert_difference -> { AttentionItem.count }, 1 do
+      post api_attention_items_url,
+        params: {
+          title: "New decision item",
+          category: "decisions_waiting",
+          meta_text: "Needs approval",
+          user_id: users(:jason).id,
+          project_id: @project.id,
+          room_id: @room.id,
+          due_at: 3.days.from_now.iso8601
+        },
+        headers: { "Authorization" => "Bearer test-token" }
+    end
+
+    assert_response :created
+    body = JSON.parse(response.body)
+    assert_equal "New decision item", body["title"]
+    assert_equal "decisions_waiting", body["category"]
+    assert_equal users(:jason).id, body["user_id"]
+    assert_equal @project.id, body["project_id"]
+    assert_equal @room.id, body["room_id"]
+  end
+
+  test "rejects create requests without a token" do
+    post api_attention_items_url,
+      params: { title: "No token item", category: "decisions_waiting" }
+
+    assert_response :unauthorized
+  end
+
   test "returns an attention item with a valid token" do
     get api_attention_item_url(@attention_item.id), headers: { "Authorization" => "Bearer test-token" }
 
