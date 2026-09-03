@@ -171,6 +171,7 @@ Rails.application.routes.draw do
 
     resources :projects, only: [] do
       resources :project_users, only: %i[ index show ], path: "users"
+      resources :project_all_hands_takeaways, only: %i[ index show create update destroy ]
     end
   end
 
