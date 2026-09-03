@@ -163,6 +163,14 @@ module Api
       render json: { error: "Invalid date format for due_at" }, status: :unprocessable_entity
     end
 
+    def destroy
+      attention_item = AttentionItem.find_by(id: params[:id])
+      return render json: { error: "Attention item not found" }, status: :not_found unless attention_item
+
+      attention_item.destroy
+      head :no_content
+    end
+
     private
 
     def serialize(attention_item)

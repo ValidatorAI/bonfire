@@ -118,6 +118,21 @@ class Api::AttentionItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal true, body["overdue"]
   end
 
+  test "deletes an attention item with a valid token" do
+    assert_difference -> { AttentionItem.count }, -1 do
+      delete api_attention_item_url(@attention_item.id), headers: { "Authorization" => "Bearer test-token" }
+    end
+
+    assert_response :no_content
+    assert_nil AttentionItem.find_by(id: @attention_item.id)
+  end
+
+  test "rejects delete requests without a token" do
+    delete api_attention_item_url(@attention_item.id)
+
+    assert_response :unauthorized
+  end
+
   test "rejects update requests without a token" do
     patch api_attention_item_url(@attention_item.id), params: { title: "No token update" }
 

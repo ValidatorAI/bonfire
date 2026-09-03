@@ -150,7 +150,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :attention_items, only: %i[ index show create update ]
+    resources :attention_items, only: %i[ index show create update destroy ]
 
     # Flat routes since message ids are globally unique; no project/room scoping required.
     resources :messages, only: %i[ show update destroy ] do
