@@ -163,6 +163,11 @@ Rails.application.routes.draw do
     resources :company_status_periods, only: %i[ index show create update destroy ] do
       get :current, on: :collection
     end
+
+    resources :company_status_items, only: %i[ index show create update destroy ] do
+      get :by_period, on: :collection
+      get :advanced_filter, on: :collection
+    end
   end
 
   # MCP Agent Chat API (Streamable HTTP transport)
