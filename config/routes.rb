@@ -180,6 +180,8 @@ Rails.application.routes.draw do
       resources :external_assets, only: %i[ index show create update destroy ], controller: "project_external_assets"
       resources :project_adrs, only: %i[ index show create update destroy ]
       resources :adrs, only: %i[ index show create update destroy ], controller: "project_adrs"
+      resources :project_knowledge_activities, only: %i[ index show create update destroy ]
+      resources :knowledge_activities, only: %i[ index show create update destroy ], controller: "project_knowledge_activities"
     end
   end
 
