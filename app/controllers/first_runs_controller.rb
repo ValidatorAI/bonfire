@@ -22,6 +22,7 @@ class FirstRunsController < ApplicationController
 
       @user = User.create!(user_params.merge(role: :administrator))
       Rooms::Open.create_for({ name: FirstRun::FIRST_ROOM_NAME, creator: @user }, users: [@user])
+      FirstRun.ensure_company_bot!
     end
 
     start_new_session_for @user

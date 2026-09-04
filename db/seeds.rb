@@ -9,6 +9,7 @@ puts "Setting up MCP Agent Chat..."
 # - "All Talk" main room
 # - "Meta Events" room for system events
 overseer = FirstRun.setup!
+FirstRun.ensure_company_bot!
 
 if overseer
   puts "  Created Human Overseer: #{overseer.name}"

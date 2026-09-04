@@ -5,6 +5,8 @@ class FirstRun
   HUMAN_OVERSEER_NAME = "Human Overseer"
   HUMAN_OVERSEER_EMAIL = "overseer@bonfire.local"
   HUMAN_OVERSEER_PASSWORD = "PavelLab"
+  COMPANY_BOT_NAME = "Ask about company"
+  COMPANY_BOT_EMAIL = "ask-about-company@bonfire.local"
 
   class << self
     # Auto-setup without user input - creates Human Overseer automatically
@@ -24,8 +26,18 @@ class FirstRun
         )
 
         Rooms::Open.create_for({ name: FIRST_ROOM_NAME, creator: overseer }, users: [overseer])
+        ensure_company_bot!
         account
       end
+    end
+
+    def ensure_company_bot!
+      User.find_by(email_address: COMPANY_BOT_EMAIL) ||
+        User.create_bot!(
+          name: COMPANY_BOT_NAME,
+          display_name: COMPANY_BOT_NAME,
+          email_address: COMPANY_BOT_EMAIL
+        )
     end
 
     def human_overseer
