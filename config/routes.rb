@@ -188,6 +188,8 @@ Rails.application.routes.draw do
       resources :obsidian_notes, only: %i[ index show create update destroy ], controller: "project_obsidian_notes"
       resources :project_bottlenecks, only: %i[ index show create update destroy ]
       resources :bottlenecks, only: %i[ index show create update destroy ], controller: "project_bottlenecks"
+      resources :project_todos, only: %i[ index show create update destroy ]
+      resources :todos, only: %i[ index show create update destroy ], controller: "project_todos"
     end
   end
 
