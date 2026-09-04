@@ -32,7 +32,7 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
     assert_select "form.home-ask-form[action='#{rooms_directs_path}'][method='post']" do
       assert_select "input[type='hidden'][name='user_ids[]'][value='#{company_bot.id}']"
       assert_select "input[name='message[body]'][placeholder='Ask W about the company...']"
-      assert_select "input[type='submit'][value='Send']"
+      assert_select "input[type='submit'][value='📨'][aria-label='Send']"
     end
   end
 

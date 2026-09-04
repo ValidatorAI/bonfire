@@ -61,8 +61,8 @@
       <%= hidden_field_tag "user_ids[]", @company_bot.id %>
       <div class="home-input-pill">
         <span aria-hidden="true">✨</span>
-        <%= text_field_tag "message[body]", nil, placeholder: "Ask W about the company...", aria: { label: "Ask W about the company" }, autocomplete: "off" %>
-        <%= submit_tag "Send", class: "home-ask-send" %>
+        <%= text_field_tag "message[body]", nil, placeholder: "Ask W about the company...", aria: { label: "Ask W about the company" }, autocomplete: "off", class: "home-ask-input" %>
+        <%= submit_tag "📨", class: "home-ask-send", aria: { label: "Send" } %>
       </div>
     <% end %>
   </div>

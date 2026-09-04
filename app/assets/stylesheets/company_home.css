@@ -210,7 +210,9 @@
   border: 1px solid var(--border-color);
 }
 
-.home-input-pill input {
+.home-ask-input {
+  flex: 1 1 auto;
+  min-width: 0;
   border: none;
   background: transparent;
   width: 100%;
@@ -220,16 +222,17 @@
 }
 
 .home-ask-send {
-  flex: 0 0 auto;
+  flex: 0 0 36px;
+  inline-size: 36px;
+  block-size: 36px;
   border: none;
-  border-radius: 18px;
+  border-radius: 50%;
   background: var(--black, #111827);
   color: var(--white, #ffffff);
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 16px;
   line-height: 1;
-  padding: 9px 14px;
+  padding: 0;
 }
 
 .home-ask-send:hover,
@@ -247,6 +250,8 @@
   }
 
   .home-ask-send {
-    padding-inline: 12px;
+    flex-basis: 34px;
+    inline-size: 34px;
+    block-size: 34px;
   }
 }
