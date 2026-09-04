@@ -23,6 +23,19 @@ class Users::CompaniesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".list-item-title", text: "Approve smart contract audit"
   end
 
+  test "home renders ask company form for the company bot" do
+    company_bot = FirstRun.ensure_company_bot!
+
+    get user_company_home_url(user_id: "me")
+
+    assert_response :ok
+    assert_select "form.home-ask-form[action='#{rooms_directs_path}'][method='post']" do
+      assert_select "input[type='hidden'][name='user_ids[]'][value='#{company_bot.id}']"
+      assert_select "input[name='message[body]'][placeholder='Ask W about the company...']"
+      assert_select "input[type='submit'][value='Send']"
+    end
+  end
+
   test "status renders company direction dashboard and month selector from database" do
     period = CompanyStatusPeriod.create!(slug: "september-2026", name: "September 2026 (Upcoming)", current: true)
     period.company_status_items.create!(

@@ -3,6 +3,7 @@ class Users::CompaniesController < ApplicationController
   before_action :ensure_can_administer, only: %i[ update add_user ]
 
   def home
+    @company_bot = FirstRun.ensure_company_bot!
     @open_attention_items = AttentionItem.for_user(Current.user).open_items.ordered
     @open_count = @open_attention_items.count
     @overdue_count = @open_attention_items.count(&:overdue?)

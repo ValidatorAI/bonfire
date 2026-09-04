@@ -31,6 +31,35 @@ class Rooms::DirectsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to room_url(room)
   end
 
+  test "create with initial message" do
+    assert_difference -> { Rooms::Direct.count }, +1 do
+      assert_difference -> { Message.count }, +1 do
+        post rooms_directs_url, params: { user_ids: [ users(:bender).id ], message: { body: "What changed this week?" } }
+      end
+    end
+
+    room = Rooms::Direct.order(:created_at).last
+    message = room.messages.last
+    assert_redirected_to room_url(room)
+    assert_equal "What changed this week?", message.plain_text_body
+    assert_equal users(:david), message.creator
+    assert_equal [ users(:david).id, users(:bender).id ].sort, room.user_ids.sort
+  end
+
+  test "create with initial message reuses existing direct room" do
+    post rooms_directs_url, params: { user_ids: [ users(:bender).id ] }
+    room = Rooms::Direct.order(:created_at).last
+
+    assert_no_difference -> { Rooms::Direct.count } do
+      assert_difference -> { Message.count }, +1 do
+        post rooms_directs_url, params: { user_ids: [ users(:bender).id ], message: { body: "Summarize the company status" } }
+      end
+    end
+
+    assert_redirected_to room_url(room)
+    assert_equal "Summarize the company status", room.messages.last.plain_text_body
+  end
+
   test "destroy only allowed for all room users" do
     sign_in :kevin
 
