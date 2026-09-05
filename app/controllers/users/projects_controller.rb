@@ -95,6 +95,7 @@ class Users::ProjectsController < ApplicationController
     @ai_teammates = @project.users.active_bots.ordered
     @project_rooms = @project.rooms.without_directs.order(:name)
     @attention_items = @project.attention_items.open_items.ordered
+    @project_milestones = @project.project_milestones.active.ordered
     @total_rooms_count = @project_rooms.count
     @messages_count = Message.where(room_id: @project.rooms.select(:id)).count
   end

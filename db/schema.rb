@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_09_04_000000) do
+ActiveRecord::Schema[8.2].define(version: 2026_09_04_000001) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -389,6 +389,19 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_04_000000) do
     t.index ["project_id"], name: "index_project_knowledge_items_on_project_id"
   end
 
+  create_table "project_milestones", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "icon", default: "✅"
+    t.integer "position", default: 0, null: false
+    t.integer "project_id", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_project_milestones_on_position"
+    t.index ["project_id"], name: "index_project_milestones_on_project_id"
+  end
+
   create_table "project_obsidian_notes", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.text "content"
@@ -562,6 +575,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_09_04_000000) do
   add_foreign_key "project_external_assets", "projects"
   add_foreign_key "project_knowledge_activities", "projects"
   add_foreign_key "project_knowledge_items", "projects"
+  add_foreign_key "project_milestones", "projects"
   add_foreign_key "project_obsidian_notes", "projects"
   add_foreign_key "project_todos", "projects"
   add_foreign_key "project_users", "projects"
