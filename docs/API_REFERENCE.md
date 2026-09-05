@@ -119,6 +119,11 @@ update to connected web clients in that room, in addition to the JSON response.
 | POST | `/api/projects/:project_id/project_todos` | Create a project todo | No |
 | PATCH/PUT | `/api/projects/:project_id/project_todos/:id` | Update a project todo | No |
 | DELETE | `/api/projects/:project_id/project_todos/:id` | Delete a project todo | No |
+| GET | `/api/projects/:project_id/project_milestones` | List project milestones (filterable by `created_at` range, `active`, & paginated) | No |
+| GET | `/api/projects/:project_id/project_milestones/:id` | Get a single project milestone | No |
+| POST | `/api/projects/:project_id/project_milestones` | Create a project milestone | No |
+| PATCH/PUT | `/api/projects/:project_id/project_milestones/:id` | Update a project milestone | No |
+| DELETE | `/api/projects/:project_id/project_milestones/:id` | Delete a project milestone | No |
 
 Note: message ids are globally unique (not scoped per room), so the flat
 `/api/messages/:id` routes work regardless of which room the message belongs to.
@@ -1067,6 +1072,70 @@ Deletes a project todo. Returns `204 No Content`.
 
 ---
 
+## Project Milestones
+
+### `GET /api/projects/:project_id/project_milestones`
+
+Lists milestones for a project. Supports date range filtering on `created_at`, active/inactive filtering, and pagination.
+
+**Query Parameters:**
+- Date range:
+  - `created_at_gt` / `from` / `starts_at` / `start_date`: items created after date/time
+  - `created_at_gte`: items created on or after date/time
+  - `created_at_lt` / `to` / `ends_at` / `end_date`: items created before date/time
+  - `created_at_lte`: items created on or before date/time
+- Status:
+  - `active=true|false`
+- Pagination:
+  - `page` (default: 1)
+  - `per_page` (default: 40, max: 200)
+
+**Response** `200`
+```json
+{
+  "count": 1,
+  "page": 1,
+  "per_page": 40,
+  "project_milestones": [
+    {
+      "id": 1,
+      "project_id": 1,
+      "title": "Discovery & framework alignment",
+      "description": "Initial architecture validated",
+      "icon": "✅",
+      "active": true,
+      "position": 1,
+      "created_at": "2026-09-01T10:00:00.000Z",
+      "updated_at": "2026-09-01T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+### `GET /api/projects/:project_id/project_milestones/:id`
+
+Fetches a single project milestone.
+
+### `POST /api/projects/:project_id/project_milestones`
+
+Creates a project milestone.
+
+**Params**: `title` (required), `description`, `icon`, `active`, `position`.
+
+**Response** `201 Created`.
+
+### `PATCH`/`PUT /api/projects/:project_id/project_milestones/:id`
+
+Updates a project milestone.
+
+**Response** `200 OK`.
+
+### `DELETE /api/projects/:project_id/project_milestones/:id`
+
+Deletes a project milestone. Returns `204 No Content`.
+
+---
+
 ## Source Files
 
 - Auth: [`app/controllers/api/base_controller.rb`](../app/controllers/api/base_controller.rb)
@@ -1090,5 +1159,6 @@ Deletes a project todo. Returns `204 No Content`.
 - Project Obsidian Notes: [`app/controllers/api/project_obsidian_notes_controller.rb`](../app/controllers/api/project_obsidian_notes_controller.rb)
 - Project Bottlenecks: [`app/controllers/api/project_bottlenecks_controller.rb`](../app/controllers/api/project_bottlenecks_controller.rb)
 - Project Todos: [`app/controllers/api/project_todos_controller.rb`](../app/controllers/api/project_todos_controller.rb)
+- Project Milestones: [`app/controllers/api/project_milestones_controller.rb`](../app/controllers/api/project_milestones_controller.rb)
 - Routes: [`config/routes.rb`](../config/routes.rb) (`namespace :api`)
 - Tests: `test/controllers/api/*_test.rb`

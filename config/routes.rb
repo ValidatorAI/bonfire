@@ -190,6 +190,8 @@ Rails.application.routes.draw do
       resources :bottlenecks, only: %i[ index show create update destroy ], controller: "project_bottlenecks"
       resources :project_todos, only: %i[ index show create update destroy ]
       resources :todos, only: %i[ index show create update destroy ], controller: "project_todos"
+      resources :project_milestones, only: %i[ index show create update destroy ]
+      resources :milestones, only: %i[ index show create update destroy ], controller: "project_milestones"
     end
   end
 
